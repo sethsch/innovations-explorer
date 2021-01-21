@@ -11,7 +11,7 @@ This script gets some basic stats about the SBIR data
 import json
 import os
 
-file = "/Users/sethschimmel/Documents/GitHub/Capstone/data/sbir/sbir_2008to2018.json"
+file = "/Users/sethschimmel/Documents/GitHub/CUNY-Capstone/data/sbir/sbir_2008to2018.json"
 
 
 fulldata= json.load(open(file))

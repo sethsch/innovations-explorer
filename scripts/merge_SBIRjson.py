@@ -13,7 +13,7 @@ De-duplicate in case there were any downloading errors.
 import json
 import os
 
-path = "/Users/sethschimmel/Documents/GitHub/Capstone/data/sbir"
+path = "/Users/sethschimmel/Documents/GitHub/CUNY-Capstone/data/sbir"
 
 files = os.listdir(path)
 
