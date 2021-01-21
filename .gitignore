@@ -1,10 +1,5 @@
-# For projects using Nanoc (http://nanoc.ws/)
-
-# Default location for output (needs to match output_dir's value found in nanoc.yaml)
-output/
-
-# Temporary file directory
-tmp/nanoc/
-
-# Crash Log
-crash.log
+capstone.code-workspace
+data/sbir/
+data/vocab_taxon_lod/
+.DS_Store
+data/sbir/sbirTopics_2008to2018.json
