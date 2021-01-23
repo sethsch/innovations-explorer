@@ -3,3 +3,4 @@ data/sbir/
 data/vocab_taxon_lod/
 .DS_Store
 data/sbir/sbirTopics_2008to2018.json
+data/sample_pulledTopSol.json
