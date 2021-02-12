@@ -13,7 +13,7 @@ De-duplicate in case there were any downloading errors.
 import json
 import os
 
-path = "/Users/sethschimmel/Documents/GitHub/CUNY-Capstone/data/sbir"
+path = "/Users/sethschimmel/Documents/GitHub/CUNY-Capstone/data/sbir/raw_awards_data"
 
 files = os.listdir(path)
 
@@ -24,16 +24,17 @@ data = []
 
 
 for file in files:
-    with open(file) as f:
+    with open(file, encoding="utf-8") as f:
       data.append(json.load(f))
 
 fulldata = []
-with open("sbir_2008to2018.json", "w") as outfile:
+with open("sbir_2008to2018.json", "w",encoding="utf-8") as outfile:
     for f in files:
         with open(f, 'rb') as infile:
             file_data = json.load(infile)
             fulldata += file_data
     json.dump(fulldata, outfile)
+
 
 ######### merge topics jsons
 

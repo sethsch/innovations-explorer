@@ -166,3 +166,12 @@ import random
 my_randoms = random.sample(range(65479), 10)
 
 sample = [awardsClean[i] for i in my_randoms]
+
+
+with open('sample_pulledTopSol.json', 'w', encoding='utf-8') as f:
+    json.dump(sample, f, ensure_ascii=False, indent=4)
+    
+    
+import pandas as pd    
+awardsDf = pd.DataFrame(awards)
+awardsDf.to_csv("sbir_Awards_2008to2018.csv")
