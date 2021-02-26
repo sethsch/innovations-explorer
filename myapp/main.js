@@ -66,7 +66,7 @@ let industryNames = {
   "PUBADMIN": "Public administration"}
 
 
-dropDown = d3.select("#dropdown2")
+/*dropDown = d3.select("#dropdown2")
 
 var options = dropDown.selectAll("option")
       .data(Array.from(shortAttributeNames))
@@ -79,6 +79,8 @@ options.text(function(d) {
       .attr("value", function(d) {
         return d[0];
       });
+      
+*/
 
 
 //let colorRange = ["brown", "#999", "#999", "steelblue"];
@@ -95,9 +97,9 @@ var zcolorscale = d3.scaleLinear()
 /// setup the legend -- eventually this needs to be placed in a function,
 /// when teh color changes, the ticks etc. also change
 
+
 legArea = d3.select("#legend")
   .append("svg")
-  //.attr("class","legArea")
   //.style("font-size","9px");
   
 
@@ -116,7 +118,12 @@ legArea.append("g")
   .call(legend);
 
 
-var parcoords = ParCoords()("#example")
+
+
+
+
+
+var parcoords = ParCoords()("#parcoords")
   .rate(20)
   .composite("darker-over")
   //.brushedColor("#000")
@@ -173,8 +180,8 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
   // TO DO: create a dict which gets the summary stats for each sector to display on select/hover
   // default string when the palette has been selected
   state.paletteInfoString = `Current palette: % employed in <strong><strong> ${industryNames[state.color]} sector(s)</strong> OTHERSTUFFFF`;
-  // set the initial tooltip text
-  var tooltip = d3.select(".tooltip")
+  // set the initial info-bar text
+  var infobar = d3.select("#info-bar")
                       .html(state.paletteInfoString);
            
   
@@ -218,7 +225,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
   // consider shifting this so that on hover it shifts but on mouseout it reverts to the selected scale
   parcoords.svg.selectAll(".dimension .label")
     .on("mouseout", function () {
-        tooltip
+        infobar
         .style("opacity",0)
         .html(state.paletteInfoString)
         .style('pointer-events', 'none')
@@ -228,7 +235,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
         .duration(100); 
     })
     .on("mouseover", function(d) {
-      tooltip
+      infobar
         .style("opacity",1)
         .html(`<strong>${industryNames[d]} sector(s)</strong> OTHERSTUFFFFFF`) // this should be a call to a dictionary, the abbrev returns the full
         .transition()
@@ -308,7 +315,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
   };
 
   var dataView = new Slick.Data.DataView({inlineFilters: true });
-  var grid = new Slick.Grid("#grid", dataView, columns, options);
+  var grid = new Slick.Grid("#districts-table", dataView, columns, options);
   grid.setSelectionModel(new Slick.RowSelectionModel());
   //var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
 
@@ -454,7 +461,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
 
 
   // wire up the search textbox to apply the filter to the model
-  $("#txtSearch,#txtSearch2").keyup(function (e) {
+  $("#parcoords-search").keyup(function (e) {
     Slick.GlobalEditorLock.cancelCurrentEdit();
 
     // clear on Esc
@@ -629,7 +636,7 @@ function type(d) {
 
 
 // monochrome set view: [39.425,-94.796], 3.68
-var mymap = L.map('mapid').setView([-1.746,1.281],4.05);
+var mymap = L.map('map').setView([-1.746,1.281],4.05);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',

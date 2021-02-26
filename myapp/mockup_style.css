@@ -23,7 +23,7 @@ html, body {
 }
 
 #map-par-panel{
-    padding-top: 4%;
+    padding-top: 1%;
     height: 80vw;    
 }
 
@@ -33,35 +33,200 @@ html, body {
     width: 100%;
     background-color: #555;
 }
+
+#legend-infobar-nav{
+    /*background-color: #d1d1d1;*/
+
+}
+
+.legend {
+    /* ref: https://fonts.google.com/specimen/Source+Sans+Pro?selection.family=Source+Sans+Pro */
+    height: 4vw;
+    padding-bottom: 2%;  
+    float: left;
+    transform: translate(6%,24%);
+    padding: 0;
+    font-size: 0.6em;
+}
+
+
+
+  
+.legendTitle{
+    width: 66%;
+    text-anchor: left;
+    transform: translate(12%,-10%);
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    font-size: 0.6em;
+}
+#info-bar {
+    float: left;
+    position: absolute;
+    top: 33%;
+    left: 33%;
+    text-anchor: left;
+    font-size: 0.7em;
+}
+.legendCells .label text{
+    color: white;
+}
+  
+
+
+
+
+
 #parcoords{
     width: 100%;
     height: 16%;
-    background-color: gainsboro;
+    margin: 1.5%;
 }
+
+.axis .label {
+    font-size: 1em;
+}
+  
+.axis .tick {
+    font-size: 0.85em;
+}
+.axis text {
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+    cursor: move;
+}
+
+
 #parcoords-search{
     float: right;
     margin-right: 4%;
+    width: 140%;
 }
 
-#districts-table{
+
+
+/* Component containers
+----------------------------------*/
+.ui-widget {
+    font-family: 'Source Sans Pro', sans-serif !important;
+    font-size: 1.1em;
+  }
+  .ui-widget .ui-widget { 
+    font-size: 1em; 
+  }
+  .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { 
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; 
+    font-size: 1em; 
+  }
+  .ui-widget-content { 
+    border: 1px solid #aaaaaa; 
+    background: #ffffff; 
+    color: #222222; 
+  }
+  .ui-widget-content a { 
+    color: #222222; 
+  }
+  .ui-widget-header { 
+    border: 1px solid #aaaaaa; 
+    background: #cccccc; 
+    color: #222222; 
+    font-weight: bold; }
+  .ui-widget-header a { 
+    color: blue !important; 
+  }
+
+
+
+/*SlickGrid */
+
+
+#districts-table {
+    margin-top: 0px;
     height: 24%;
     overflow: auto;
-    border: 1px solid lightgray;
-    line-height: 11px; 
     font-size: 0.8em;
-
 }
+
+.slick-header > .slick-header-columns > .slick-header-column {
+    -webkit-box-sizing: content-box;                                                              
+    -moz-box-sizing: content-box;
+    box-sizing: content-box; 
+}
+
+.slick-header-column {
+    font-weight:bold;
+    cursor: move;
+    border-right: 1px solid #bbb !important;
+    color: black;
+    font-size: 10px;
+}
+
+.slick-cell {
+    border: none !important;
+}
+.slick-row.odd {
+    background: rgba(0,0,0,0.05);
+}
+.slick-row {
+    height: 24px !important;
+    line-height: 24px;
+}
+.slick-resizable-handle {
+    background: rgba(0,0,0,0.03);
+    width: 8px;
+}
+  
+  
+
+  
+/* jquery resizable */
+.ui-resizable {
+    padding-bottom: 10px;
+    position: relative;
+}
+.ui-resizable-handle {
+    background: rgba(0,0,0,0.05);
+}
+.ui-resizable-s {
+    height: 10px;
+    width: 100%;
+    cursor: s-resize;
+    position: absolute;
+    bottom: 0px;
+}
+  
+  
+#pager {
+    bottom: 306px;
+    height: 20px;
+    font-size: 0.4em;
+}
+  
+  
+.parcoords canvas {
+    opacity: 1;
+    -moz-transition: opacity 0.75s !important;
+    -webkit-transition: opacity 0.75s !important;
+    -o-transition: opacity 0.75s !important;
+}
+
+
+
+
+
+
+
 
 #summary-panel{
     border-left: 1px solid lightgray;
-    margin-top: 4%;
+    margin-top: 1%;
     height: 60vw;
 
 }
 
 
 #bargraph-area, #vocab-pills-area {
-    height: 32%;
+    height: 40%;
     width: 100%;
     margin-top: 2em;
     margin-bottom: 2.5em;
@@ -79,10 +244,12 @@ html, body {
     padding: 0.8em;
     overflow-y: scroll;
 }
+
 #term-badge{
     margin: 0.2em;
     font-size: 0.8em;
 }
+
 #left-panel-spacer{
     height: 14vw;
 }

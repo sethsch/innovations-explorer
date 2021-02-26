@@ -1,12 +1,20 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/ >
-		<title>Brushing Parallel Coordinates Chart</title>
+		<!-- Required meta tags -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+		<title>Capstone Dashboard v1</title>
 
 		<!-- Google fonts -->
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300" rel='stylesheet' type='text/css'>
 		<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+		
+		<!--Bootstrap css-->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+		<link rel='stylesheet' type='text/css' href="mockup_style.css">
+
 		<!-- SlickGrid -->
 		<link rel="stylesheet" href="./node_modules/slickgrid/slick.grid.css" type="text/css"/>
 		<link rel="stylesheet" href="./node_modules/slickgrid/jquery-ui-1.8.16.custom.css" type="text/css"/>
@@ -59,75 +67,438 @@
 		<script src="./node_modules/underscore/underscore.js"></script>
 		<script src="./node_modules/underscore/underscore.math.js"></script>
 		<script src="https://unpkg.com/d3-scale-cluster@1.3.1/dist/d3-scale-cluster.min.js"></script>
-
 		
 			
 	
 	</head>
 	<body>
-		<h1>Public Innovations Explorer: Congressional District Labor Sectors</h1>
-		<h2></h2>
-		<!--<label for="industries" class="input-label">Choose a labor sector:</label>
 
-		<select name="industries" id="industries">
-			<option value="pct_agro">AGRIC</option>              
-			<option value="pct_construct">CNSTR</option>          
-			<option value="pct_manufact">MFCTR</option>           
-			<option value="pct_wholesale">WHOLESALE</option>           
-			<option value="pct_retail">RETAIL</option>             
-			<option value="pct_transport_util">TRNSP/UTIL</option>          
-			<option value="pct_information">INFO</option>       
-			<option value="pct_finance_realest">FNC/REALEST</option>        
-			<option value="pct_prof_sci_mgmt_adm">SCI/MGMT</option>     
-			<option value="pct_edu_health">EDU/HEALTH</option>            
-			<option value="pct_arts_ent_food_rec">ARTS/ENT/FOOD</option>            
-			<option value="pct_otherserv">OTHER</option>          
-			<option value="pct_public_admin">PUBADMIN</option>       
-		</select>
-	-->
+		<!-- TITLE -->
+		<div id="title-panel">
+			<h1 id="page-title">Public Innovations Explorer</h1>
+			<div id="intro-panel">
+				<p>Sriracha biodiesel taxidermy organic post-ironic, Intelligentsia salvia mustache 90's code editing brunch. Butcher polaroid VHS art party, hashtag Brooklyn deep v PBR narwhal sustainable mixtape swag wolf squid tote bag. Tote bag cronut semiotics,
+					raw denim deep v taxidermy messenger bag. Tofu YOLO Etsy, direct trade ethical Odd Future jean shorts paleo. Forage Shoreditch tousled aesthetic irony, street art organic Bushwick artisan cliche semiotics ugh synth chillwave meditation.
+					Shabby chic lomo plaid vinyl chambray Vice. Vice sustainable cardigan, Williamsburg master cleanse hella DIY 90's blog. thical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher street art Carles, stumptown gluten-free Kickstarter </p>
 
+				<p>Sriracha biodiesel taxidermy organic post-ironic, stainable cardigan, Williamsburg master cleanse hella DIY 90's blog. thical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher street art Carles, stumptown gluten-free Kickstarter </p>
 
-	
+				<p>Sriracha biodiesel taxidermy organic post-ironic, Intelligentsia salvia mustache 90's code editing brunch. Butcher polaroid VHS art party, hashtag Brooklyn deep v PBR narwhal sustainable mixtape swag wolf squid tote bag. Tote bag cronut semiotics,
+					raw denim deep v taxidermy messenger bag. Tofu YOLO Etsy, direct trade ethical Odd Future jean shorts paleo. Forage Shoreditch tousled aesthetic irony, street art organic Bushwick artisan cliche semiotics ugh synth chillwave meditation.
+					Shabby chic lomo plaid vinyl chambray Vice. Vice sustainable cardigan, Williamsburg master cleanse hella DIY 90's blog. thical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher street art Carles, stumptown gluten-free Kickstarter </p>
 
-	<div id="mainpanel" class="row">
-		<div  id='sidebar' class="column">
+				<p>Sriracha biodiesel taxidermy organic post-ironic, stainable cardigan, Williamsburg master cleanse hella DIY 90's blog. thical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher street art Carles, stumptown gluten-free Kickstarter </p>
+				<p>Sriracha biodiesel taxidermy organic post-ironic, Intelligentsia salvia mustache 90's code editing brunch. Butcher polaroid VHS art party, hashtag Brooklyn deep v PBR narwhal sustainable mixtape swag wolf squid tote bag. Tote bag cronut semiotics,
+					raw denim deep v taxidermy messenger bag. Tofu YOLO Etsy, direct trade ethical Odd Future jean shorts paleo. Forage Shoreditch tousled aesthetic irony, street art organic Bushwick artisan cliche semiotics ugh synth chillwave meditation.
+					Shabby chic lomo plaid vinyl chambray Vice. Vice sustainable cardigan, Williamsburg master cleanse hella DIY 90's blog. thical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher street art Carles, stumptown gluten-free Kickstarter </p>
+
+				<p>Sriracha biodiesel taxidermy organic post-ironic, stainable cardigan, Williamsburg master cleanse hella DIY 90's blog. thical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher street art Carles, stumptown gluten-free Kickstarter </p>
+
+			</div>
 
 		</div>
 		
-		<div id="col1" class="column">
-				<div class="varinfo-group">
-					<!--<text class="legendTitle">Deviations from Mean</text>-->
-					<div class="legend" id="legend"></div>
-					<div class='tooltip' id='tooltip'></div>
-				</div>
-				<div id="example" class="parcoords"></div>
-				<p class="instructions"><strong>User Tips:</strong> <i><u>Click</u> axis labels to change the color palette, <u>double click</u> to invert the scale. You can reorder the axes by <u>dragging</u> them into new positions. Use the <u>crosshairs</u> to apply adjustable filter ranges to multiple axes.</i></p> 
-				<!-- TO DO: make these columns adaptively scaled properly-->
-				<div id="searchbar" class="row">
-					<div class="column">
-						<label id="search-label">Search for states and districts:</label>
-					</div>
-					<div class="column">
-						<input type=text id="txtSearch">
-					</div>
+
+		<!--NAV BAR-->
+		<!-- examples: https://www.codeply.com/go/qhaBrcWp3v -->
+		<!-- example 3 - Navbar with brand left, links on center and right that collapse into the vert mobile menu-->
+		<nav class="navbar navbar-dark sticky-top navbar-expand-md bg-dark justify-content-center" id="navbar-top">
+			<h1 href="/" class="navbar-brand d-flex w-50 mr-auto" style="padding-left: 4%;">Public Innovations Explorer</h1>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+				<ul class="navbar-nav w-100 justify-content-center">
+					<li class="nav-item active">
+						<a class="nav-link" href="#">Link</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Years</a>
+					</li>
+			
+
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="collapsingNavbar3MenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Agencies
+						</a>
+						<ul class="dropdown-menu" aria-labelledby="collapsing3NavbarMenuLink">
+						<li><a class="dropdown-item" href="#">User guide</a></li>
+						<li><a class="dropdown-item" href="#">Background</a></li>
+						<li><a class="dropdown-item" href="#">Data sources</a></li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="nav navbar-nav ml-auto w-100 justify-content-end" style="padding-right: 4%;">
+					<li class="nav-item">
+						<a class="nav-link" href="#">Right</a>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="collapsingNavbar3MenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						About
+						</a>
+						<ul class="dropdown-menu" aria-labelledby="collapsing3NavbarMenuLink">
+						<li><a class="dropdown-item" href="#">User guide</a></li>
+						<li><a class="dropdown-item" href="#">Background</a></li>
+						<li><a class="dropdown-item" href="#">Data sources</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+
+		<!--MAIN PANEL-->
+		<div class="container-fluid h-100 d-flex flex-column" id="main-panel">
+			
+			<div class="row flex-fill" style="min-height:0">
+				<!-- START OF MAIN PANEL LEFT-->
+				<!-- TO ADD SCROLL IN THIS COLUMN: style="overflow-y: scroll;"-->
+				<div class="col-8 mh-100"  id="map-par-panel">
+
+					<!-- LEAFLET MAP -->
+					<!--<h5>Congressional Districts Map</h5>-->
+					<div id="map"></div>
 					
+					<!--parallel coordinates options and search bar-->
+					<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="legend-infobar-nav">
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						  <span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						  <div class="navbar-nav mr-auto">
+								<li class="nav-item dropdown">
+									<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									Congressional District profiler
+									</a>
+									<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+									<li><a class="dropdown-item" href="#">By worker industries</a></li>
+									<li><hr class="dropdown-divider"></li>
+									<li><h6 class="dropdown-header">By funding details</h6></li>
+									<li><a class="dropdown-item" href="#">Total funding</a></li>
+									<li><a class="dropdown-item" href="#">Total grants</a></li>
+									</ul>
+								</li>
+						
+							</div>
+						</div>
+							<form class="form-inline">
+								<input class="form-control form-control-sm" type="search" placeholder="Search districts/states/regions" aria-label="Search districts" id="parcoords-search">
+							</form>
+					  </nav>
+
+					<!-- LEGEND / INFO BAR -->  
+					<nav class="navbar navbar-expand-lg navbar-light bg-light" id="legend-infobar-nav">
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						  <span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						  <div class="navbar-nav mr-auto">
+							
+
+								<!--<text class="legendTitle">Deviations from Mean</text>-->
+								<div class="legend" id="legend"></div>
+								<div class='info-bar' id='info-bar'></div>
+			
+						
+							</div>
+						</div>
+					</nav>
+
+
+
+					
+
+					<!-- PARALLEL COORDINATES -->
+					<h4></h4>
+					<div id="parcoords" class="parcoords"></div>
+
+					<!-- TABLE -->
+					<div id="districts-table">
+						<!-- 
+							<table class="table table-hover table-striped">
+							<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">First</th>
+								<th scope="col">Last</th>
+								<th scope="col">Handle</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+								<th scope="row">1</th>
+								<td>Mark</td>
+								<td>Otto</td>
+								<td>@mdo</td>
+							</tr>
+							<tr>
+								<th scope="row">2</th>
+								<td>Jacob</td>
+								<td>Thornton</td>
+								<td>@fat</td>
+							</tr>
+							<tr>
+								<th scope="row">3</th>
+								<td colspan="2">Larry the Bird</td>
+								<td>@twitter</td>
+							</tr>
+							<tr>
+								<th scope="row">1</th>
+								<td>Mark</td>
+								<td>Otto</td>
+								<td>@mdo</td>
+							</tr>
+							<tr>
+								<th scope="row">2</th>
+								<td>Jacob</td>
+								<td>Thornton</td>
+								<td>@fat</td>
+							</tr>
+							<tr>
+								<th scope="row">3</th>
+								<td colspan="2">Larry the Bird</td>
+								<td>@twitter</td>
+							</tr>
+							<tr>
+								<th scope="row">1</th>
+								<td>Mark</td>
+								<td>Otto</td>
+								<td>@mdo</td>
+							</tr>
+							<tr>
+								<th scope="row">2</th>
+								<td>Jacob</td>
+								<td>Thornton</td>
+								<td>@fat</td>
+							</tr>
+							<tr>
+								<th scope="row">3</th>
+								<td colspan="2">Larry the Bird</td>
+								<td>@twitter</td>
+							</tr>
+							<tr>
+								<th scope="row">1</th>
+								<td>Mark</td>
+								<td>Otto</td>
+								<td>@mdo</td>
+							</tr>
+							<tr>
+								<th scope="row">2</th>
+								<td>Jacob</td>
+								<td>Thornton</td>
+								<td>@fat</td>
+							</tr>
+							<tr>
+								<th scope="row">3</th>
+								<td colspan="2">Larry the Bird</td>
+								<td>@twitter</td>
+							</tr>
+							<tr>
+								<th scope="row">1</th>
+								<td>Mark</td>
+								<td>Otto</td>
+								<td>@mdo</td>
+							</tr>
+							<tr>
+								<th scope="row">2</th>
+								<td>Jacob</td>
+								<td>Thornton</td>
+								<td>@fat</td>
+							</tr>
+							<tr>
+								<th scope="row">3</th>
+								<td colspan="2">Larry the Bird</td>
+								<td>@twitter</td>
+							</tr>
+							</tbody>
+						</table>
+					-->
+					</div>
+					<div id="pager"></div>
+
+				
+				
+				
+				<!-- END OF MAIN PANEL LEFT-->
 				</div>
 
-				<div id="mapid"></div>
+				<!-- START OF MAIN PANEL RIGHT-->
+				<div class="col-4 mh-100" style="overflow-y: scroll;" id="summary-panel">
 
-				<div id="grid"></div>
-				<div id="pager"></div>
-				<div>
-					<p class="sources"><strong>Data Sources:</strong> SBIR.gov Awards Database (2010-2020); ACS 1-Year Estimate of Industry and Occupation, for Congressional Districts of the 116th U.S. Congress.</p>
+					<!-- SUMMARY TEXT-->
+
+					<!-- use d3 to populate the selected district's name-->	
+					<h5>District Summary - CD NAME</h5>
+			
+
+					<p>Sriracha biodiesel taxidermy organic post-ironic, Intelligentsia salvia mustache 90's code editing brunch. Butcher polaroid VHS art party, hashtag Brooklyn deep v PBR narwhal sustainable mixtape swag wolf squid tote bag. Tote bag cronut semiotics,
+						raw denim deep v taxidermy messenger bag. Tofu YOLO Etsy, direct trade ethical Odd Future jean shorts paleo. Forage Shoreditch tousled aesthetic irony, street art organic Bushwick artisan cliche semiotics ugh synth chillwave meditation.
+						Shabby chic lomo plaid vinyl chambray Vice. Vice sustainable cardigan, Williamsburg master cleanse hella DIY 90's blog. thical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher street art Carles, stumptown gluten-free Kickstarter </p>
+
+					<p>Sriracha biodiesel taxidermy organic post-ironic, stainable cardigan, Williamsburg master cleanse hella DIY 90's blog. thical Kickstarter PBR asymmetrical lo-fi. Dreamcatcher street art Carles, stumptown gluten-free Kickstarter </p>
+
+
+					<!-- START BAR GRAPH-->
+					<div id="bargraph-area">
+						<h5>Funding details</h5>
+						<ul class="nav nav-tabs">
+							<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="#">Agencies</a>
+							</li>
+							<li class="nav-item">
+							<a class="nav-link" href="#">Recipients</a>
+							</li>
+							<li class="nav-item">
+							<a class="nav-link" href="#">Grant types</a>
+							</li>
+						</ul>
+						<div id="bargraph"></div>
+					</div>
+					<!-- END BAR GRAPH -->
+
+
+
+					<!-- START VOCAB PILLS-->
+					<div id="vocab-pills-area">
+						<h5>Topics</h5>
+						<ul class="nav nav-tabs">
+							<li class="nav-item">
+							<a class="nav-link active" aria-current="page" href="#">All</a>
+							</li>
+							<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">From vocabulary</a>
+							<ul class="dropdown-menu">
+								<li><h6 class="dropdown-header">External vocabularies</h6></li>
+								<li><a class="dropdown-item" href="#">GEMET</a></li>
+								<li><a class="dropdown-item" href="#">EIGE</a></li>
+								<li><a class="dropdown-item" href="#">AGROVOC</a></li>
+								<li><a class="dropdown-item" href="#">STW</a></li>
+								<li><a class="dropdown-item" href="#">EU-SCIVOC</a></li>
+								<li><a class="dropdown-item" href="#">EUVOC</a></li>
+								<li><a class="dropdown-item" href="#">MeSH</a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li><h6 class="dropdown-header">Extracted keywords</h6></li>
+								<li><a class="dropdown-item" href="#">Separated link</a></li>
+							</ul>
+							</li>
+							<li class="nav-item">
+							<a class="nav-link" href="#">Info</a>
+							</li>
+						</ul>
+						<!-- D3 would add pills here, right now many are pasted to show scrolling functionality
+						to add the title text with d3, see: https://chartio.com/resources/tutorials/how-to-show-data-on-mouseover-in-d3js/-->
+						<div class="container-fluid" id="vocab-pills">
+
+							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
+								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
+								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
+								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
+								Profile <span class="badge bg-secondary">9</span>
+							</button>
+
+							<button type="button" class="btn rounded-pill btn-primary text-wrap btn-sm" id="term-badge" 
+								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
+								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
+								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
+								Profile long long long long and so much longer longer and more still even longer <span class="badge bg-secondary">9</span>
+							</button>
+							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
+								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
+								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
+								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
+								Profile <span class="badge bg-secondary">9</span>
+							</button>
+
+							<button type="button" class="btn rounded-pill btn-primary text-wrap btn-sm" id="term-badge" 
+								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
+								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
+								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
+								Profile long long long long <span class="badge bg-secondary">9</span>
+							</button>
+
+							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
+								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
+								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
+								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
+								Profile <span class="badge bg-secondary">9</span>
+							</button>
+							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
+								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
+								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
+								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
+								Profile <span class="badge bg-secondary">9</span>
+							</button>
+							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
+								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
+								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
+								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
+								Profile <span class="badge bg-secondary">9</span>
+							</button>
+							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
+								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
+								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
+								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
+								Profile <span class="badge bg-secondary">9</span>
+							</button>
+							
+							
+							
+
+
+					
+							
+				
+						</div>
+		
+					</div>
+					<!-- END VOCAB PILLS-->
+
+					<!-- ADD SPACER TO LET SCROLL UP TO TOP OF PANEL-->
+					<div id="left-panel-spacer">
+
+					</div>
+
+
+
+
 				</div>
+				
+			</div>
+			<!-- FOOTER ROW-->
+			<div class="row flex-shrink-0" id="footer-row">
+				<div class="col-12 border">Footer </div>
+			</div>
 		</div>
-	</div>
+	
 
 
+	<!--boostrap bundle load-->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+	<script
+		src="https://code.jquery.com/jquery-3.5.1.min.js"
+		integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+		crossorigin="anonymous">
+	</script>
+	
+	<script type="text/javascript">
+		//$(function(){
+		//	$('body').tooltip({ selector: '[data-toggle="tooltip"]' });
+		//});
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+		return new bootstrap.Tooltip(tooltipTriggerEl)
+		})
 
-	</body>
-	<link rel='stylesheet' type='text/css' href="style.css">
+	</script>
+	<!-- <link rel='stylesheet' type='text/css' href="style.css"> -->
 
 	<script src="main.js"></script>
+	
+
+	</body>
+
+
+
+
 	
 </html>
