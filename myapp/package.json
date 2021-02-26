@@ -1,0 +1,29 @@
+{
+  "name": "thesis_parcoords",
+  "version": "1.0.0",
+  "description": "attempting parallel coords for thesis",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "later"
+  },
+  "keywords": [
+    "parcoords"
+  ],
+  "author": "sethsch",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^6.3.1",
+    "d3-geo": "^2.0.1",
+    "d3-tip": "^0.9.1",
+    "d3-v6-tip": "^1.0.8",
+    "leaflet": "^1.7.1",
+    "parcoord-es": "^2.2.10",
+    "slickgrid": "^2.4.32",
+    "topojson-simplify": "^3.0.3",
+    "underscore": "^1.12.0"
+  }
+}

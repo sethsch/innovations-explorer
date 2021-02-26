@@ -1,0 +1,93 @@
+
+html, body {
+    height: 100vw;
+
+}
+#title-panel{
+    padding-left: 4%;
+    padding-right: 4%;
+    padding-top: 2%;
+    padding-bottom: 0%;
+}
+#intro-panel{
+    padding-left: 6%;
+    padding-right: 6%;
+    font-size: 18px;
+
+}
+
+#main-panel{
+    padding-left: 4%;
+    padding-right: 4%;
+
+}
+
+#map-par-panel{
+    padding-top: 4%;
+    height: 80vw;    
+}
+
+
+#map{
+    height: 32%;
+    width: 100%;
+    background-color: #555;
+}
+#parcoords{
+    width: 100%;
+    height: 16%;
+    background-color: gainsboro;
+}
+#parcoords-search{
+    float: right;
+    margin-right: 4%;
+}
+
+#districts-table{
+    height: 24%;
+    overflow: auto;
+    border: 1px solid lightgray;
+    line-height: 11px; 
+    font-size: 0.8em;
+
+}
+
+#summary-panel{
+    border-left: 1px solid lightgray;
+    margin-top: 4%;
+    height: 60vw;
+
+}
+
+
+#bargraph-area, #vocab-pills-area {
+    height: 32%;
+    width: 100%;
+    margin-top: 2em;
+    margin-bottom: 2.5em;
+
+}
+#bargraph {
+    height: 80%;
+    width: 100%;
+    background-color: lightsteelblue;
+}
+#vocab-pills{
+    height: 80%;
+    width: 100%;
+    background-color: lightsteelblue;
+    padding: 0.8em;
+    overflow-y: scroll;
+}
+#term-badge{
+    margin: 0.2em;
+    font-size: 0.8em;
+}
+#left-panel-spacer{
+    height: 14vw;
+}
+
+#footer-row{
+    padding-top: 3em;
+}
+

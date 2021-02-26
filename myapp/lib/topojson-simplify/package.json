@@ -1,0 +1,48 @@
+{
+  "name": "topojson-simplify",
+  "version": "3.0.3",
+  "description": "Topology-preserving simplification and filtering for TopoJSON.",
+  "keywords": [
+    "topojson",
+    "geojson",
+    "simplification"
+  ],
+  "homepage": "https://github.com/topojson/topojson-simplify",
+  "license": "ISC",
+  "author": {
+    "name": "Mike Bostock",
+    "url": "https://bost.ocks.org/mike"
+  },
+  "main": "dist/topojson-simplify.js",
+  "unpkg": "dist/topojson-simplify.min.js",
+  "jsdelivr": "dist/topojson-simplify.min.js",
+  "module": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/topojson/topojson-simplify.git"
+  },
+  "bin": {
+    "toposimplify": "bin/toposimplify"
+  },
+  "files": [
+    "bin/topo*",
+    "dist/**/*.js",
+    "src/**/*.js"
+  ],
+  "scripts": {
+    "pretest": "rollup -c",
+    "test": "tape 'test/**/*-test.js' && eslint src test",
+    "prepublishOnly": "rm -rf dist && yarn test",
+    "postpublish": "git push && git push --tags && zip -j dist/${npm_package_name}.zip -- LICENSE README.md dist/${npm_package_name}.js dist/${npm_package_name}.min.js"
+  },
+  "dependencies": {
+    "commander": "2",
+    "topojson-client": "3"
+  },
+  "devDependencies": {
+    "eslint": "6",
+    "rollup": "1",
+    "rollup-plugin-terser": "5",
+    "tape": "4"
+  }
+}
