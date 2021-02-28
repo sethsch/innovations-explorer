@@ -26,6 +26,8 @@ let state = {
   data: [],
   procData: [],
   parData: [],
+  recipsData: [],
+  industData: [],
   cols: [],
   usStates: [],
   selectedPlace: "All States",
@@ -55,6 +57,7 @@ let grid;
 let dataView;
 let pager;
 let infobar;
+let mymap;
 
 
 // default settings for grid
@@ -192,6 +195,7 @@ function init() {
 
 
   initParcoords();
+  initAwardsData();
 
 
   // TO DO: create a dict which gets the summary stats for each sector to display on select/hover
@@ -543,7 +547,8 @@ function change_color(dimension) {
     .filter(function(d,i) { return state.currentAxes[i] == dimension; })
     .style("font-weight", "bold")
 
-    parcoords.color(zcolor(parcoords.data(),dimension)).render();
+  parcoords.color(zcolor(parcoords.data(),dimension)).render();
+
 }
 
 // return color function based on plot and dimension
@@ -673,19 +678,6 @@ function type(d) {
 
 
 
-// monochrome set view: [39.425,-94.796], 3.68
-// albers USA set view: [-1.746,1.281],4.05
-var mymap = L.map('map').setView([39.425,-94.796], 3.5);
-
-var Stamen_TonerLite = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
-	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	subdomains: 'abcd',
-	minZoom: 3,
-	maxZoom: 13,
-	ext: 'png'
-});
-
-Stamen_TonerLite.addTo(mymap);
 
 // to add albers USA tiles from personal API:
 /*L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -747,6 +739,114 @@ function initParcoords(){
 
 
 };
+
+function initAwardsData(){
+  d3.csv('data/cd116_sbirRecipients_epsg3857.csv').then(function(data) {
+
+    // INIT - Process the data, select only the variables from it we need 
+    // Note: slickgrid needs each data element to have an 'id'
+    //data.forEach(function(d,i) { d.id = d.id || i; });
+    //console.log("RECIPS DATA AT FIRST LOAD",data)
+    var procData = [];
+    data.forEach(function(recipient) {
+      let rData = {};
+      rData["STATEFP"] = recipient["STATEFP"]
+      rData["AFFGEOID"] = recipient["AFFGEOID"]
+      rData["Company"] = recipient["Company"]
+      rData["lat"] = parseInt(recipient['Latitude'])
+      rData["long"] = parseInt(recipient["Longitude"])
+      rData["distr_name"] = recipient["distr_name"]
+      rData["City"] = recipient["City"]
+      rData["County"] = recipient["County"]
+      rData["State"] = recipient["State"]
+      procData.push( rData );
+      });
+
+    //console.log("Processed recips",procData);
+    state.recipsData = procData;
+    addRecipsToMap(state.recipsData);
+  })
+};
+
+function initIndustData(){
+  var geojson = d3.json("data/cd116_5yearACS2018_LISAclust.geojson").then(function(data){
+    state.industData.push(data)
+    L.geoJson(data, {style: chloroplethStyle}).addTo(mymap);
+  });
+  //console.log("DID WE LOAD GEOJSON?",state);
+
+  //state.industData.forEach(function(d){
+  //  L.geoJson(d, {style: chloroplethStyle}).addTo(mymap);
+  //});
+  
+
+};
+
+function chloroplethStyle(feature) {
+  var industries =  [ ...shortAttributeNames.values() ];
+  var selectedVar = industries.indexOf(state.color);
+  selectedVar = [...shortAttributeNames.keys()][selectedVar]
+  //console.log("INDUSTRIES",industries,"SELE",selectedVar);
+
+  return {
+      fillColor: zcolorscale(parseFloat(feature.properties[selectedVar])),
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.7
+  };
+}
+
+function addRecipsToMap(d){
+ 
+  var myIcon = L.icon({
+    iconUrl: './node_modules/leaflet/dist/images/marker-icon.png',
+    iconRetinaUrl: './node_modules/leaflet/dist/images/marker-icon.png',
+    iconSize: [20, 20],
+    iconAnchor: [9, 9],
+    popupAnchor: [0, -14]
+  });
+
+  var markerClusters = L.markerClusterGroup();
+ 
+  for ( var i = 0; i < d.length; ++i )
+  {
+    var popup = d[i].Company +
+                '<br/>' + d[i].City 
+  
+    var m = L.marker( [d[i].lat, d[i].long], {icon: myIcon} )
+                    .bindPopup( popup );
+  
+    markerClusters.addLayer( m );
+  }
+ 
+  mymap.addLayer( markerClusters );
+
+};
+
+
+
+// monochrome set view: [39.425,-94.796], 3.68
+// albers USA set view: [-1.746,1.281],4.05
+
+
+mymap = L.map('map').setView([39.425,-94.796], 3.5);
+
+
+
+var Stamen_TonerLite = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	subdomains: 'abcd',
+	minZoom: 3,
+	maxZoom: 13,
+	ext: 'png'
+});
+
+Stamen_TonerLite.addTo(mymap);
+
+initIndustData();
+
 
 
 /*  // scale to window size
