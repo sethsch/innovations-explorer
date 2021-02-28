@@ -222,6 +222,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
 
   var popover = new bootstrap.Popover(document.querySelector('.label'), {
       container: 'body',
+
       
       //trigger: 'manual'
     })
@@ -234,7 +235,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
     .attr("data-bs-placement","top")
     .attr("data-bs-html","true")
     // add this function to all popover axis-remove text
-    .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}"><strong>&times;</strong></div>`
+    .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}">&times;</div>`
     ) // this adds the content, on click of content, remove axis
     .attr("data-bs-trigger",'manual')
     // on right click = context menu 
@@ -252,7 +253,10 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
     });*/
     .on("mouseenter", function() {
       var _this = this;
-      $(this).popover("show");
+      setTimeout(function() {
+        $(_this).popover('show');
+      }, 300);
+      //$(this).popover("show");
       $(".popover").on("mouseleave", function() {
         $(_this).popover('hide');
       });
@@ -262,7 +266,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
         if (!$(".popover:hover").length) {
           $(_this).popover("hide");
         }
-      }, 250);
+      }, 300);
     });
 
   // add a function for updating the hide list
@@ -308,15 +312,17 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
         .style('pointer-events', 'none')
         .transition()
         .style("opacity",1)
-        .delay(0)
-        .duration(100); 
+        .delay(300)
+        .duration(450); 
     })
     .on("mouseover", function(d) {
       infobar
-        .style("opacity",1)
+        .style("opacity",0)
         .html(`<strong>${industryNames[d]} sector(s)</strong> OTHERSTUFFFFFF`) // this should be a call to a dictionary, the abbrev returns the full
         .transition()
-        .duration(500)
+        .style("opacity",1)
+        .delay(300)
+        .duration(300)
         //.style("transform",`translate(${parentPos.x + 15}px,${parentPos.y - 20}px)`)
         ;
     });
@@ -713,9 +719,21 @@ function type(d) {
 
 
 // monochrome set view: [39.425,-94.796], 3.68
-var mymap = L.map('map').setView([-1.746,1.281],4.05);
+// albers USA set view: [-1.746,1.281],4.05
+var mymap = L.map('map').setView([39.425,-94.796], 3.5);
 
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+var Stamen_TonerLite = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	subdomains: 'abcd',
+	minZoom: 3,
+	maxZoom: 13,
+	ext: 'png'
+});
+
+Stamen_TonerLite.addTo(mymap);
+
+// to add albers USA tiles from personal API:
+/*L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     //id: 'sethsch/ckl1e8ryc0dqg17jykxnnwlls', //monochrome custom
@@ -723,4 +741,4 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     tileSize: 512, 
     zoomOffset: -1,
     accessToken: 'pk.eyJ1Ijoic2V0aHNjaCIsImEiOiJja2wxZTFhcWIxMXN4MnBueHdhZnlvOW5mIn0.FTNdrJfrl5rz17HFj-FMpg'
-}).addTo(mymap);
+}).addTo(mymap);*/

@@ -121,15 +121,16 @@ html, body {
     margin-left: 0px !important;
     margin-bottom: -0.85em !important;
     border: none;
-    color: black;
-    font-size: 1em;
+    color: rgb(78, 78, 78);
+    font-size: 0.85em;
     background: none;
     
 }
 .popover-body{
     width: fit-content;
     height: fit-content;
-    padding: 0.2em;
+    padding: 0.05em;
+    font-weight: bold;
     
     
 }
