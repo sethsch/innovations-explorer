@@ -194,10 +194,7 @@
 
 					<!-- LEGEND / INFO BAR -->  
 					<nav class="navbar navbar-expand-lg navbar-light bg-light" id="legend-infobar-nav">
-						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-						  <span class="navbar-toggler-icon"></span>
-						</button>
-						<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						<div class="navbar-nav" id="navbarSupportedContent">
 						  <div class="navbar-nav mr-auto">
 							
 
@@ -219,7 +216,7 @@
 					<div id="parcoords" class="parcoords"></div>
 
 					<!-- TABLE -->
-					<div id="districts-table">
+					<div id="districts-table" class="districts-table">
 						<!-- 
 							<table class="table table-hover table-striped">
 							<thead>
@@ -494,22 +491,6 @@
 		})
 
 		
-
-		/*$(function(){
-			resizeCanvas();
-		});
-
-		$(window).on('resize', function(){
-			resizeCanvas();
-		});
-
-		function resizeCanvas()
-		{
-			var canvas = $('.parcoords canvas');
-			var panel = $("#map-par-panel")
-			canvas.css("width", panel.width());
-			canvas.css("height", "16%");
-		}*/
 
 	</script>
 	<!-- <link rel='stylesheet' type='text/css' href="style.css"> -->

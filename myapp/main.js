@@ -4,6 +4,20 @@
 
 //const { initial } = require("underscore");
 
+/*var parentElement = document.getElementById('map-par-panel');
+
+var panelWidth = parseInt($('#map-par-panel').css("width"));
+var panelHeight = parseInt($('#map-par-panel').css("height"));
+var panelPaddingTop = parseInt($('#map-par-panel').css("padding-top"));
+var panelPaddingBottom = parseInt($('#map-par-panel').css("padding-bottom"));
+var panelPaddingLeft = parseInt($('#map-par-panel').css("padding-left"));
+var panelPaddingRight = parseInt($('#map-par-panel').css("padding-right"));
+
+
+var pcHeight = panelHeight*0.16 - panelPaddingTop - panelPaddingBottom
+var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight*/
+
+
 
 /**
  * APPLICATION STATE
@@ -152,8 +166,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
 
 function init() {
 
-  // PC INIT - set the state equal to the industryName keys minus the default hidden
-  state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
+  
 
   /// INIT - set up the color legend
   /// 
@@ -178,23 +191,7 @@ function init() {
 
 
 
-
-  // INIT - set up the base of parcoords and its settings
-  parcoords = ParCoords()("#parcoords")
-    .rate(20)
-    .composite("darker-over")
-    //.brushedColor("#000")
-    .mode("queue") // progressive rendering
-    //.height(d3.max([document.body.clientHeight-326, 220]))
-    /*.margin({
-      top: 10,
-      left: 10,
-      right: 50,
-      bottom: 20,
-    })*/
-    .smoothness(0.13)
-    .alphaOnBrushed(0.2)
-    .alpha(0.5); // set bundling strength
+  initParcoords();
 
 
   // TO DO: create a dict which gets the summary stats for each sector to display on select/hover
@@ -204,22 +201,6 @@ function init() {
   // state.color = state.defaultColor;  
 
            
-  // INIT - wire up the search textbox to apply the filter to the model
-  $("#parcoords-search").keyup(function (e) {
-    Slick.GlobalEditorLock.cancelCurrentEdit();
-
-    // clear on Esc
-    if (e.which == 27) {
-      this.value = "";
-    }
-
-    searchString = this.value.toLowerCase();
-
-    // get ahead of ourselves to avoid the full-highligted graph
-    preClear(searchString);
-    updateFilter();
-    
-  });
 
   // setting up grid
   /// TO DO: have the grid feature other data about the GEOID, like ranks
@@ -249,20 +230,7 @@ function init() {
 
   pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
 
-
-  state.currentHiddenAxes = state.defaultHiddenAxes;
-  state.color = state.defaultColor;
-  
-  state.paletteInfoString = `Current palette: % employed in <strong><strong> ${industryNames[state.color]} sector(s)</strong> OTHERSTUFFFF`;
-  // set the initial info-bar text
-  infobar = d3.select("#info-bar")
-                      .html(state.paletteInfoString);
   // Now call the draw function(s) to get going...
-  
-
-
-
-
   draw();
 
 
@@ -729,3 +697,82 @@ Stamen_TonerLite.addTo(mymap);
     zoomOffset: -1,
     accessToken: 'pk.eyJ1Ijoic2V0aHNjaCIsImEiOiJja2wxZTFhcWIxMXN4MnBueHdhZnlvOW5mIn0.FTNdrJfrl5rz17HFj-FMpg'
 }).addTo(mymap);*/
+
+
+function initParcoords(){
+  // PC INIT - set the state equal to the industryName keys minus the default hidden
+  state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
+  // INIT - set up the base of parcoords and its settings
+  parcoords = ParCoords()("#parcoords")
+    .rate(20)
+    .composite("darker-over")
+    //.brushedColor("#000")
+    .mode("queue") // progressive rendering
+    //.width(d3.max([800, 220]))
+    /*.margin({
+      top: 10,
+      left: 10,
+      right: 50,
+      bottom: 20,
+    })*/
+    .smoothness(0.13)
+    .alphaOnBrushed(0.2)
+    .alpha(0.5); // set bundling strength
+
+
+      // INIT - wire up the search textbox to apply the filter to the model
+  $("#parcoords-search").keyup(function (e) {
+    Slick.GlobalEditorLock.cancelCurrentEdit();
+
+    // clear on Esc
+    if (e.which == 27) {
+      this.value = "";
+    }
+
+    searchString = this.value.toLowerCase();
+
+    // get ahead of ourselves to avoid the full-highligted graph
+    preClear(searchString);
+    updateFilter();
+    
+  });
+  state.currentHiddenAxes = state.defaultHiddenAxes;
+  state.color = state.defaultColor;
+  
+  state.paletteInfoString = `Current palette: % employed in <strong><strong> ${industryNames[state.color]} sector(s)</strong> OTHERSTUFFFF`;
+  // set the initial info-bar text
+  infobar = d3.select("#info-bar")
+                      .html(state.paletteInfoString);
+
+
+
+};
+
+
+/*  // scale to window size
+window.onresize = function() {
+  
+  var parentElement = document.getElementById('map-par-panel');
+
+  var panelWidth = parseInt($('#map-par-panel').css("width"));
+  var panelHeight = parseInt($('#map-par-panel').css("height"));
+  var panelPaddingTop = parseInt($('#map-par-panel').css("padding-top"));
+  var panelPaddingBottom = parseInt($('#map-par-panel').css("padding-bottom"));
+  var panelPaddingLeft = parseInt($('#map-par-panel').css("padding-left"));
+  var panelPaddingRight = parseInt($('#map-par-panel').css("padding-right"));
+
+  console.log("PANELWIDTH",panelWidth)
+
+  var pcHeight = panelHeight*0.16 - panelPaddingTop - panelPaddingBottom
+  var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight
+
+
+  var tableElement = document.getElementById('districts-table')
+  $("#parcoords").remove();
+  var newElement = document.createElement('div');
+  newElement.class = "parcoords"
+  newElement.id = "parcoords"
+  parentElement.insertBefore(newElement, tableElement);
+  initParcoords(pcHeight,pcWidth);
+
+};*/
