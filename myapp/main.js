@@ -357,8 +357,12 @@ function draw() {
   function updateHides(d){
     state.hiddenAxes.push(d);
     state.hiddenAxes = [... new Set(state.hiddenAxes)]
+
+    var justHidden = state.currentAxes.indexOf(d);
+    //console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes);
+
     state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes.includes( el ) );
-    console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
+    //console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
 
     // then update the ids for the new label order, so popovers work
     parcoords.svg.selectAll(".label")
@@ -369,21 +373,21 @@ function draw() {
     parcoords.svg.selectAll(".dimension")
     .attr("axis-id",(d,i)=>state.currentAxes[i]);
 
-
-
     //state.parData = state.procData
     //delete state.parData[d]
     // if that item was the color palette, pass the selection onto the first axis still available
     // and update the palette string
     if (state.color === d) {
+      change_color(state.currentAxes[0]);
       state.color = state.currentAxes[0];
       parcoords.bundleDimension(state.color);
-      change_color(state.currentAxes[0]);
+      //console.log("so we switched the bolding and color choice to",state.currentAxes[0]," from the list where axes are",state.currentAxes);
+
 
     };
-    console.log("BEFORE RESETTING DIM",parcoords.state);
+    //console.log("BEFORE RESETTING DIM",parcoords.state);
     parcoords.dimensions(state.currentAxes);
-    console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
+    //console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
     infobar.html(state.paletteInfoString);
     
 
@@ -568,7 +572,7 @@ function change_color(dimension) {
   //console.log("color Dim",state.color)
   parcoords.svg.selectAll(".dimension")
     .style("font-weight", "normal")
-    .filter(function(d) { return d == dimension; })
+    .filter(function(d,i) { return state.currentAxes[i] == dimension; })
     .style("font-weight", "bold")
 
     parcoords.color(zcolor(parcoords.data(),dimension)).render();
