@@ -10,6 +10,8 @@
  * */
 let state = {
   data: [],
+  procData: [],
+  parData: [],
   cols: [],
   usStates: [],
   selectedPlace: "All States",
@@ -33,12 +35,34 @@ let state = {
  * 
  */
 
- // For the text search, set a buffer before the filtering starts to operate -- num of chars
+// graph objects and components
+let parcoords;
+let grid;
+let dataView;
+let pager;
+let infobar;
+
+
+// default settings for grid
+var sortcol = "name";
+var sortdir = 1;
+var percentCompleteThreshold = 0;
+var searchString = "";
+
+
+// color settings
+let colorRange = d3.schemeSpectral[4]
+  // color scale for zscores
+let zcolorscale = d3.scaleLinear()
+  .domain([-2,-0.5,0.5,2])
+  .range(colorRange)
+  .interpolate(d3.interpolateLab);
+
+// For the text search, set a buffer before the filtering starts to operate -- num of chars
 let buffer = 2;
 
 
 // For parcoords, we need lists of variable names; as in the data abbrevs and spelled out for the UI
-
 var attributes = ["GEOID","distr_name","us_state","ind_profile","pct_agro",	"pct_construct",	"pct_manufact",
       "pct_wholesale",	"pct_retail",	"pct_transport_util",
       "pct_information",	"pct_finance_realest",	"pct_prof_sci_mgmt_adm",
@@ -84,61 +108,7 @@ let industryNames = {
   "PUBADMIN": "Public administration"}
 
 
-// PC INIT - set the state equal to the industryName keys minus the default hidden
-state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
 
-
-// INIT - set the color scale function
-let colorRange = d3.schemeSpectral[4]
-// color scale for zscores
-var zcolorscale = d3.scaleLinear()
-  .domain([-2,-0.5,0.5,2])
-  .range(colorRange)
-  .interpolate(d3.interpolateLab);
-
-
-/// INIT - set up the color legend
-/// 
-legArea = d3.select("#legend")
-  .append("svg")
-  //.style("font-size","9px");
-  
-
-// add the correct legend
-var legend = d3.legendColor()
-  //.labelFormat(d3.format(".1f"))
-  .labels(["-2 st.dev.","-1","Nat'l Avg.","+1","+2 st.dev."])
-  .shapeWidth(40)
-  .orient('horizontal')
-  //.title("Deviations from Mean (s.d.)")
-  .useClass(false)
-  //.titleWidth(140)
-  .scale(zcolorscale);
-
-legArea.append("g")
-  .call(legend);
-
-
-
-
-
-
-// INIT - set up the base of parcoords and its settings
-var parcoords = ParCoords()("#parcoords")
-  .rate(20)
-  .composite("darker-over")
-  //.brushedColor("#000")
-  .mode("queue") // progressive rendering
-  //.height(d3.max([document.body.clientHeight-326, 220]))
-  /*.margin({
-    top: 10,
-    left: 10,
-    right: 50,
-    bottom: 20,
-  })*/
-  .smoothness(0.13)
-  .alphaOnBrushed(0.2)
-  .alpha(0.5); // set bundling strength
 
 
 
@@ -170,44 +140,160 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
            procData.push( distData );
       })
       console.log("FILT",procData);
+      state.procData = procData;
  
 
+  init();
 
 
-  //init();
+
+});
+
+
+function init() {
+
+  // PC INIT - set the state equal to the industryName keys minus the default hidden
+  state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
+
+  /// INIT - set up the color legend
+  /// 
+  var legArea = d3.select("#legend")
+    .append("svg")
+    //.style("font-size","9px");
+    
+
+  // add the correct legend
+  var legend = d3.legendColor()
+    //.labelFormat(d3.format(".1f"))
+    .labels(["-2 st.dev.","-1","Nat'l Avg.","+1","+2 st.dev."])
+    .shapeWidth(40)
+    .orient('horizontal')
+    //.title("Deviations from Mean (s.d.)")
+    .useClass(false)
+    //.titleWidth(140)
+    .scale(zcolorscale);
+
+  legArea.append("g")
+    .call(legend);
+
+
+
+
+  // INIT - set up the base of parcoords and its settings
+  parcoords = ParCoords()("#parcoords")
+    .rate(20)
+    .composite("darker-over")
+    //.brushedColor("#000")
+    .mode("queue") // progressive rendering
+    //.height(d3.max([document.body.clientHeight-326, 220]))
+    /*.margin({
+      top: 10,
+      left: 10,
+      right: 50,
+      bottom: 20,
+    })*/
+    .smoothness(0.13)
+    .alphaOnBrushed(0.2)
+    .alpha(0.5); // set bundling strength
+
+
   // TO DO: create a dict which gets the summary stats for each sector to display on select/hover
   // default string when the palette has been selected
   // set a default color -- THIS NEEDS TO GO IN THE INIT FUNCTION
   // 
-  state.color = state.defaultColor;  
+  // state.color = state.defaultColor;  
+
+           
+  // INIT - wire up the search textbox to apply the filter to the model
+  $("#parcoords-search").keyup(function (e) {
+    Slick.GlobalEditorLock.cancelCurrentEdit();
+
+    // clear on Esc
+    if (e.which == 27) {
+      this.value = "";
+    }
+
+    searchString = this.value.toLowerCase();
+
+    // get ahead of ourselves to avoid the full-highligted graph
+    preClear(searchString);
+    updateFilter();
+    
+  });
+
+  // setting up grid
+  /// TO DO: have the grid feature other data about the GEOID, like ranks
+  // INIT - Slick Grid columns
+  var column_keys = state.procData.columns;
+  var columns = column_keys.map(function(key,i) {
+    return {
+      id: key,
+      name: key,
+      field: key,
+      sortable: true,
+    }
+  });
+  // INIT - slick grid opts
+  var options = {
+    enableCellNavigation: true,
+    enableColumnReorder: false,
+    //multiColumnSort: true,
+    asyncEditorLoading: true,
+
+  };
+  // INIT - slick grid and pager
+  dataView = new Slick.Data.DataView({inlineFilters: true });
+  grid = new Slick.Grid("#districts-table", dataView, columns, options);
+  grid.setSelectionModel(new Slick.RowSelectionModel());
+  //var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
+
+  pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
 
 
-  // DRAW - update the info bar display with the selected variable
+  state.currentHiddenAxes = state.defaultHiddenAxes;
+  state.color = state.defaultColor;
+  
   state.paletteInfoString = `Current palette: % employed in <strong><strong> ${industryNames[state.color]} sector(s)</strong> OTHERSTUFFFF`;
   // set the initial info-bar text
-  var infobar = d3.select("#info-bar")
+  infobar = d3.select("#info-bar")
                       .html(state.paletteInfoString);
-           
-  // DRAW - draw parcoords
+  // Now call the draw function(s) to get going...
+  
+
+
+
+
+  draw();
+
+
+};
+
+
+function draw() {
+
+ 
+
+
+
+  // Initial draw of parcoords
   parcoords
-    .data(procData)
-    .hideAxis(state.defaultHiddenAxes) // using state variable to hide axes dynamically when needed
+    .data(state.procData)
+    //.dimensions(state.currentAxes) // using state variable to hide axes dynamically when needed
+    .hideAxis(state.defaultHiddenAxes)
     .render()
     // TO DO: let this parameter be user/customizable -- 
     .commonScale() // sometimes it's useful to put it in common, but othertimes its nicer to have more space on the axis
     .interactive()
     .reorderable() // if this is on, need to figure out how to make the state keep track of order, so that removal popover works right
     //.brushable()
+    .bundleDimension(state.color) // bundle the parcoords on the color dimension
     .bundlingStrength(0.6)
-    .bundleDimension(state.color)
     .brushMode("1D-axes");
 
-  // DRAW - set color
-  change_color(state.color);
+
+                
   
 
- 
-  
 
   // DRAW - Add label interactivity: click label to activate coloring
   parcoords.svg.selectAll(".dimension")
@@ -272,14 +358,35 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
     state.hiddenAxes.push(d);
     state.hiddenAxes = [... new Set(state.hiddenAxes)]
     state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes.includes( el ) );
-    console.log("HIDDEN ARE",state.hiddenAxes);
-    parcoords.hideAxis(state.hiddenAxes).updateAxes();
+    console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
 
     // then update the ids for the new label order, so popovers work
     parcoords.svg.selectAll(".label")
     .attr("axis-id",(d,i)=>state.currentAxes[i])
     .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}">&times;</div>`
     );
+
+    parcoords.svg.selectAll(".dimension")
+    .attr("axis-id",(d,i)=>state.currentAxes[i]);
+
+
+
+    //state.parData = state.procData
+    //delete state.parData[d]
+    // if that item was the color palette, pass the selection onto the first axis still available
+    // and update the palette string
+    if (state.color === d) {
+      state.color = state.currentAxes[0];
+      parcoords.bundleDimension(state.color);
+      change_color(state.currentAxes[0]);
+
+    };
+    console.log("BEFORE RESETTING DIM",parcoords.state);
+    parcoords.dimensions(state.currentAxes);
+    console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
+    infobar.html(state.paletteInfoString);
+    
+
   };
 
 // DRAW -  enable popover X mark
@@ -325,80 +432,15 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
         ;
     });
     
-    
-
-  console.log("DATA",procData.columns);
-  // setting up grid
-
-
-  /// TO DO: have the grid feature other data about the GEOID, like ranks
-
-
-  // INIT - Slick Grid columns
-  var column_keys = procData.columns;
-  var columns = column_keys.map(function(key,i) {
-    return {
-      id: key,
-      name: key,
-      field: key,
-      sortable: true,
-    }
-  });
-  // INIT - slick grid opts
-  var options = {
-    enableCellNavigation: true,
-    enableColumnReorder: false,
-    //multiColumnSort: true,
-    asyncEditorLoading: true,
-
-  };
-  // INIT - slick grid and pager
-  var dataView = new Slick.Data.DataView({inlineFilters: true });
-  var grid = new Slick.Grid("#districts-table", dataView, columns, options);
-  grid.setSelectionModel(new Slick.RowSelectionModel());
-  //var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
-
-  var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
-
   
-  // FUNCTION - String filter for grid/parcoords search
-  function myFilter(item, args) {
-    /*if (item["percentComplete"] < args.percentCompleteThreshold) {
-      return false;
-    }*/
-    if (args.searchString != "" && 
-        args.searchString.length > buffer &&
-        item[args.sortcol].toLowerCase().indexOf(args.searchString.toLowerCase()) == -1) {
-      
-      return false;
-    }
-    
-    return true;
-  };
-
-  // FUNCTION - not sure what this is, its' not called anywhere
-  function percentCompleteSort(a, b) {
-    return a["percentComplete"] - b["percentComplete"];
-  };
-  
+  // set up listener for the axis hides
+  // parcoords.hideAxis(state.hiddenAxes).updateAxes();
+  // Initial coloration of parcoords
+  change_color("AGRIC");    
+  console.log("DATA",state.procData.columns);
 
 
-
-  // FUNCTION - column sorting
-  var sortcol = "name";
-  var sortdir = 1;
-  var percentCompleteThreshold = 0;
-  var searchString = "";
-
-  function comparer(a, b) {
-    var x = a[sortcol], y = b[sortcol];
-    return (x == y ? 0 : (x > y ? 1 : -1));
-  };
-
-  
   // DRAW - add sort beheaviors to grid
-
-  // Define function used to get the data and sort it.
   grid.onSort.subscribe(function (e, args) {
     sortdir = args.sortAsc ? 1 : -1;
     sortcol = args.sortCol.field;
@@ -435,7 +477,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
 
     // Get the id of the item referenced in grid_row
     var item_id = grid.getDataItem(grid_row).id;
-    var d = parcoords.brushed() || procData;
+    var d = parcoords.brushed() || state.procData;
 
     // Get the element position of the id in the data object
     elementPos = d.map(function(x) {return x.id; }).indexOf(item_id);
@@ -443,24 +485,22 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
     // Highlight that element in the parallel coordinates graph
     parcoords.highlight([d[elementPos]]);
   });
-
   grid.onMouseLeave.subscribe(function(e,args) {
     parcoords.unhighlight();
   });
+
   grid.onCellChange.subscribe(function (e, args) {
     dataView.updateItem(args.item.id, args.item);
     
   });
 
   // TO DO : add behavior for for on Mouse click that selects in parcoords, map, summary etc.
-
   grid.onAddNewRow.subscribe(function (e, args) {
     //var item = {"num": data.length, "id": "new_" + (Math.round(Math.random() * 10000)), "title": "New task", "duration": "1 day", "percentComplete": 0, "start": "01/01/2009", "finish": "01/01/2009", "effortDriven": false};
     $.extend(item, args.item);
     dataView.addItem(item);
     
   });
-
 
   // On typing... 
   grid.onKeyDown.subscribe(function (e) {
@@ -482,41 +522,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
     
   });
   
-  /*/// this is about what needs to happen for the text filter to 
-  /// match the parcoords lines and filter the others out... what function should bes be embeded in or called from?
-  let filtData = Array.from(dataView.getItems());
-    let showData = Array.from(filtData.filter(d=>d.name.includes(searchString)))
-    let exclData = Array.from(filtData.filter(d=>!d.name.includes(searchString)))
-    //console.log("FILT",filtData)
-    var d = parcoords.brushed() || data;
-    
-    showData.forEach(function(item) {
-        parcoords.mark([d[item.id]])
-    });
-    exclData.forEach(function(item){
-        parcoords.mark([d[item.id]])
 
-    });
-  
-  */
-
-
-  // INIT - wire up the search textbox to apply the filter to the model
-  $("#parcoords-search").keyup(function (e) {
-    Slick.GlobalEditorLock.cancelCurrentEdit();
-
-    // clear on Esc
-    if (e.which == 27) {
-      this.value = "";
-    }
-
-    searchString = this.value.toLowerCase();
-
-    // get ahead of ourselves to avoid the full-highligted graph
-    preClear(searchString);
-    updateFilter();
-    
-  });
 
   // wire up model events to drive the grid
   dataView.onRowCountChanged.subscribe(function (e, args) {
@@ -536,61 +542,8 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
     
   });
 
-  // FUNCTION - Grid update
-  function gridUpdate(data) {
-    // initialize the model after all the events have been hooked up
-    dataView.beginUpdate();
-    dataView.setItems(data);
-    dataView.setFilterArgs({
-      percentCompleteThreshold: percentCompleteThreshold,
-      searchString: searchString,
-      sortcol: sortcol
-    });
-    dataView.setFilter(myFilter);
-    dataView.endUpdate()
-    
-   
-    
-    
-  }; 
-
-  // FUNCTION - filtering update
-  function updateFilter() {
-    dataView.setFilterArgs({
-      percentCompleteThreshold: percentCompleteThreshold,
-      searchString: searchString,
-      sortcol: sortcol
-    });
-    dataView.refresh();
-
-    showQueryPaths();
-
-
-  };
-  // FUNCTION - clear the highlighting when the string has been removed from search to be below buffer
-  function preClear(searchString) {
-    if (searchString.length < buffer) {
-      //parcoords.unhighlight(data);
-      parcoords.clear("highlight")
-      
-    }
-  };
-
-  // FUNCTION -- highlight behavior for the parcoords when the text string is typed
-  // TO DO - this can be updated to include map highlighting as well
-  function showQueryPaths () {
-    // hmmmmm... is this where highlighting can get its values?
-    state.selectedRows = dataView.getItems().filter(d=> searchString.length > buffer && d[sortcol].toLowerCase().includes(searchString));
-    state.unselRows = dataView.getItems().filter(d=>!d[sortcol].toLowerCase().includes(searchString));
-
-    //console.log( "Sel Size",state.selectedRows);
-    parcoords.unhighlight(state.unselRows);
-    parcoords.highlight(state.selectedRows);
-
-  }
-
   // DRAW - fill grid with data
-  gridUpdate(procData);
+  gridUpdate(state.procData);
 
   // DRAW - update grid on brush
   // TO DO -- add function for updating map too
@@ -602,19 +555,8 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
   // or being on a different page) to stay selected, pass 'false' to the second arg
   dataView.syncGridSelection(grid, false);
 
-  
 
-
-  
-
-
-  
-
-  
-
-});
-
-
+};
 
 
 
@@ -629,7 +571,7 @@ function change_color(dimension) {
     .filter(function(d) { return d == dimension; })
     .style("font-weight", "bold")
 
-    parcoords.color(zcolor(parcoords.data(),dimension)).render()
+    parcoords.color(zcolor(parcoords.data(),dimension)).render();
 }
 
 // return color function based on plot and dimension
@@ -647,6 +589,84 @@ function zscore(col) {
     return (d-mean)/sigma;
   };
 };
+
+// FUNCTION - String filter for grid/parcoords search
+function myFilter(item, args) {
+  /*if (item["percentComplete"] < args.percentCompleteThreshold) {
+    return false;
+  }*/
+  if (args.searchString != "" && 
+      args.searchString.length > buffer &&
+      item[args.sortcol].toLowerCase().indexOf(args.searchString.toLowerCase()) == -1) {
+    
+    return false;
+  }
+  
+  return true;
+};
+
+// FUNCTION - not sure what this is, its' not called anywhere
+function percentCompleteSort(a, b) {
+  return a["percentComplete"] - b["percentComplete"];
+};
+  
+// FUNCTION - column sorting
+function comparer(a, b) {
+  var x = a[sortcol], y = b[sortcol];
+  return (x == y ? 0 : (x > y ? 1 : -1));
+};
+
+// FUNCTION - Grid update
+function gridUpdate(data) {
+  // initialize the model after all the events have been hooked up
+  dataView.beginUpdate();
+  dataView.setItems(data);
+  dataView.setFilterArgs({
+    percentCompleteThreshold: percentCompleteThreshold,
+    searchString: searchString,
+    sortcol: sortcol
+  });
+  dataView.setFilter(myFilter);
+  dataView.endUpdate();
+  
+}; 
+
+// FUNCTION - filtering update
+function updateFilter() {
+  dataView.setFilterArgs({
+    percentCompleteThreshold: percentCompleteThreshold,
+    searchString: searchString,
+    sortcol: sortcol
+  });
+  dataView.refresh();
+
+  showQueryPaths();
+
+
+};
+// FUNCTION - clear the highlighting when the string has been removed from search to be below buffer
+function preClear(searchString) {
+  if (searchString.length < buffer) {
+    //parcoords.unhighlight(data);
+    parcoords.clear("highlight")
+    
+  }
+};
+
+// FUNCTION -- highlight behavior for the parcoords when the text string is typed
+// TO DO - this can be updated to include map highlighting as well
+function showQueryPaths () {
+  // hmmmmm... is this where highlighting can get its values?
+  state.selectedRows = dataView.getItems().filter(d=> searchString.length > buffer && d[sortcol].toLowerCase().includes(searchString));
+  state.unselRows = dataView.getItems().filter(d=>!d[sortcol].toLowerCase().includes(searchString));
+
+  //console.log( "Sel Size",state.selectedRows);
+  parcoords.unhighlight(state.unselRows);
+  parcoords.highlight(state.selectedRows);
+
+};
+
+
 
 function wrap(text, width) {
   text.each(function() {
