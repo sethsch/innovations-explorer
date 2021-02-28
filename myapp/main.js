@@ -770,10 +770,11 @@ function initAwardsData(){
 
 function initIndustData(){
   var geojson = d3.json("data/cd116_5yearACS2018_LISAclust.geojson").then(function(data){
-    state.industData.push(data)
+    state.industData = data;
     L.geoJson(data, {style: chloroplethStyle}).addTo(mymap);
   });
-  //console.log("DID WE LOAD GEOJSON?",state);
+
+  console.log("DID WE LOAD GEOJSON?",state);
 
   //state.industData.forEach(function(d){
   //  L.geoJson(d, {style: chloroplethStyle}).addTo(mymap);
