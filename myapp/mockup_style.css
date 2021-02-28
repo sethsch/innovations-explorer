@@ -4,16 +4,23 @@ html, body {
 
 }
 #title-panel{
-    padding-left: 4%;
-    padding-right: 4%;
-    padding-top: 2%;
-    padding-bottom: 0%;
+    width: 100vw;
+    padding: 2%;
 }
-#intro-panel{
-    padding-left: 6%;
-    padding-right: 6%;
-    font-size: 18px;
+#page-title{
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
 
+#intro-panel{
+    padding-left: 12%;
+    padding-right: 12%;
+    font-size: 18px;
+}
+
+#navbar-top{
+    margin-bottom: 3%;
 }
 
 #main-panel{
@@ -22,11 +29,19 @@ html, body {
 
 }
 
+/* ---- GENERAL PAGE COMPONENTS --- */
+
+.dropdown-item {
+    font-size: 0.85em;
+}
+
+
+
+/* ---- LEFT PANEL: MAP, PARCOORDS, SLICKGRID ---- */
 #map-par-panel{
     padding-top: 1%;
     height: 80vw;    
 }
-
 
 #map{
     height: 32%;
@@ -42,7 +57,7 @@ html, body {
 .legend {
     /* ref: https://fonts.google.com/specimen/Source+Sans+Pro?selection.family=Source+Sans+Pro */
     height: 4vw;
-    padding-bottom: 2%;  
+    padding-bottom: 0%;  
     float: left;
     transform: translate(6%,24%);
     padding: 0;
@@ -50,8 +65,6 @@ html, body {
 }
 
 
-
-  
 .legendTitle{
     width: 66%;
     text-anchor: left;
@@ -73,7 +86,22 @@ html, body {
     color: white;
 }
   
+#parcoords-search{   
+    float: right;
+    margin-right: 1em;
+    min-width: 10vw;
+    width: 20vw;
+    font-size: 0.8em;
+}
 
+#funded-radio {
+    transform: translate(0%,25%);
+    color: rgb(163, 163, 163);
+    font-size: 0.8em;
+    margin-right: 0.5em;
+    margin-left: 0.5em;
+
+}
 
 
 
@@ -81,7 +109,36 @@ html, body {
 #parcoords{
     width: 100%;
     height: 16%;
-    margin: 1.5%;
+    margin-left: 0.5%;
+    margin-right: 1%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    
+}
+.popover{
+    margin-right: 1.5em !important;
+    margin-top: 0px !important;
+    margin-left: 0px !important;
+    margin-bottom: -0.85em !important;
+    border: none;
+    color: black;
+    font-size: 1em;
+    background: none;
+    
+}
+.popover-body{
+    width: fit-content;
+    height: fit-content;
+    padding: 0.2em;
+    
+    
+}
+.popover-arrow {
+    visibility:hidden;
+}
+
+.axis-remove:hover{
+    color: rgb(163, 22, 22);
 }
 
 .axis .label {
@@ -97,11 +154,7 @@ html, body {
 }
 
 
-#parcoords-search{
-    float: right;
-    margin-right: 4%;
-    width: 140%;
-}
+
 
 
 
@@ -214,7 +267,7 @@ html, body {
 
 
 
-
+/* --------------  SUMMARY PANEL ------------- */
 
 
 #summary-panel{
@@ -229,7 +282,8 @@ html, body {
     height: 40%;
     width: 100%;
     margin-top: 2em;
-    margin-bottom: 2.5em;
+    padding-bottom: 2.5em;
+    font-size: 0.9em;
 
 }
 #bargraph {
@@ -253,6 +307,11 @@ html, body {
 #left-panel-spacer{
     height: 14vw;
 }
+
+
+
+/*------- FOOTER ---------*/
+
 
 #footer-row{
     padding-top: 3em;

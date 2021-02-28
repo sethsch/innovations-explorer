@@ -2,6 +2,8 @@
 
 //var svg = d3.select("#example").style("width","800px").style("height","320px");
 
+//const { initial } = require("underscore");
+
 
 /**
  * APPLICATION STATE
@@ -11,6 +13,10 @@ let state = {
   cols: [],
   usStates: [],
   selectedPlace: "All States",
+  defaultHiddenAxes: ["id","GEOID","name","state","profile"],
+  hiddenAxes: ["id","GEOID","name","state","profile"],
+  currentAxes: [],
+  defaultColor: "AGRIC",
   color: null,
   paletteInfoString: "",
   changedOpt: null,
@@ -37,12 +43,12 @@ var shortAttributeNames = new Map(
         pct_manufact:                 "MFCTR",
         pct_wholesale:                "WHOLE",	
         pct_retail:                 "RETAIL",	
-        pct_transport_util:           "TRNSP/UTIL",
+        pct_transport_util:           "TRNSP-UTIL",
         pct_information:             "INFO",	
-        pct_finance_realest:          "FNC/REAL",	
-        pct_prof_sci_mgmt_adm:        "SCI/MGMT",
-        pct_edu_health:             "ED/HEALTH",	
-        pct_arts_ent_food_rec:              "ARTS/ENT",	
+        pct_finance_realest:          "FNC-REAL",	
+        pct_prof_sci_mgmt_adm:        "SCI-MGMT",
+        pct_edu_health:             "ED-HLTH",	
+        pct_arts_ent_food_rec:              "ARTS-ENT",	
         pct_otherserv:                "OTHER",
         pct_public_admin:             "PUBADMIN",
         id: "id"
@@ -56,15 +62,16 @@ let industryNames = {
   "MFCTR": "Manufacturing",
   "WHOLE": "Wholesale trade",
   "RETAIL": "Retail trade",
-  "TRNSP/UTIL": "Transportation, warehousing, and utilities",
+  "TRNSP-UTIL": "Transportation, warehousing, and utilities",
   "INFO": "Information",
-  "FNC/REAL": "Finance, insurance, real estate, rental and leasing",
-  "SCI/MGMT": "Professional, scientific, management, waste mgmt. services",
-  "ED/HEALTH": "Educational services, health care, social assistance",
-  "ARTS/ENT": "Arts, entertainment, recreation, accommodation and food services",
+  "FNC-REAL": "Finance, insurance, real estate, rental and leasing",
+  "SCI-MGMT": "Professional, scientific, management, waste mgmt. services",
+  "ED-HLTH": "Educational services, health care, social assistance",
+  "ARTS-ENT": "Arts, entertainment, recreation, accommodation and food services",
   "OTHER": "Other services, except public administration",
   "PUBADMIN": "Public administration"}
 
+state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
 
 /*dropDown = d3.select("#dropdown2")
 
@@ -129,12 +136,12 @@ var parcoords = ParCoords()("#parcoords")
   //.brushedColor("#000")
   .mode("queue") // progressive rendering
   //.height(d3.max([document.body.clientHeight-326, 220]))
-  .margin({
-    top: 40,
+  /*.margin({
+    top: 10,
     left: 10,
     right: 50,
     bottom: 20,
-  })
+  })*/
   .smoothness(0.13)
   .alphaOnBrushed(0.2)
   .alpha(0.5); // set bundling strength
@@ -173,29 +180,26 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
 
 
 
-  // default color to start
-  state.color = "INFO"
-
-
+  //init();
   // TO DO: create a dict which gets the summary stats for each sector to display on select/hover
   // default string when the palette has been selected
+  // set a default color -- THIS NEEDS TO GO IN THE INIT FUNCTION
+
+  state.color = state.defaultColor;  
   state.paletteInfoString = `Current palette: % employed in <strong><strong> ${industryNames[state.color]} sector(s)</strong> OTHERSTUFFFF`;
   // set the initial info-bar text
   var infobar = d3.select("#info-bar")
                       .html(state.paletteInfoString);
            
   
-
-
   parcoords
     .data(procData)
-    .hideAxis(["id","GEOID","name","state","profile"])
+    .hideAxis(state.defaultHiddenAxes) // using state variable to hide axes dynamically when needed
     .render()
     // TO DO: let this parameter be user/customizable -- 
     .commonScale() // sometimes it's useful to put it in common, but othertimes its nicer to have more space on the axis
     .interactive()
-    .reorderable()
-
+    .reorderable() // if this is on, need to figure out how to make the state keep track of order, so that removal popover works right
     //.brushable()
     .bundlingStrength(0.6)
     .bundleDimension(state.color)
@@ -203,18 +207,91 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
 
 
   change_color(state.color);
-
   
 
-
-    
+ 
+  
 
   // click label to activate coloring
   parcoords.svg.selectAll(".dimension")
     .on("click", change_color)
     .selectAll(".label")
-    //.call(wrap, 16)
+    .attr("class","label")
     .attr("transform","translate(0,-10) rotate(0)")
+
+
+  var popover = new bootstrap.Popover(document.querySelector('.label'), {
+      container: 'body',
+      
+      //trigger: 'manual'
+    })
+    
+
+  parcoords.svg.selectAll(".label")
+    .attr("axis-id",(d,i)=>state.currentAxes[i])
+    .attr("data-bs-container",'body') // add the popover menu from bootstrap, to allow hiding
+    .attr("data-bs-toggle","popover")
+    .attr("data-bs-placement","top")
+    .attr("data-bs-html","true")
+    // add this function to all popover axis-remove text
+    .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}"><strong>&times;</strong></div>`
+    ) // this adds the content, on click of content, remove axis
+    .attr("data-bs-trigger",'manual')
+    // on right click = context menu 
+    /*.on("mouseenter", function (d) {
+      $(this).popover('show');
+      
+      event.preventDefault();
+
+      // add hide settings after some msec
+      var pop = $(this).popover();
+      pop.on('shown.bs.popover',function(){ 
+        setTimeout(function(){
+          pop.popover("hide")},1500); 
+      });
+    });*/
+    .on("mouseenter", function() {
+      var _this = this;
+      $(this).popover("show");
+      $(".popover").on("mouseleave", function() {
+        $(_this).popover('hide');
+      });
+    }).on("mouseleave", function() {
+      var _this = this;
+      setTimeout(function() {
+        if (!$(".popover:hover").length) {
+          $(_this).popover("hide");
+        }
+      }, 250);
+    });
+
+  // add a function for updating the hide list
+  function updateHides(d){
+    state.hiddenAxes.push(d);
+    state.hiddenAxes = [... new Set(state.hiddenAxes)]
+    state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes.includes( el ) );
+    console.log("HIDDEN ARE",state.hiddenAxes);
+    parcoords.hideAxis(state.hiddenAxes).updateAxes();
+
+    // then update the ids for the new label order, so popovers work
+    parcoords.svg.selectAll(".label")
+    .attr("axis-id",(d,i)=>state.currentAxes[i])
+    .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}">&times;</div>`
+    );
+  };
+
+  
+// enable the X mark in the popover box to call the updateHides function
+  $(document).ready(function(){
+    $(document).on("click", ".popover .axis-remove" , function(){
+        $(this).parents(".popover").popover('hide');
+        console.log("ooh you clicked the popup for",this);
+        updateHides(this.id);
+
+    });
+  });
+
+
 
   // add hover over activity to labels, to show full label
   // ideally, labels will have abbreviations, and when hovered over the full

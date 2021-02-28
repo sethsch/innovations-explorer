@@ -115,8 +115,6 @@
 					<li class="nav-item">
 						<a class="nav-link" href="#">Years</a>
 					</li>
-			
-
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="collapsingNavbar3MenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						Agencies
@@ -161,22 +159,30 @@
 					
 					<!--parallel coordinates options and search bar-->
 					<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="legend-infobar-nav">
-						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+						<!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						  <span class="navbar-toggler-icon"></span>
 						</button>
-						<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					-->
+						<div class="navbar-nav" id="navbarSupportedContent" style="padding-right: 5%;">
 						  <div class="navbar-nav mr-auto">
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 									Congressional District profiler
 									</a>
 									<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-									<li><a class="dropdown-item" href="#">By worker industries</a></li>
+									<li><h6 class="dropdown-header">By socio-economic profile</h6></li>
+									<li><a class="dropdown-item" href="#">Employment sectors</a></li>
 									<li><hr class="dropdown-divider"></li>
 									<li><h6 class="dropdown-header">By funding details</h6></li>
 									<li><a class="dropdown-item" href="#">Total funding</a></li>
 									<li><a class="dropdown-item" href="#">Total grants</a></li>
 									</ul>
+								</li>
+								<li class="radio" id="funded-radio">
+									<label class="radio-inline">
+									  <input type="radio" name="gr" value="all_distr" onchange="val(this)"> All districts</label>
+									<label class="radio-inline">
+									  <input type="radio" name="gr" value="funded_distr" onchange="val(this)"> Funded only</label>
 								</li>
 						
 							</div>
@@ -442,12 +448,6 @@
 							</button>
 							
 							
-							
-
-
-					
-							
-				
 						</div>
 		
 					</div>
@@ -481,13 +481,35 @@
 	</script>
 	
 	<script type="text/javascript">
-		//$(function(){
-		//	$('body').tooltip({ selector: '[data-toggle="tooltip"]' });
-		//});
+		// enable tooltips
 		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 		return new bootstrap.Tooltip(tooltipTriggerEl)
 		})
+		// enable popovers
+
+		var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+		var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+		return new bootstrap.Popover(popoverTriggerEl)
+		})
+
+		
+
+		/*$(function(){
+			resizeCanvas();
+		});
+
+		$(window).on('resize', function(){
+			resizeCanvas();
+		});
+
+		function resizeCanvas()
+		{
+			var canvas = $('.parcoords canvas');
+			var panel = $("#map-par-panel")
+			canvas.css("width", panel.width());
+			canvas.css("height", "16%");
+		}*/
 
 	</script>
 	<!-- <link rel='stylesheet' type='text/css' href="style.css"> -->
