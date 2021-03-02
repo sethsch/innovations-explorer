@@ -2,6 +2,10 @@
 
 //var svg = d3.select("#example").style("width","800px").style("height","320px");
 
+//const { standardDeviation } = require("simple-statistics");
+
+//const { mean } = require("simple-statistics");
+
 //const { initial } = require("underscore");
 
 /*var parentElement = document.getElementById('map-par-panel');
@@ -28,6 +32,8 @@ let state = {
   parData: [],
   recipsData: [],
   industData: [],
+  industStats: [],
+  currentChloroLayer: null,
   cols: [],
   usStates: [],
   selectedPlace: "All States",
@@ -60,6 +66,24 @@ let infobar;
 let mymap;
 
 
+// these weren't loading through the state... so use the manual computations here
+let industStats_global = {
+'pct_agro': {'mean': 0.019107477743707094, 'stdev': 0.02492691803944095},
+'pct_arts_ent_food_rec': {'mean': 0.09709313590846688, 'stdev': 0.02478666254994243},
+'pct_construct': {'mean': 0.06493889406407324, 'stdev': 0.016741604324190498},
+'pct_edu_health': {'mean': 0.2320128615789473, 'stdev': 0.03328312551876628},
+'pct_finance_realest': {'mean': 0.06422619412128149, 'stdev': 0.02076702867483482},
+'pct_information': {'mean': 0.02015461168649883, 'stdev': 0.010306822824995704},
+'pct_manufact': {'mean': 0.10252189041876426, 'stdev': 0.04727747231385272},
+'pct_otherserv': {'mean': 0.048906455414187616, 'stdev': 0.006403847620039182},
+'pct_prof_sci_mgmt_adm': {'mean': 0.11167448162929057, 'stdev': 0.03646271361236327},
+'pct_public_admin': {'mean': 0.04688159643249426, 'stdev': 0.02111663008647217},
+'pct_retail': {'mean': 0.11359310667276894, 'stdev': 0.013279286235067538},
+'pct_transport_util': {'mean': 0.052658708295194444, 'stdev': 0.014976210224363492},
+'pct_wholesale': {'mean': 0.026230585965675055, 'stdev': 0.006339945705734841}
+}
+
+
 // default settings for grid
 var sortcol = "name";
 var sortdir = 1;
@@ -68,13 +92,30 @@ var searchString = "";
 
 
 // color settings
-let colorRange = d3.schemeSpectral[4]
+var colorRange = d3.schemeSpectral[4]
   // color scale for zscores
-let zcolorscale = d3.scaleLinear()
+var zcolorscale = d3.scaleLinear()
   .domain([-2,-0.5,0.5,2])
-  .range(colorRange)
+  .range(colorRange.reverse())
   .interpolate(d3.interpolateLab);
 
+//console.log(d3.schemeSpectral[5])
+
+//["#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"]
+
+var chloroScale = d3.scaleQuantize()
+  .domain([-2,2]) // pass only the extreme values to a scaleQuantize’s domain
+  .range(d3.schemeSpectral[7].reverse());
+
+function getColor(d) {
+    var val = d;
+    return val > 20  ? '#2B83BA' :
+           val > 10  ? '#ABDDA4' :
+           val > 0   ? '#FFFFBF' :
+           val > -10  ? '#FDAE61' :
+           val > -20   ? '#D7191C' :
+           'blue'
+};
 // For the text search, set a buffer before the filtering starts to operate -- num of chars
 let buffer = 2;
 
@@ -107,7 +148,8 @@ var shortAttributeNames = new Map(
         pct_public_admin:             "PUBADMIN",
         id: "id"
       })
-    )
+    );
+
 
 let industryNames = {
   "AGRIC": "Agriculture, mining, forestry, fishing, hunting",
@@ -123,7 +165,6 @@ let industryNames = {
   "ARTS-ENT": "Arts, entertainment, recreation, accommodation and food services",
   "OTHER": "Other services, except public administration",
   "PUBADMIN": "Public administration"}
-
 
 
 
@@ -192,19 +233,34 @@ function init() {
   legArea.append("g")
     .call(legend);
 
+  console.log("ZCOLORSCALE",legend)
 
 
-  initParcoords();
+  //  /// INIT FOR MAP
+  mymap = L.map('map').setView([39.425,-94.796], 3.5);
+
+  var Stamen_TonerLite = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    subdomains: 'abcd',
+    minZoom: 3,
+    maxZoom: 13,
+    ext: 'png'
+  });
+
+  
+  Stamen_TonerLite.addTo(mymap);
   initAwardsData();
+  initIndustData();
+  
+  // setup infobar
+  state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.defaultColor]}</br>${get_infobar_stats(state.defaultColor)}`
+  // set the initial info-bar text
+  infobar = d3.select("#info-bar")
+                      .html(state.paletteInfoString);
 
+  /// INIT FOR PARCOORDS
+  initParcoords();
 
-  // TO DO: create a dict which gets the summary stats for each sector to display on select/hover
-  // default string when the palette has been selected
-  // set a default color -- THIS NEEDS TO GO IN THE INIT FUNCTION
-  // 
-  // state.color = state.defaultColor;  
-
-           
 
   // setting up grid
   /// TO DO: have the grid feature other data about the GEOID, like ranks
@@ -242,11 +298,7 @@ function init() {
 
 
 function draw() {
-
  
-
-
-
   // Initial draw of parcoords
   parcoords
     .data(state.procData)
@@ -263,7 +315,7 @@ function draw() {
     .brushMode("1D-axes");
 
 
-                
+  console.log("PARCOORDS DATA",parcoords.data())  
   
 
 
@@ -326,44 +378,7 @@ function draw() {
 
   // FUNCTION - 
   // add a function for updating the hide list
-  function updateHides(d){
-    state.hiddenAxes.push(d);
-    state.hiddenAxes = [... new Set(state.hiddenAxes)]
 
-    var justHidden = state.currentAxes.indexOf(d);
-    //console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes);
-
-    state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes.includes( el ) );
-    //console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
-
-    // then update the ids for the new label order, so popovers work
-    parcoords.svg.selectAll(".label")
-    .attr("axis-id",(d,i)=>state.currentAxes[i])
-    .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}">&times;</div>`
-    );
-
-    parcoords.svg.selectAll(".dimension")
-    .attr("axis-id",(d,i)=>state.currentAxes[i]);
-
-    //state.parData = state.procData
-    //delete state.parData[d]
-    // if that item was the color palette, pass the selection onto the first axis still available
-    // and update the palette string
-    if (state.color === d) {
-      change_color(state.currentAxes[0]);
-      state.color = state.currentAxes[0];
-      parcoords.bundleDimension(state.color);
-      //console.log("so we switched the bolding and color choice to",state.currentAxes[0]," from the list where axes are",state.currentAxes);
-
-
-    };
-    //console.log("BEFORE RESETTING DIM",parcoords.state);
-    parcoords.dimensions(state.currentAxes);
-    //console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
-    infobar.html(state.paletteInfoString);
-    
-
-  };
 
 // DRAW -  enable popover X mark
 // enable the X mark in the popover box to call the updateHides function
@@ -399,7 +414,7 @@ function draw() {
     .on("mouseover", function(d) {
       infobar
         .style("opacity",0)
-        .html(`<strong>${industryNames[d]} sector(s)</strong> OTHERSTUFFFFFF`) // this should be a call to a dictionary, the abbrev returns the full
+        .html(`<strong>${industryNames[d]}</strong></br>${get_infobar_stats(d)}`) // this should be a call to a dictionary, the abbrev returns the full
         .transition()
         .style("opacity",1)
         .delay(300)
@@ -414,6 +429,8 @@ function draw() {
   // Initial coloration of parcoords
   change_color("AGRIC");    
   console.log("DATA",state.procData.columns);
+
+
 
 
   // DRAW - add sort beheaviors to grid
@@ -533,13 +550,76 @@ function draw() {
 
 
 };
+//// END MAIN DRAW FUNCTION
 
+
+
+
+
+function updateHides(d){
+  state.hiddenAxes.push(d);
+  state.hiddenAxes = [... new Set(state.hiddenAxes)]
+
+  var justHidden = state.currentAxes.indexOf(d);
+  //console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes);
+
+  state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes.includes( el ) );
+  //console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
+
+  // then update the ids for the new label order, so popovers work
+  parcoords.svg.selectAll(".label")
+  .attr("axis-id",(d,i)=>state.currentAxes[i])
+  .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}">&times;</div>`
+  );
+
+  parcoords.svg.selectAll(".dimension")
+  .attr("axis-id",(d,i)=>state.currentAxes[i]);
+
+  //state.parData = state.procData
+  //delete state.parData[d]
+  // if that item was the color palette, pass the selection onto the first axis still available
+  // and update the palette string
+  if (state.color === d) {
+    change_color(state.currentAxes[0]);
+    state.color = state.currentAxes[0];
+    parcoords.bundleDimension(state.color);
+    //console.log("so we switched the bolding and color choice to",state.currentAxes[0]," from the list where axes are",state.currentAxes);
+
+
+  };
+  //console.log("BEFORE RESETTING DIM",parcoords.state);
+  parcoords.dimensions(state.currentAxes);
+  //console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
+  infobar.html(state.paletteInfoString);
+  
+
+};
+
+
+// function to remove map layers
+function clear_maplayer(layer) {
+  mymap.removeLayer( layer );
+}
+function change_map_color(){
+  // remove any old map layer 
+  if (state.currentChloroLayer !== null) {
+    mymap.removeLayer(state.currentChloroLayer);
+    //console.log("I REMOVED THE MAP LAYER",state.currentChloroLayer)
+  };
+  // change map color
+  var chloroLayer = L.geoJson(distr_data,{style: style});
+  state.currentChloroLayer = chloroLayer;
+  chloroLayer.addTo(mymap);
+};
 
 
 // update color
 function change_color(dimension) {
+  
+
+
   state.color = dimension;
-  state.paletteInfoString = `Current palette: % employed in <strong>${industryNames[state.color]} sector(s)</strong> OTHERSTUFFFF`;
+  state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.color]}</br>${get_infobar_stats(state.color)}`
 
   //console.log("color Dim",state.color)
   parcoords.svg.selectAll(".dimension")
@@ -549,7 +629,14 @@ function change_color(dimension) {
 
   parcoords.color(zcolor(parcoords.data(),dimension)).render();
 
-}
+
+  change_map_color();
+ 
+  //console.log("NOW I RESET THE CHLOROLAYLER",state.currentChloroLayer)
+
+};
+
+
 
 // return color function based on plot and dimension
 function zcolor(col, dimension) {
@@ -566,6 +653,16 @@ function zscore(col) {
     return (d-mean)/sigma;
   };
 };
+
+function dimensionStats(col){
+  var n = col.length;
+  var mean = d3.mean(col);
+  var sigma = d3.deviation(col);
+  return [mean,sigma];
+  
+};
+
+
 
 // FUNCTION - String filter for grid/parcoords search
 function myFilter(item, args) {
@@ -643,8 +740,6 @@ function showQueryPaths () {
 
 };
 
-
-
 function wrap(text, width) {
   text.each(function() {
       var text = d3.select(this),
@@ -670,26 +765,175 @@ function wrap(text, width) {
   });
 }
 
-
 function type(d) {
   d.value = +d.value;
   return d;
 }
 
+function initAwardsData(){
+  d3.csv('data/cd116_sbirRecipients_epsg3857.csv').then(function(data) {
+
+    // INIT - Process the data, select only the variables from it we need 
+    // Note: slickgrid needs each data element to have an 'id'
+    //data.forEach(function(d,i) { d.id = d.id || i; });
+    //console.log("RECIPS DATA AT FIRST LOAD",data)
+    var procData = [];
+    data.forEach(function(recipient) {
+      let rData = {};
+      rData["STATEFP"] = recipient["STATEFP"]
+      rData["AFFGEOID"] = recipient["AFFGEOID"]
+      rData["Company"] = recipient["Company"]
+      rData["lat"] = parseInt(recipient['Latitude'])
+      rData["long"] = parseInt(recipient["Longitude"])
+      rData["distr_name"] = recipient["distr_name"]
+      rData["City"] = recipient["City"]
+      rData["County"] = recipient["County"]
+      rData["State"] = recipient["State"]
+      procData.push( rData );
+      });
+
+    //console.log("Processed recips",procData);
+    state.recipsData = procData;
+    addRecipsToMap(state.recipsData);
+  })
+};
 
 
+function addRecipsToMap(d){
+ 
+  var myIcon = L.icon({
+    iconUrl: './node_modules/leaflet/dist/images/marker-icon.png',
+    iconRetinaUrl: './node_modules/leaflet/dist/images/marker-icon.png',
+    iconSize: [20, 20],
+    iconAnchor: [9, 9],
+    popupAnchor: [0, -14]
+  });
 
-// to add albers USA tiles from personal API:
-/*L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18,
-    //id: 'sethsch/ckl1e8ryc0dqg17jykxnnwlls', //monochrome custom
-    id: 'sethsch/ckl1fbohm0esb17my5gsrrwgs', //albers
-    tileSize: 512, 
-    zoomOffset: -1,
-    accessToken: 'pk.eyJ1Ijoic2V0aHNjaCIsImEiOiJja2wxZTFhcWIxMXN4MnBueHdhZnlvOW5mIn0.FTNdrJfrl5rz17HFj-FMpg'
-}).addTo(mymap);*/
+  var markerClusters = L.markerClusterGroup();
+ 
+  for ( var i = 0; i < d.length; ++i )
+  {
+    var popup = d[i].Company +
+                '<br/>' + d[i].City 
+  
+    var m = L.marker( [d[i].lat, d[i].long], {icon: myIcon} )
+                    .bindPopup( popup );
+  
+    markerClusters.addLayer( m );
+  }
+ 
+  mymap.addLayer( markerClusters );
+};
 
+
+// IF we don't want to use d3's json load, edit this function for parity; just use the global distr_data.js
+function initIndustData(){
+
+
+  var geojson = d3.json("data/cd116_5yearACS2018_LISAclust.geojson").then(function(data){
+    var pctCols = ["pct_agro",	"pct_construct",	"pct_manufact",
+    "pct_wholesale",	"pct_retail",	"pct_transport_util",
+    "pct_information",	"pct_finance_realest",	"pct_prof_sci_mgmt_adm",
+    "pct_edu_health",	"pct_arts_ent_food_rec",	"pct_otherserv",
+    "pct_public_admin"]
+    // parse string to float for pct cols
+    for (i = 0; i < data.features.length; i++){
+      for (j = 0; j < pctCols.length; j++){  
+        data.features[i].properties[pctCols[j]] = parseFloat(data.features[i].properties[pctCols[j]]);
+        distr_data.features[i].properties[pctCols[j]] =  parseFloat(distr_data.features[i].properties[pctCols[j]]);
+      };  
+
+    }
+    // get dimension stats
+    for (j = 0; j < pctCols.length; j++){  
+      var dimStats = dimensionStats(d3.map(data.features,d=>d.properties[pctCols[j]]));
+      //console.log("PCTCOL",pctCols[j],dimStats)
+      state.industStats[String(pctCols[j])] = {"mean": dimStats[0],"stdev":dimStats[1]};
+    };
+    // compute normalized values
+    for (i = 0; i < data.features.length; i++){
+      for (j = 0; j < pctCols.length; j++){  
+        var m = state.industStats[pctCols[j]]['mean']
+        var s = state.industStats[pctCols[j]]['stdev']
+        data.features[i].properties["norm_"+pctCols[j]] =  (data.features[i].properties[pctCols[j]] - m) / s  ;
+        distr_data.features[i].properties["norm_"+pctCols[j]] =  (distr_data.features[i].properties[pctCols[j]] - m) / s  ;
+      };  
+
+    };
+    
+    //console.log("dim stats",dimStats,parseFloat(data.features[i].properties[pctCols[j]]))
+    //data.features[i].properties["norm_"+pctCols[j]] = (parseFloat(data.features[i].properties[pctCols[j]]) - dimStats[0]) / dimStats[1];
+
+    state.industData = distr_data;
+
+    industStats_global = state.industStats;
+    change_map_color();
+    console.log("INDUSTSTATS",state.industStats);
+    //console.log("DIM STATS",dimensionStats(d3.map(state.industData.features,d=>d.properties['pct_agro'])));
+
+    });
+
+   
+    
+};
+
+function style(feature) {
+
+  var industries =  [ ...shortAttributeNames.values() ];
+  var selectedVar = industries.indexOf(state.color);
+  selectedVar = [...shortAttributeNames.keys()][selectedVar]
+  var normVar = "norm_"+selectedVar;
+  var clustVar = "LSAcl_."+selectedVar;
+
+  //console.log("SELECTED VAR",selectedVar,"NORM VAR",normVar);
+// do what you want to do with `data` here...
+  return {
+      fillColor: chloroScale(feature.properties[normVar]),
+      weight: getBorderStyle(feature.properties[clustVar])[1],
+      opacity: 0.7,
+      color: getBorderStyle(feature.properties[clustVar])[0],
+      dashArray: '1',
+      fillOpacity: 0.7
+  };
+};
+function RGBToHex(rgb) {
+  // Choose correct separator
+  let sep = rgb.indexOf(",") > -1 ? "," : " ";
+  // Turn "rgb(r,g,b)" into [r,g,b]
+  rgb = rgb.substr(4).split(")")[0].split(sep);
+
+  let r = (+rgb[0]).toString(16),
+      g = (+rgb[1]).toString(16),
+      b = (+rgb[2]).toString(16);
+
+  if (r.length == 1)
+    r = "0" + r;
+  if (g.length == 1)
+    g = "0" + g;
+  if (b.length == 1)
+    b = "0" + b;
+
+  return "#" + r + g + b;
+};
+function getBorderStyle(d){
+  var val = parseInt(d)
+  return val === 5 ?  ['darkslategray',1] :
+          val === 2 ? ['blue',2] :
+          ['red',2];
+
+};
+function get_infobar_stats(dimension){
+  var industries =  [ ...shortAttributeNames.values() ];
+  var selectedVar = industries.indexOf(dimension);
+  selectedVar = [...shortAttributeNames.keys()][selectedVar];
+  console.log("inputdimen",dimension,"infobarstatsset", selectedVar);
+  
+  // get stats from state
+  var avg = industStats_global[selectedVar]['mean'];
+  var dev =  industStats_global[selectedVar]['stdev'];
+  var outString = `<strong>Sector Employment Avg.:</strong> ${Math.round(avg*100)}% </br><strong>Std. Deviation:</strong> ${Math.round(dev*100)}%`
+  return outString;
+};
 
 function initParcoords(){
   // PC INIT - set the state equal to the industryName keys minus the default hidden
@@ -730,101 +974,14 @@ function initParcoords(){
   });
   state.currentHiddenAxes = state.defaultHiddenAxes;
   state.color = state.defaultColor;
-  
-  state.paletteInfoString = `Current palette: % employed in <strong><strong> ${industryNames[state.color]} sector(s)</strong> OTHERSTUFFFF`;
-  // set the initial info-bar text
-  infobar = d3.select("#info-bar")
-                      .html(state.paletteInfoString);
-
-
 
 };
 
-function initAwardsData(){
-  d3.csv('data/cd116_sbirRecipients_epsg3857.csv').then(function(data) {
 
-    // INIT - Process the data, select only the variables from it we need 
-    // Note: slickgrid needs each data element to have an 'id'
-    //data.forEach(function(d,i) { d.id = d.id || i; });
-    //console.log("RECIPS DATA AT FIRST LOAD",data)
-    var procData = [];
-    data.forEach(function(recipient) {
-      let rData = {};
-      rData["STATEFP"] = recipient["STATEFP"]
-      rData["AFFGEOID"] = recipient["AFFGEOID"]
-      rData["Company"] = recipient["Company"]
-      rData["lat"] = parseInt(recipient['Latitude'])
-      rData["long"] = parseInt(recipient["Longitude"])
-      rData["distr_name"] = recipient["distr_name"]
-      rData["City"] = recipient["City"]
-      rData["County"] = recipient["County"]
-      rData["State"] = recipient["State"]
-      procData.push( rData );
-      });
 
-    //console.log("Processed recips",procData);
-    state.recipsData = procData;
-    addRecipsToMap(state.recipsData);
-  })
-};
 
-function initIndustData(){
-  var geojson = d3.json("data/cd116_5yearACS2018_LISAclust.geojson").then(function(data){
-    state.industData = data;
-    L.geoJson(data, {style: chloroplethStyle}).addTo(mymap);
-  });
 
-  console.log("DID WE LOAD GEOJSON?",state);
 
-  //state.industData.forEach(function(d){
-  //  L.geoJson(d, {style: chloroplethStyle}).addTo(mymap);
-  //});
-  
-
-};
-
-function chloroplethStyle(feature) {
-  var industries =  [ ...shortAttributeNames.values() ];
-  var selectedVar = industries.indexOf(state.color);
-  selectedVar = [...shortAttributeNames.keys()][selectedVar]
-  //console.log("INDUSTRIES",industries,"SELE",selectedVar);
-
-  return {
-      fillColor: zcolorscale(parseFloat(feature.properties[selectedVar])),
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.7
-  };
-}
-
-function addRecipsToMap(d){
- 
-  var myIcon = L.icon({
-    iconUrl: './node_modules/leaflet/dist/images/marker-icon.png',
-    iconRetinaUrl: './node_modules/leaflet/dist/images/marker-icon.png',
-    iconSize: [20, 20],
-    iconAnchor: [9, 9],
-    popupAnchor: [0, -14]
-  });
-
-  var markerClusters = L.markerClusterGroup();
- 
-  for ( var i = 0; i < d.length; ++i )
-  {
-    var popup = d[i].Company +
-                '<br/>' + d[i].City 
-  
-    var m = L.marker( [d[i].lat, d[i].long], {icon: myIcon} )
-                    .bindPopup( popup );
-  
-    markerClusters.addLayer( m );
-  }
- 
-  mymap.addLayer( markerClusters );
-
-};
 
 
 
@@ -832,21 +989,9 @@ function addRecipsToMap(d){
 // albers USA set view: [-1.746,1.281],4.05
 
 
-mymap = L.map('map').setView([39.425,-94.796], 3.5);
 
 
 
-var Stamen_TonerLite = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
-	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	subdomains: 'abcd',
-	minZoom: 3,
-	maxZoom: 13,
-	ext: 'png'
-});
-
-Stamen_TonerLite.addTo(mymap);
-
-initIndustData();
 
 
 
