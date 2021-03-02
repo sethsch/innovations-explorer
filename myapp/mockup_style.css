@@ -50,10 +50,8 @@ html, body {
 }
 
 #legend-infobar-nav{
-    padding-bottom: 2%;
     width: 100%;
-
-
+    position: relative;
 }
 
 .legend {
@@ -78,6 +76,9 @@ html, body {
     position: absolute;
     font-size: 0.6em;
 }
+.legendCells .label text{
+    color: white;
+}
 #info-bar {
     float: left;
     width: inherit;
@@ -88,11 +89,26 @@ html, body {
     text-anchor: left;
     font-size: 0.7em;
     margin-top: 0.5em;
+}
+
+.parcoords-info-circle{
+    width: 100%;
+    float: right;
+    position: absolute;
+    vertical-align: bottom;
+    transform: translate(96.5%,150%);
 
 }
-.legendCells .label text{
-    color: white;
+#info-circle-icon{
+    width: 16px;
+    height: 16px;
+    fill: rgb(65, 65, 65);
 }
+#info-circle-icon:hover {
+    fill: #3c73eb;
+}
+
+
   
 #parcoords-search{   
     float: right;
