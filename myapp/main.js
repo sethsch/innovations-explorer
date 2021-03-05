@@ -29,6 +29,7 @@ var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight*/
 let state = {
   data: [],
   procData: [],
+  awardsData: [],
   parData: [],
   recipsData: [],
   industData: [],
@@ -105,7 +106,7 @@ var zcolorscale = d3.scaleLinear()
 
 var chloroScale = d3.scaleQuantize()
   .domain([-2,2]) // pass only the extreme values to a scaleQuantize’s domain
-  .range(d3.schemeSpectral[7].reverse());
+  .range(d3.schemeSpectral[6].reverse());
 
 function getColor(d) {
     var val = d;
@@ -179,7 +180,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
   // INIT - Process the data, select only the variables from it we need 
   // Note: slickgrid needs each data element to have an 'id'
   data.forEach(function(d,i) { d.id = d.id || i; });
-  console.log("DATA AT FIRST LOAD",data)
+  //console.log("DATA AT FIRST LOAD",data)
   var procData = [];
       procData.columns = [Array.from(shortAttributeNames.values())].flat()
       data.forEach(function(district) {
@@ -197,9 +198,9 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
            // console.log(distData);
            procData.push( distData );
       })
-      console.log("FILT",procData);
+      //console.log("FILT",procData);
       state.procData = procData;
- 
+      //console.log("state proc",state)
 
   init();
 
@@ -233,7 +234,7 @@ function init() {
   legArea.append("g")
     .call(legend);
 
-  console.log("ZCOLORSCALE",legend)
+  //console.log("ZCOLORSCALE",legend)
 
 
   //  /// INIT FOR MAP
@@ -312,10 +313,14 @@ function draw() {
     //.brushable()
     .bundleDimension(state.color) // bundle the parcoords on the color dimension
     .bundlingStrength(0.6)
-    .brushMode("1D-axes");
+    .brushMode("1D-axes")
+ 
+
+ 
+    //.on("resize","resize");
 
 
-  console.log("PARCOORDS DATA",parcoords.data())  
+  //console.log("PARCOORDS DATA",parcoords.data())  
   
 
 
@@ -428,7 +433,7 @@ function draw() {
   // parcoords.hideAxis(state.hiddenAxes).updateAxes();
   // Initial coloration of parcoords
   change_color("AGRIC");    
-  console.log("DATA",state.procData.columns);
+  //console.log("DATA",state.procData.columns);
 
 
 
@@ -477,6 +482,7 @@ function draw() {
 
     // Highlight that element in the parallel coordinates graph
     parcoords.highlight([d[elementPos]]);
+
   });
   grid.onMouseLeave.subscribe(function(e,args) {
     parcoords.unhighlight();
@@ -541,6 +547,9 @@ function draw() {
   // DRAW - update grid on brush
   // TO DO -- add function for updating map too
   parcoords.on("brush", function(d) {
+    
+    brushMap();
+
     gridUpdate(d);
     
   });
@@ -607,7 +616,10 @@ function change_map_color(){
     //console.log("I REMOVED THE MAP LAYER",state.currentChloroLayer)
   };
   // change map color
-  var chloroLayer = L.geoJson(distr_data,{style: style});
+  var chloroLayer = L.geoJson(distr_data,{
+    style: style,
+    onEachFeature: onEachFeature
+  });
   state.currentChloroLayer = chloroLayer;
   chloroLayer.addTo(mymap);
 };
@@ -636,8 +648,6 @@ function change_color(dimension) {
 
 };
 
-
-
 // return color function based on plot and dimension
 function zcolor(col, dimension) {
   var z = zscore(_(col).pluck(dimension).map(parseFloat))
@@ -653,7 +663,7 @@ function zscore(col) {
     return (d-mean)/sigma;
   };
 };
-
+// get statistics for industry dimensions for the infobar and zscore computation
 function dimensionStats(col){
   var n = col.length;
   var mean = d3.mean(col);
@@ -661,7 +671,6 @@ function dimensionStats(col){
   return [mean,sigma];
   
 };
-
 
 
 // FUNCTION - String filter for grid/parcoords search
@@ -738,6 +747,8 @@ function showQueryPaths () {
   parcoords.unhighlight(state.unselRows);
   parcoords.highlight(state.selectedRows);
 
+
+
 };
 
 function wrap(text, width) {
@@ -771,7 +782,7 @@ function type(d) {
 }
 
 function initAwardsData(){
-  d3.csv('data/cd116_sbirRecipients_epsg3857.csv').then(function(data) {
+  d3.csv('data/cd116_sbirRecipients_epsg4326.csv').then(function(data) {
 
     // INIT - Process the data, select only the variables from it we need 
     // Note: slickgrid needs each data element to have an 'id'
@@ -783,8 +794,8 @@ function initAwardsData(){
       rData["STATEFP"] = recipient["STATEFP"]
       rData["AFFGEOID"] = recipient["AFFGEOID"]
       rData["Company"] = recipient["Company"]
-      rData["lat"] = parseInt(recipient['Latitude'])
-      rData["long"] = parseInt(recipient["Longitude"])
+      rData["lat"] = parseFloat(recipient['Latitude'])
+      rData["long"] = parseFloat(recipient["Longitude"])
       rData["distr_name"] = recipient["distr_name"]
       rData["City"] = recipient["City"]
       rData["County"] = recipient["County"]
@@ -795,21 +806,37 @@ function initAwardsData(){
     //console.log("Processed recips",procData);
     state.recipsData = procData;
     addRecipsToMap(state.recipsData);
-  })
+  });
+  var t0 = performance.now();
+  d3.csv('data/sbir_2008to2018_noAbstract.csv').then(function(data){
+      // Remember when we started
+      console.time("awardsload");
+      // Remember when we finished
+      data.forEach(function(award){
+      });
+      state.awardsData = data;
+      var t1 = performance.now();
+      console.log("state after awards",state.awardsData,"time",(t1 - t0) + " milliseconds.");
+    })
 };
 
 
 function addRecipsToMap(d){
  
   var myIcon = L.icon({
-    iconUrl: './node_modules/leaflet/dist/images/marker-icon.png',
-    iconRetinaUrl: './node_modules/leaflet/dist/images/marker-icon.png',
+    iconUrl: 'award-fill.svg',
+    iconRetinaUrl: 'award-fill.svg',
     iconSize: [20, 20],
     iconAnchor: [9, 9],
     popupAnchor: [0, -14]
   });
 
-  var markerClusters = L.markerClusterGroup();
+  var markerClusters = L.markerClusterGroup({
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: true,
+    zoomToBoundsOnClick: true,
+    disableClusteringAtZoom: 12
+  });
  
   for ( var i = 0; i < d.length; ++i )
   {
@@ -868,7 +895,7 @@ function initIndustData(){
 
     industStats_global = state.industStats;
     change_map_color();
-    console.log("INDUSTSTATS",state.industStats);
+    //console.log("INDUSTSTATS",state.industStats);
     //console.log("DIM STATS",dimensionStats(d3.map(state.industData.features,d=>d.properties['pct_agro'])));
 
     });
@@ -876,7 +903,7 @@ function initIndustData(){
    
     
 };
-
+// chloropleth style mapping
 function style(feature) {
 
   var industries =  [ ...shortAttributeNames.values() ];
@@ -890,12 +917,13 @@ function style(feature) {
   return {
       fillColor: chloroScale(feature.properties[normVar]),
       weight: getBorderStyle(feature.properties[clustVar])[1],
-      opacity: 0.7,
+      opacity: 0.5,
       color: getBorderStyle(feature.properties[clustVar])[0],
       dashArray: '1',
-      fillOpacity: 0.7
+      fillOpacity: 0.5
   };
 };
+
 function RGBToHex(rgb) {
   // Choose correct separator
   let sep = rgb.indexOf(",") > -1 ? "," : " ";
@@ -915,18 +943,21 @@ function RGBToHex(rgb) {
 
   return "#" + r + g + b;
 };
+
 function getBorderStyle(d){
   var val = parseInt(d)
   return val === 5 ?  ['darkslategray',1] :
           val === 2 ? ['blue',2] :
           ['red',2];
-
 };
+
+
+
 function get_infobar_stats(dimension){
   var industries =  [ ...shortAttributeNames.values() ];
   var selectedVar = industries.indexOf(dimension);
   selectedVar = [...shortAttributeNames.keys()][selectedVar];
-  console.log("inputdimen",dimension,"infobarstatsset", selectedVar);
+  //console.log("inputdimen",dimension,"infobarstatsset", selectedVar);
   
   // get stats from state
   var avg = industStats_global[selectedVar]['mean'];
@@ -934,6 +965,99 @@ function get_infobar_stats(dimension){
   var outString = `<strong>Sector Employment Avg.:</strong> ${Math.round(avg*100)}% </br><strong>Std. Deviation:</strong> ${Math.round(dev*100)}%`
   return outString;
 };
+
+// chloropleth district highlight
+function highlightFeature(e) {
+  console.log('highlight gives you e',e)
+  var layer = e.target;
+
+  layer.setStyle({
+      weight: 4,
+      color: '#666',
+      dashArray: '',
+      fillOpacity: 0.8
+  });
+
+  if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+      layer.bringToFront();
+  }
+  //console.log("Map highlight e",e)
+  var selected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID === e.target.feature.properties.AFFGEOID)
+  //console.log("parcoords dist id",dist_id)
+  // highlight the path in parcoords
+  parcoords.highlight(selected_dist_id);
+  //gridUpdate(selected_dist_id)
+
+};
+// reset highlight
+function resetHighlight(e) {
+  state.currentChloroLayer.resetStyle(e.target);
+  parcoords.unhighlight();
+};
+function zoomToFeature(e) {
+  mymap.fitBounds(e.target.getBounds());
+  var selected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID === e.target.feature.properties.AFFGEOID)
+  var unselected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID !== e.target.feature.properties.AFFGEOID)
+  parcoords.unhighlight(unselected_dist_id);
+  parcoords.highlight(selected_dist_id);
+
+  // TO DO: update state for selected district, 
+  // use selected district to override style palette
+  // use brushed districts to zoom, too
+  /*var layer = e.target;
+
+  layer.setStyle({
+      weight: 4,
+      color: 'black',
+      dashArray: '',
+      fillOpacity: 0.8
+  });*/
+}
+function onEachFeature(feature, layer) {
+  layer._id = feature.AFFGEOID;
+  layer.on({
+      mouseover: highlightFeature,
+      mouseout: resetHighlight,
+      click: zoomToFeature
+  });
+}
+function brushMap(){
+  var brushedrows = parcoords.brushed();
+  var brushed_ids = []
+  brushedrows.forEach(d=>brushed_ids.push(d.GEOID))
+  //console.log('brushed rows',brushedrows,"ids",brushed_ids);
+  var brushed_layers = []
+  //state.currentChloroLayer._layer.forEach()
+  //state.currentChloroLayer.eachLayer(function(layer) { highlightFeature(layer, doesRelate(layer._id, d.AFFGEOID)); });
+  var map_layers = [state.currentChloroLayer._layers][0]
+  Object.filter = (obj, predicate) => 
+  Object.keys(obj)
+        .filter( key => predicate(obj[key]) )
+        .reduce( (res, key) => (res[key] = obj[key], res), {} );
+  var brushed_layers = Object.filter(map_layers, d => brushed_ids.includes(d.feature.properties.AFFGEOID)); 
+  brushed_layers = Object.keys(brushed_layers);
+  var nonbrushed_layers = Object.filter(map_layers, d => !brushed_ids.includes(d.feature.properties.AFFGEOID)); 
+  nonbrushed_layers = Object.keys(nonbrushed_layers);
+  for (i=0; i<brushed_layers.length; i++){
+    state.currentChloroLayer.getLayer(brushed_layers[i]).setStyle({
+      weight: 4,
+      color: '#666',
+      dashArray: '',
+      fillOpacity: 0.8
+    });
+  };
+  for (i=0; i<nonbrushed_layers.length; i++){
+    var layer = state.currentChloroLayer.getLayer(nonbrushed_layers[i])
+    state.currentChloroLayer.resetStyle(layer);
+  };
+  //console.log("map brushed",);
+  
+};
+
+
+
+
+
 
 function initParcoords(){
   // PC INIT - set the state equal to the industryName keys minus the default hidden
@@ -953,7 +1077,8 @@ function initParcoords(){
     })*/
     .smoothness(0.13)
     .alphaOnBrushed(0.2)
-    .alpha(0.5); // set bundling strength
+    .alpha(0.5) // set bundling strength
+
 
 
       // INIT - wire up the search textbox to apply the filter to the model
@@ -991,14 +1116,11 @@ function initParcoords(){
 
 
 
-
-
-
-
-/*  // scale to window size
+// scale to window size
 window.onresize = function() {
-  
-  var parentElement = document.getElementById('map-par-panel');
+		
+
+  // consider whether there should be a UI element to recommend and refresh full screen at the same position as the notice
 
   var panelWidth = parseInt($('#map-par-panel').css("width"));
   var panelHeight = parseInt($('#map-par-panel').css("height"));
@@ -1007,18 +1129,69 @@ window.onresize = function() {
   var panelPaddingLeft = parseInt($('#map-par-panel').css("padding-left"));
   var panelPaddingRight = parseInt($('#map-par-panel').css("padding-right"));
 
-  console.log("PANELWIDTH",panelWidth)
 
-  var pcHeight = panelHeight*0.16 - panelPaddingTop - panelPaddingBottom
+
+  var pcHeight = (panelHeight) * 0.18
   var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight
 
 
-  var tableElement = document.getElementById('districts-table')
-  $("#parcoords").remove();
-  var newElement = document.createElement('div');
-  newElement.class = "parcoords"
-  newElement.id = "parcoords"
-  parentElement.insertBefore(newElement, tableElement);
-  initParcoords(pcHeight,pcWidth);
+  //var tableElement = document.getElementById('districts-table')
+  //$("#parcoords").remove();
+  //var newElement = document.createElement('div');
+  //newElement.class = "parcoords"
+  //newElement.id = "parcoords"
+  //parentElement.insertBefore(newElement, tableElement);
+  //initParcoords();
 
-};*/
+  parcoords.width(pcWidth).height(pcHeight).render();
+  parcoords.resize().autoscale().commonScale();
+  draw();
+  
+
+  };
+
+/* Get the documentElement (<html>) to display the page in fullscreen */
+var elem = document.documentElement;
+
+/* View in fullscreen */
+function openFullscreen() {
+if (elem.requestFullscreen) {
+  elem.requestFullscreen();
+} else if (elem.webkitRequestFullscreen) { /* Safari */
+  elem.webkitRequestFullscreen();
+} else if (elem.msRequestFullscreen) { /* IE11 */
+  elem.msRequestFullscreen();
+}
+};
+
+/* Close fullscreen */
+function closeFullscreen() {
+if (document.exitFullscreen) {
+  document.exitFullscreen();
+} else if (document.webkitExitFullscreen) { /* Safari */
+  document.webkitExitFullscreen();
+} else if (document.msExitFullscreen) { /* IE11 */
+  document.msExitFullscreen();
+}
+};
+
+
+$(document).ready(function(){
+$(".btn btn-block").on('click', function(event) {
+  if (this.hash !== "") {
+  event.preventDefault();
+  var hash = this.hash;
+  $('html, body').animate({
+    scrollTop: $(hash).offset().top
+  }, 800, function(){
+    window.location.hash = hash;
+  });
+  } 
+  //openFullscreen();
+});
+});
+
+
+
+
+
