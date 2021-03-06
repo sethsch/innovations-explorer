@@ -182,6 +182,9 @@ html, body {
     margin-bottom: 1%;
 }
 
+
+
+/* parcoords popovers */
 .popover{
     margin-right: 1.5em !important;
     margin-top: 0px !important;
@@ -204,6 +207,8 @@ html, body {
 .popover-arrow {
     visibility:hidden;
 }
+
+
 
 .axis-remove:hover{
     color: rgb(163, 22, 22);
@@ -345,7 +350,7 @@ html, body {
 #summary-panel{
     border-left: 1px solid lightgray;
     margin-top: 1%;
-    height: 60vw;
+    height: 65vw;
 
 }
 
@@ -366,18 +371,53 @@ html, body {
 #vocab-pills{
     height: 80%;
     width: 100%;
-    background-color: lightsteelblue;
-    padding: 0.8em;
+    background-color: rgb(235, 238, 240);
+    border: 1.5px solid rgb(222,226,230);
+    padding: 1em;
     overflow-y: scroll;
+    display: inline-block;
+ 
 }
+.pill-container{
+    width:fit-content;
+    height:fit-content;
+    float: left;
+    margin: 0.05em;
+}
+
 
 #term-badge{
     margin: 0.2em;
     font-size: 0.8em;
 }
 
-#left-panel-spacer{
-    height: 14vw;
+
+/* vocab popovers */
+.vocab-popover {
+    background-color: gray !important;
+    color: white !important;
+    margin-right: 1.5em !important;
+    margin-top: 0px !important;
+    margin-left: 0px !important;
+    margin-bottom: -0.85em !important;
+    font-size: 0.5em !important;
+}
+
+.vocab-popover-body{
+    width: fit-content !important;
+    height: fit-content !important;
+    padding: 0.05em !important;
+    font-weight:lighter !important;
+
+}
+.vocab-popover-arrow {
+    visibility:visible !important;
+}
+
+
+
+#right-panel-spacer{
+    height: 28vw;
 }
 
 

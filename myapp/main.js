@@ -2,6 +2,8 @@
 
 //var svg = d3.select("#example").style("width","800px").style("height","320px");
 
+//const { zoom } = require("d3");
+
 //const { standardDeviation } = require("simple-statistics");
 
 //const { mean } = require("simple-statistics");
@@ -46,7 +48,13 @@ let state = {
   paletteInfoString: "",
   changedOpt: null,
   selectedRows: [],
-  unselRows: []
+  unselRows: [],
+  currentCd: null,
+  lastCd: null,
+  currentCdVocab: [],
+  filteredCdVocab: [],
+  selectedVocab: "All",
+  lastVocab: null
 };
 /**
  * 
@@ -108,18 +116,26 @@ var chloroScale = d3.scaleQuantize()
   .domain([-2,2]) // pass only the extreme values to a scaleQuantize’s domain
   .range(d3.schemeSpectral[6].reverse());
 
-function getColor(d) {
-    var val = d;
-    return val > 20  ? '#2B83BA' :
-           val > 10  ? '#ABDDA4' :
-           val > 0   ? '#FFFFBF' :
-           val > -10  ? '#FDAE61' :
-           val > -20   ? '#D7191C' :
-           'blue'
-};
+
 // For the text search, set a buffer before the filtering starts to operate -- num of chars
 let buffer = 2;
 
+let vocabs = ["EIGE","AGROVOC","STW","EU-SCIVOC","EUVOC","GEMET","MeSH"];
+// quick function for merging vocabs when necessary
+const mergeVocabs = data => {
+  const result = {}; //(1)
+
+  data.forEach(basket => { //(2)
+    for (let [key, value] of Object.entries(basket)) { //(3)
+      if (result[key]) { //(4)
+        result[key] += value; //(5)
+      } else { //(6)
+        result[key] = value;
+      }
+    }
+  });
+  return result; //(7)
+};
 
 // For parcoords, we need lists of variable names; as in the data abbrevs and spelled out for the UI
 var attributes = ["GEOID","distr_name","us_state","ind_profile","pct_agro",	"pct_construct",	"pct_manufact",
@@ -291,6 +307,12 @@ function init() {
 
   pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
 
+
+  // INIT Dropdown functionality
+  d3.selectAll('.vocabsel')
+  .on("click",d=>changeVocab(d))
+
+
   // Now call the draw function(s) to get going...
   draw();
 
@@ -338,6 +360,7 @@ function draw() {
       
       //trigger: 'manual'
     })
+
     
   // DRAW - set up popovers on labels
   parcoords.svg.selectAll(".label")
@@ -548,9 +571,9 @@ function draw() {
   // TO DO -- add function for updating map too
   parcoords.on("brush", function(d) {
     
-    brushMap();
-
     gridUpdate(d);
+
+    brushMap();
     
   });
     // if you don't want the items that are not visible (due to being filtered out
@@ -563,7 +586,46 @@ function draw() {
 
 
 
+function changeVocab(e){
+  // set the state vocab
+  state.lastVocab = state.selectedVocab;
+  state.selectedVocab = e.target.id;
+  // if user has clicked All again, don't change anything...
+  if (state.selectedVocab == "All" && state.lastVocab == "All"){
 
+  }
+  else if (e.target.id !== "All") {
+        // unselect the All tab
+    $('#All').attr("class","nav-link vocabsel");
+    // add active for the dropdown and change the text
+    $('#vocabs-dropdown')
+      .attr("class","nav-link active dropdown-toggle")
+      .text(e.target.id+" Vocabulary")
+
+    // show it as the selected item in the dropdown
+    $('#'+state.lastVocab).attr("class","dropdown-item") // reset all selections
+    $('#'+e.target.id).attr("class","dropdown-item active") // update active sel
+
+  }
+  // if the user selects the All tab
+  else {
+    // activate the all tab
+    //$('#allvocabs-tab').attr("class","nav-item active");
+    $('#All').attr("class","nav-link active vocabsel");
+    // reset the dropdown
+    $('#vocabs-dropdown')
+    .attr("class","nav-link dropdown-toggle")
+    .text("From vocabulary")
+
+    // reset dropdown selection
+    $('#'+state.lastVocab).attr("class","dropdown-item") 
+    
+  }
+  showCdVocab(state.currentCdVocab);
+  $('#vocabs-dropdown').dropdown('hide')
+  //console.log("VOCAB SEL EVENT",e);
+
+}
 
 function updateHides(d){
   state.hiddenAxes.push(d);
@@ -600,7 +662,7 @@ function updateHides(d){
   parcoords.dimensions(state.currentAxes);
   //console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
   infobar.html(state.paletteInfoString);
-  
+  //console.log("brush state",parcoords.state)
 
 };
 
@@ -622,6 +684,7 @@ function change_map_color(){
   });
   state.currentChloroLayer = chloroLayer;
   chloroLayer.addTo(mymap);
+  brushMap();
 };
 
 
@@ -641,8 +704,10 @@ function change_color(dimension) {
 
   parcoords.color(zcolor(parcoords.data(),dimension)).render();
 
-
+  
   change_map_color();
+
+
  
   //console.log("NOW I RESET THE CHLOROLAYLER",state.currentChloroLayer)
 
@@ -794,6 +859,7 @@ function initAwardsData(){
       rData["STATEFP"] = recipient["STATEFP"]
       rData["AFFGEOID"] = recipient["AFFGEOID"]
       rData["Company"] = recipient["Company"]
+      rData["DUNS"] = recipient["DUNS"]
       rData["lat"] = parseFloat(recipient['Latitude'])
       rData["long"] = parseFloat(recipient["Longitude"])
       rData["distr_name"] = recipient["distr_name"]
@@ -808,7 +874,7 @@ function initAwardsData(){
     addRecipsToMap(state.recipsData);
   });
   var t0 = performance.now();
-  d3.csv('data/sbir_2008to2018_noAbstract.csv').then(function(data){
+  d3.csv('data/sbir_2008to2018_geoRefed.csv').then(function(data){
       // Remember when we started
       console.time("awardsload");
       // Remember when we finished
@@ -816,8 +882,39 @@ function initAwardsData(){
       });
       state.awardsData = data;
       var t1 = performance.now();
-      console.log("state after awards",state.awardsData,"time",(t1 - t0) + " milliseconds.");
-    })
+      //console.log("state after awards",state.awardsData,"time",(t1 - t0) + " milliseconds.");
+    });
+  /*d3.json("data/0.json").then(
+    function(data){
+      console.log("JSONsample",data);
+    });
+  */
+/*
+  var t0 = performance.now();
+  d3.json("data/cd116_vocab_aggs/5001600US0200.json").then(
+      function(data){
+        var t1 = performance.now();
+        state.vocabIndex = data;
+        console.log("JSONsample CongDist",state," load time congress agg file:",(t1 - t0)/1000 + " seconds.");
+    });
+    // single award vocab file
+    var t0 = performance.now();
+    d3.json("data/1.json").then(
+        function(data){
+          var t1 = performance.now();
+          state.vocabIndexSingle = data;
+          console.log("JSONsample award",state," load time single award index file:",(t1 - t0)/1000 + " seconds.");
+      });
+  */
+  /*var t0 = performance.now();
+  d3.json("data/sbir_2008to2018_FULLINDEX_clean.json").then(
+    function(data){
+      state.vocabIndex = data;
+      var t1 = performance.now();
+      console.log("time for vocab load",(t1 - t0)/1000 + " seconds.",state);
+    }
+  );*/
+  
 };
 
 
@@ -916,11 +1013,11 @@ function style(feature) {
 // do what you want to do with `data` here...
   return {
       fillColor: chloroScale(feature.properties[normVar]),
-      weight: getBorderStyle(feature.properties[clustVar])[1],
-      opacity: 0.5,
-      color: getBorderStyle(feature.properties[clustVar])[0],
+      color: getBorderStyle(feature,clustVar)[0],
+      weight: getBorderStyle(feature,clustVar)[1],
+      opacity: getBorderStyle(feature,clustVar)[2],
       dashArray: '1',
-      fillOpacity: 0.5
+      fillOpacity: getFillOpacity(feature)
   };
 };
 
@@ -944,12 +1041,25 @@ function RGBToHex(rgb) {
   return "#" + r + g + b;
 };
 
-function getBorderStyle(d){
-  var val = parseInt(d)
-  return val === 5 ?  ['darkslategray',1] :
-          val === 2 ? ['blue',2] :
-          ['red',2];
+function getBorderStyle(feature,clustVar){
+  var val = parseInt(feature.properties[clustVar])
+  var district = feature.properties.AFFGEOID;
+  var border =  val === 5 ?  ['darkslategray',0.5,0.6] :
+                val === 2 ? ['blue',1,0.6] :
+                  ['red',1,0.6];
+  if (state.currentCd === district) {border[1] = 4; border[2] = 1}
+  else if (state.lastCd === district && border[0] === 'darkslategray') {border[1] = 0.5; border[2] = 0.6}
+  else {border[1] = 1; border[2] = 0.6;}
+
+  return border;
 };
+
+function getFillOpacity(feature){
+  var district = feature.properties.AFFGEOID;
+  if (state.currentCd === district) {return 0.9;}
+  else {return 0.5;}
+
+}
 
 
 
@@ -968,15 +1078,23 @@ function get_infobar_stats(dimension){
 
 // chloropleth district highlight
 function highlightFeature(e) {
-  console.log('highlight gives you e',e)
-  var layer = e.target;
+  //console.log('highlight gives you e',e)
 
-  layer.setStyle({
-      weight: 4,
-      color: '#666',
-      dashArray: '',
-      fillOpacity: 0.8
-  });
+
+  // if the layer is already selected, dont do anything, if it's not, do highlighting
+  // this helps to reduce the highlighting jitters when teh map is zoomed in far enough
+  if (state.currentCd !== e.target.feature.properties.AFFGEOID) {
+    var layer = e.target;
+
+    layer.setStyle({
+        weight: 3,
+        opacity: 0.8,
+        dashArray: '',
+        fillOpacity: 0.8
+    });
+  };
+
+  
 
   if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       layer.bringToFront();
@@ -987,74 +1105,284 @@ function highlightFeature(e) {
   // highlight the path in parcoords
   parcoords.highlight(selected_dist_id);
   //gridUpdate(selected_dist_id)
+  //brushMap();
 
 };
 // reset highlight
 function resetHighlight(e) {
   state.currentChloroLayer.resetStyle(e.target);
   parcoords.unhighlight();
+  brushMap();
 };
+
 function zoomToFeature(e) {
+
+
+
+
+  // fit bounds
   mymap.fitBounds(e.target.getBounds());
+
+
+  // get id in parcoords and highlight/unhighlight as needed
   var selected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID === e.target.feature.properties.AFFGEOID)
   var unselected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID !== e.target.feature.properties.AFFGEOID)
   parcoords.unhighlight(unselected_dist_id);
   parcoords.highlight(selected_dist_id);
+  
+  //showCdStats(e);
+
+
+  // change state
+  state.lastCd = state.currentCd
+  var district = e.target.feature.properties.AFFGEOID;
+  state.currentCd = district
+  // reset the last selected district 
+  var map_layers = [state.currentChloroLayer._layers][0]
+  var last_layer = Object.filter(map_layers, d => d.feature.properties.AFFGEOID === state.lastCd);
+  console.log("LAST LAYER",last_layer)
+  last_layer = last_layer[0];
+  state.currentChloroLayer.resetStyle(last_layer);
+
+
+  // get the vocab for that district -- state gets reset here too
+  getCdVocab(e);
+  // reset style of last Cd
 
   // TO DO: update state for selected district, 
   // use selected district to override style palette
   // use brushed districts to zoom, too
-  /*var layer = e.target;
+  var layer = e.target;
+  layer.setStyle(style);
+};
 
-  layer.setStyle({
-      weight: 4,
-      color: 'black',
-      dashArray: '',
-      fillOpacity: 0.8
-  });*/
-}
+
 function onEachFeature(feature, layer) {
   layer._id = feature.AFFGEOID;
   layer.on({
       mouseover: highlightFeature,
       mouseout: resetHighlight,
-      click: zoomToFeature
+      click: zoomToFeature,
+
   });
-}
+};
 function brushMap(){
-  var brushedrows = parcoords.brushed();
-  var brushed_ids = []
-  brushedrows.forEach(d=>brushed_ids.push(d.GEOID))
-  //console.log('brushed rows',brushedrows,"ids",brushed_ids);
-  var brushed_layers = []
-  //state.currentChloroLayer._layer.forEach()
-  //state.currentChloroLayer.eachLayer(function(layer) { highlightFeature(layer, doesRelate(layer._id, d.AFFGEOID)); });
-  var map_layers = [state.currentChloroLayer._layers][0]
   Object.filter = (obj, predicate) => 
   Object.keys(obj)
         .filter( key => predicate(obj[key]) )
         .reduce( (res, key) => (res[key] = obj[key], res), {} );
-  var brushed_layers = Object.filter(map_layers, d => brushed_ids.includes(d.feature.properties.AFFGEOID)); 
-  brushed_layers = Object.keys(brushed_layers);
-  var nonbrushed_layers = Object.filter(map_layers, d => !brushed_ids.includes(d.feature.properties.AFFGEOID)); 
-  nonbrushed_layers = Object.keys(nonbrushed_layers);
-  for (i=0; i<brushed_layers.length; i++){
-    state.currentChloroLayer.getLayer(brushed_layers[i]).setStyle({
-      weight: 4,
-      color: '#666',
-      dashArray: '',
-      fillOpacity: 0.8
-    });
-  };
-  for (i=0; i<nonbrushed_layers.length; i++){
-    var layer = state.currentChloroLayer.getLayer(nonbrushed_layers[i])
-    state.currentChloroLayer.resetStyle(layer);
-  };
+
+  var map_layers = [state.currentChloroLayer._layers][0]
+  var brushedrows = parcoords.brushed();
+
+  // as long as not every thing is brushed or no brushes are applied...
+  if (brushedrows != false && brushedrows.length != 437) {
+    var brushed_ids = []
+    brushedrows.forEach(d=>brushed_ids.push(d.GEOID))
+    //console.log('brushed rows',brushedrows,"ids",brushed_ids);
+    var brushed_layers = []
+    var brushed_layers = Object.filter(map_layers, d => brushed_ids.includes(d.feature.properties.AFFGEOID)); 
+    brushed_layers = Object.keys(brushed_layers);
+    var nonbrushed_layers = Object.filter(map_layers, d => !brushed_ids.includes(d.feature.properties.AFFGEOID)); 
+    nonbrushed_layers = Object.keys(nonbrushed_layers);
+    for (i=0; i<brushed_layers.length; i++){
+      state.currentChloroLayer.getLayer(brushed_layers[i]).setStyle({
+        weight: 1.5,
+        //color: 'black',
+        dashArray: '',
+        fillOpacity: 0.9,
+        opacity: 0.9
+      });
+    };
+    for (i=0; i<nonbrushed_layers.length; i++){
+      var layer = state.currentChloroLayer.getLayer(nonbrushed_layers[i])
+      state.currentChloroLayer.resetStyle(layer);
+    };
+  }
+  else {
+    for (i=0; i<map_layers.length; i++){
+      var layer = state.currentChloroLayer.getLayer(map_layers[i])
+      state.currentChloroLayer.resetStyle(layer);
+    };
+
+  }
+  //console.log("NO BRUSHED",brushedrows);
+  
+  //state.currentChloroLayer._layer.forEach()
+  //state.currentChloroLayer.eachLayer(function(layer) { highlightFeature(layer, doesRelate(layer._id, d.AFFGEOID)); });
+  
+  
+  
   //console.log("map brushed",);
   
 };
 
+function getCdVocab(e){
+  // change state
+  //state.lastCd = state.currentCd
+  var district = e.target.feature.properties.AFFGEOID;
+  //state.currentCd = district
+  // if the CD is different from teh one already loaded, go forward, if not nothing
+  if (state.currentCd !== state.lastCd){
+      // get the full vocab file and put it in state
+      d3.json("data/cd116_vocab_aggs/"+district+".json").then(function(data){
+        state.currentCdVocab = data;
+        
+  
+      });
+      // pass the vocab to the show function, where it's filtered properly by the state params
+      showCdVocab(state.currentCdVocab)
+      //console.log("CD VOCAB",state.currentCdVocab)
+  }
+  else {}
 
+};
+
+
+function showCdVocab(data){
+
+  // remove any existing pills
+  d3.selectAll('.pill-container').remove();
+  // close any open popovers
+  $(document).ready(function(){
+    $(".vocab-popover").popover();
+  
+    $(document).on('click', function(){
+        $(".vocab-popover").popover('hide');
+    });
+  
+    $('.vocab-popover').click(function(){
+        return false;
+    });
+  });
+
+  var ag = Object.keys(data);
+  var allvocab = []
+  for (i=0; i<ag.length; i++){
+    var yr = Object.keys(data[ag[i]])
+    for (j=0; j<yr.length; j++){
+      if (state.selectedVocab == "All"){
+        for (k=0; k<vocabs.length; k++){
+          allvocab.push(data[ag[i]][yr[j]][vocabs[k]])
+        }
+      }
+      else if (state.selectedVocab == "textrank-tfidf_keywords"){
+        allvocab.push(data[ag[i]][yr[j]]['textrank'])
+        allvocab.push(data[ag[i]][yr[j]]['tfidf_keywords'])
+      }
+      else { allvocab.push( data[ag[i]][yr[j]][state.selectedVocab]   )}
+      //allvocab.push(data[ag[i]][yr[j]])
+    }
+  }
+  allvocab = allvocab.filter(x => x !== undefined && String(Object.keys(x)[0]) !== "" && String(Object.keys(x)[0]).length > 2);
+  allvocab = mergeVocabs(allvocab)
+  var sortedVocab = [];
+  for (var term in allvocab) {
+    sortedVocab.push([term, allvocab[term]]);
+  }
+
+  sortedVocab.sort(function(a, b) {
+      return b[1] - a[1];
+  });
+
+  state.filteredCdVocab = sortedVocab;
+
+
+  //console.log("CD VOCAB",state.currentCdVocab)
+
+  // draw the term badges
+  var vocabArea = d3.select("#vocab-pills")
+    .selectAll("term-badge")
+    .data(state.filteredCdVocab)
+    .join(
+      enter => enter.append("div")
+        .attr("class","pill-container")
+        .attr("id",state.currentCd+"_vocab")
+        .attr("data-bs-toggle","popover")
+        .attr("data-bs-placement","top")
+        .attr("data-bs-html","true")
+        .attr("data-bs-custom-class","vocab-popover")
+        .attr("data-bs-container","#vocab-pills")
+        // add this function to all popover axis-remove text
+        .attr("data-bs-content",  (d,i)=> "In X grants in district,</br>Y nationally")
+        // this adds the content, on click of content, remove axis
+        .attr("data-bs-trigger","click")
+        /*.on("mouseenter", function() {
+          var _this = this;
+          setTimeout(function() {
+            $(_this).popover('show');
+            }, 150);
+            $('.pill-container').not(this).popover('hide');
+          })
+          .on("mouseleave", function() {
+          var _this = this;
+          setTimeout(function() {
+            if (!$(".vocab-popover:hover").length) {
+              $(_this).popover("hide");
+              }
+            }, 0);
+          })*/
+          .html(function(d){
+            var pillButton = `<button type="button" class="btn rounded-pill btn-primary btn-sm"`+
+            ` id="term-badge">`+
+            `${d[0].replaceAll("_"," ")} <span class="badge bg-secondary">${d[1]}</span></button>`
+            return pillButton;
+          })
+        .call(enter => enter.transition()
+              ),
+      update => update
+      .attr("class","pill-container")
+      .attr("id",state.currentCd+"_vocab")
+      // add this function to all popover axis-remove text
+      .attr("data-bs-toggle","popover")
+      .attr("data-bs-placement","top")
+      .attr("data-bs-html","true")
+      .attr("data-bs-custom-class","vocab-popover")
+      .attr("data-bs-container","#vocab-pills")
+      // add this function to all popover axis-remove text
+      .attr("data-bs-content",  (d,i)=> "In X grants in district,</br>Y nationally")
+      // this adds the content, on click of content, remove axis
+      .attr("data-bs-trigger","click")
+      /*.on("mouseenter", function() {
+        var _this = this;
+        setTimeout(function() {
+          $(_this).popover('show');
+          }, 150);
+          $('.pill-container').not(this).popover('hide');
+        })
+        .on("mouseleave", function() {
+        var _this = this;
+        setTimeout(function() {
+          if (!$(".vocab-popover:hover").length) {
+            $(_this).popover("hide");
+            }
+          }, 0);
+        })*/
+        // this adds the content, on click of content, remove axis
+        .html(function(d){
+          var pillButton = '<button type="button" class="btn rounded-pill btn-primary btn-sm"'+
+          ' id="term-badge">'+
+          `${d[0].replaceAll("_"," ")} <span class="badge bg-secondary">${d[1]}</span></button>`
+          return pillButton;
+        })
+        .call(update => update.transition()
+        )
+    );
+
+    var popover = new bootstrap.Popover(document.querySelector(".pill-container"),{
+      container: '#vocab-pills',
+    });
+   
+    
+   
+
+
+};
+
+
+function showCdStats(){
+
+};
 
 
 

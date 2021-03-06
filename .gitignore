@@ -6,3 +6,7 @@ data/sbir/sbirTopics_2008to2018.json
 data/sample_pulledTopSol.json
 data/shp/
 
+repo_redirect_index.html
+myapp/data/sbir_2008to2018_FULLINDEX_clean.json
+myapp/data/sbir_2008to2018_noAbstract.csv
+index.html
