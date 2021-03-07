@@ -1406,8 +1406,8 @@ function showCdStats(e){
   var width = parseInt($('#bargraph').css('width')),
     height = parseInt($('#bargraph').css('height')),
     paddingInner = 0.2,
-    margin = { top: 20, bottom: 40, 
-      left: 50, right: 20 };
+    margin = { right: 20, left: 50, 
+      top: 50, bottom: 25 };
 
   console.log("bargraph dims",width,height,paddingInner,margin)
   console.log("cd data",state)
@@ -1439,7 +1439,7 @@ function showCdStats(e){
       return res;
     }, {});
 
-  fundSummary.sort((a, b) => b.total - a.total)
+  fundSummary.sort((a, b) => a.total - b.total)
   fundSummary.forEach(function(v){ delete v.total });
 
   var countSummary = [];
@@ -1460,73 +1460,112 @@ function showCdStats(e){
       }
       return res;
     }, {});
-    countSummary.sort((a, b) => b.total - a.total)
+    countSummary.sort((a, b) => a.total - b.total)
     countSummary.forEach(function(v){ delete v.total });
   
 
   console.log("district data is",data, "SUMMARY",fundSummary,countSummary);
  
-  /*
-    // reference for d3.scales: https://github.com/d3/d3-scale
-    var xScale = d3
-      .scaleLinear()
-      .domain([0,d3.max(summaryData, d => d.Total_Funding)])
-      .range([margin.left,width - margin.right]);
-      
-  
-    var yScale = d3
-      .scaleBand()
-      .domain(summaryData.map(d => d.Agency))
-      .range([height - margin.bottom, margin.top])
-      .paddingInner(paddingInner);
-  
-    // reference for d3.axis: https://github.com/d3/d3-axis
-    var yAxis = d3.axisLeft(yScale)
-        .ticks(summaryData.length)
-        .tickSizeInner(5)
-        .tickSizeOuter(5);
-  
-    
-    var svg = d3
-      .select("#bargraph")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
-  
-    // append rects
-    var rect = svg
-      .selectAll("rect")
-      .data(summaryData)
-      .join("rect")
-      .attr("y", d => yScale(d.Agency))
-      .attr("x", d => margin.left)
-      .attr("height", yScale.bandwidth())
-      .attr("width", d => xScale(d.Total_Funding));
-  
-    // append text
-    var text = svg
-      .selectAll("text")
-      .data(summaryData)
-      .join("text")
-      .attr("class", "label")
-      // this allows us to position the text in the center of the bar
-      .attr("y", d => yScale(d.Agency) + (yScale.bandwidth()/4))
-      .attr("x", d => xScale(d.Total_Funding) )
-      .text(d => d.Total_Funding)
-      .attr("dy", "0.1em")
-      .attr("font-size","0.2em")
-
-   
-  
-    svg
-      .append("g")
-      .attr("class", "axis")
-      .attr("transform", `translate(${margin.left}, 0)`)
-      .call(yAxis)
-      .selectAll(".tick text")
-      .call(wrap, margin.left);   
-      */
+ 
   $(".bargraph-svg").remove();
+
+
+    // Horizontal Bars
+    var series = d3.stack()
+    .keys(["sbir","sttr"])
+    (fundSummary)
+      .map(d => (d.forEach(v => v.key = d.key), d))
+  
+    console.log("SERIES",series)
+  
+    // x scale is for total funding amts
+    var x = d3.scaleLinear()
+    .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
+    .rangeRound([margin.left, width - margin.right])
+
+    // y scale is for agencies
+    var y = d3.scaleBand()
+    .domain(fundSummary.map(d => d.Agency))
+    .range([height - margin.bottom, margin.top])
+    .padding(paddingInner)
+
+
+    var formatValue = y => isNaN(y) ? "N/A" : y.toLocaleString("en")
+    // funding format string
+    function formatTick(d) {
+      const s = (d / 1e6).toFixed(1);
+      return this.parentNode.nextSibling ? `\xa0$${s}` : `$${s} million`;
+    }
+  
+    // draw axis ticks the height of the graph
+    var xAxis = g => g
+    .attr("transform", `translate(0,${height-margin.bottom})`)
+    .call(d3.axisTop(x)
+            .tickSize(height-margin.top-margin.bottom)
+            .tickFormat(formatTick)
+            .ticks(5))
+        .call(g => g.select(".domain")
+            .remove())
+        .call(g => g.selectAll(".tick:not(:first-of-type) line")
+            .attr("stroke-opacity", 0.5)
+            .attr("stroke-dasharray", "2,2"))
+        .call(g => g.selectAll(".tick text")
+            .attr("x", 0)
+            .attr("dy", -4))
+    .call(g => g.selectAll(".domain").remove())
+
+    // vertical axis anchros left, 
+    var yAxis = g => g
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y).tickSizeOuter(0).tickSize(4))
+    .call(g => g.selectAll(".domain").remove())
+    .call(g => g.selectAll(".tick line").remove())
+
+    // create the svg
+    var svg = d3.select("#bargraph")
+    .append("svg")
+    .attr("class","bargraph-svg")
+    .attr("width", width)
+    .attr("height", height);
+
+
+    svg.append("g")
+        .call(xAxis)
+          .selectAll(".tick text")
+          .attr("class","bar-x-ticks")
+          //.attr("transform",`translate(0,${margin.top})`)
+          //.call(wrap, parseInt((width-margin.left-margin.right)/12)   );
+          
+
+    svg.append("g")
+        .call(yAxis)
+        .selectAll(".tick text")
+        .attr("class","bar-y-ticks")
+        //.attr("dy",-y.bandwidth()/4)
+        //.call(wrap, 8);
+        
+      
+    svg.append("g")
+        .selectAll("g")
+        .data(series)
+        .join("g")
+          .attr("fill", function(d){
+            return d.key == "sttr" ? "blue" : "black";
+          })
+        .selectAll("rect")
+        .data(d => d)
+        .join("rect")
+          .attr("y", (d, i) => y(d.data.Agency))
+          .attr("x", d => x(d[0]))
+          .attr("width", d => x(d[1]) - x(d[0]))
+          .attr("height", y.bandwidth())
+        .append("title")
+          .text(d => `${d.data.Agency} ${d.key}
+              ${formatValue(d.data[d.key])}`);
+
+
+    // Vertical Bars
+  /*
   var series = d3.stack()
   .keys(["sbir","sttr"])
   (fundSummary)
@@ -1611,7 +1650,7 @@ function showCdStats(e){
         .text(d => `${d.data.Agency} ${d.key}
             ${formatValue(d.data[d.key])}`);
 
-    
+  */
 
 
 

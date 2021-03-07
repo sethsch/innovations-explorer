@@ -371,10 +371,14 @@ html, body {
     height: 94%;
     width: 100%;
     /*background-color: rgb(235, 238, 240);*/
-    border: 1.5px solid rgb(222,226,230);
+    border-top: 1.5px solid rgb(222,226,230);
 }
-.bar-ticks{
-    font-size: 0.9em;
+.bar-x-ticks{
+    font-size: 1em;
+    font-weight: 500;
+}
+.bar-y-ticks {
+    font-size: 1.15em;
 }
 
 #vocab-pills{
