@@ -100,6 +100,7 @@ html, body {
 }
 
 
+
 .legendTitle{
     width: 66%;
     text-anchor: left;
@@ -150,14 +151,17 @@ html, body {
 }
 
 #funded-radio {
-    transform: translate(0%,25%);
+    transform: translate(0,30%);
     color: rgb(163, 163, 163);
     font-size: 0.8em;
-    margin-right: 0.5em;
-    margin-left: 0.5em;
+    margin-right: 0.25em;
+    margin-left: 0.25em;
 
 }
-
+.radio-inline{
+    margin-right: 0.15em;
+    
+}
 
 /*canvas, svg {
     position: absolute;
@@ -214,17 +218,17 @@ html, body {
     color: rgb(163, 22, 22);
 }
 
-.axis .label {
+.parcoords .axis .label {
     font-size: 0.8vw;
     color: black;
 }
   
-.axis .tick {
+.parcoords .axis .tick {
     font-size: 0.75vw;
 }
 
 
-.axis text {
+.parcoords .axis text {
     text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
     cursor: move;
 }
@@ -358,16 +362,21 @@ html, body {
 #bargraph-area, #vocab-pills-area {
     height: 40%;
     width: 100%;
-    margin-top: 2em;
+    margin-top: 3em;
     padding-bottom: 2.5em;
     font-size: 0.9em;
 
 }
 #bargraph {
-    height: 80%;
+    height: 94%;
     width: 100%;
-    background-color: lightsteelblue;
+    /*background-color: rgb(235, 238, 240);*/
+    border: 1.5px solid rgb(222,226,230);
 }
+.bar-ticks{
+    font-size: 0.9em;
+}
+
 #vocab-pills{
     height: 80%;
     width: 100%;

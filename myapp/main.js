@@ -32,6 +32,7 @@ let state = {
   data: [],
   procData: [],
   awardsData: [],
+  filteredCdAwards: [],
   parData: [],
   recipsData: [],
   industData: [],
@@ -77,19 +78,19 @@ let mymap;
 
 // these weren't loading through the state... so use the manual computations here
 let industStats_global = {
-'pct_agro': {'mean': 0.019107477743707094, 'stdev': 0.02492691803944095},
-'pct_arts_ent_food_rec': {'mean': 0.09709313590846688, 'stdev': 0.02478666254994243},
-'pct_construct': {'mean': 0.06493889406407324, 'stdev': 0.016741604324190498},
-'pct_edu_health': {'mean': 0.2320128615789473, 'stdev': 0.03328312551876628},
-'pct_finance_realest': {'mean': 0.06422619412128149, 'stdev': 0.02076702867483482},
-'pct_information': {'mean': 0.02015461168649883, 'stdev': 0.010306822824995704},
-'pct_manufact': {'mean': 0.10252189041876426, 'stdev': 0.04727747231385272},
-'pct_otherserv': {'mean': 0.048906455414187616, 'stdev': 0.006403847620039182},
-'pct_prof_sci_mgmt_adm': {'mean': 0.11167448162929057, 'stdev': 0.03646271361236327},
-'pct_public_admin': {'mean': 0.04688159643249426, 'stdev': 0.02111663008647217},
-'pct_retail': {'mean': 0.11359310667276894, 'stdev': 0.013279286235067538},
-'pct_transport_util': {'mean': 0.052658708295194444, 'stdev': 0.014976210224363492},
-'pct_wholesale': {'mean': 0.026230585965675055, 'stdev': 0.006339945705734841}
+'pct_agro': {'mean': 0.01910747, 'stdev': 0.0249269},
+'pct_arts_ent_food_rec': {'mean': 0.0970931, 'stdev': 0.0247866},
+'pct_construct': {'mean': 0.0649388, 'stdev': 0.01674160},
+'pct_edu_health': {'mean': 0.2320128, 'stdev': 0.03328312},
+'pct_finance_realest': {'mean': 0.06422619, 'stdev': 0.0207670},
+'pct_information': {'mean': 0.0201546, 'stdev': 0.01030682},
+'pct_manufact': {'mean': 0.10252189, 'stdev': 0.0472774},
+'pct_otherserv': {'mean': 0.04890645, 'stdev': 0.00640384},
+'pct_prof_sci_mgmt_adm': {'mean': 0.1116744, 'stdev': 0.0364627},
+'pct_public_admin': {'mean': 0.0468815, 'stdev': 0.02111663},
+'pct_retail': {'mean': 0.113593, 'stdev': 0.013279286},
+'pct_transport_util': {'mean': 0.05265870, 'stdev': 0.01497621},
+'pct_wholesale': {'mean': 0.02623058, 'stdev': 0.00633994}
 }
 
 
@@ -231,7 +232,7 @@ function init() {
 
   /// INIT - set up the color legend
   /// 
-  var legArea = d3.select("#legend")
+  /*var legArea = d3.select("#legend")
     .append("svg")
     //.style("font-size","9px");
     
@@ -250,7 +251,7 @@ function init() {
   legArea.append("g")
     .call(legend);
 
-  //console.log("ZCOLORSCALE",legend)
+  //console.log("ZCOLORSCALE",legend)*/
 
 
   //  /// INIT FOR MAP
@@ -600,7 +601,7 @@ function changeVocab(e){
     // add active for the dropdown and change the text
     $('#vocabs-dropdown')
       .attr("class","nav-link active dropdown-toggle")
-      .text(e.target.id+" Vocabulary")
+      .text(e.target.id.replace("textrank-tfidf_keywords","Extracted")+" Vocabulary")
 
     // show it as the selected item in the dropdown
     $('#'+state.lastVocab).attr("class","dropdown-item") // reset all selections
@@ -670,7 +671,9 @@ function updateHides(d){
 // function to remove map layers
 function clear_maplayer(layer) {
   mymap.removeLayer( layer );
-}
+};
+
+// function to change map chloropleth color variable
 function change_map_color(){
   // remove any old map layer 
   if (state.currentChloroLayer !== null) {
@@ -688,7 +691,7 @@ function change_map_color(){
 };
 
 
-// update color
+// update color for parcoords, calls map color change too
 function change_color(dimension) {
   
 
@@ -737,9 +740,8 @@ function dimensionStats(col){
   
 };
 
-
 // FUNCTION - String filter for grid/parcoords search
-function myFilter(item, args) {
+function stringFilter(item, args) {
   /*if (item["percentComplete"] < args.percentCompleteThreshold) {
     return false;
   }*/
@@ -774,7 +776,7 @@ function gridUpdate(data) {
     searchString: searchString,
     sortcol: sortcol
   });
-  dataView.setFilter(myFilter);
+  dataView.setFilter(stringFilter);
   dataView.endUpdate();
   
 }; 
@@ -816,36 +818,38 @@ function showQueryPaths () {
 
 };
 
+// text wrapping function
 function wrap(text, width) {
   text.each(function() {
-      var text = d3.select(this),
-      words = text.text().split(/\s+/).reverse(),
-      word,
-      line = [],
-      lineNumber = 0, //<-- 0!
-      lineHeight = 1.2, // ems
-      x = text.attr("x"), //<-- include the x!
-      y = text.attr("y"),
-      dy = text.attr("dy") ? text.attr("dy") : 0; //<-- null check
-      tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-      while (word = words.pop()) {
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-              line.pop();
-              tspan.text(line.join(" "));
-              line = [word];
-              tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-          }
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
       }
+    }
   });
-}
+};
 
 function type(d) {
   d.value = +d.value;
   return d;
-}
+};
 
+
+// read the recipients and awards data and add recipients to map
 function initAwardsData(){
   d3.csv('data/cd116_sbirRecipients_epsg4326.csv').then(function(data) {
 
@@ -879,6 +883,7 @@ function initAwardsData(){
       console.time("awardsload");
       // Remember when we finished
       data.forEach(function(award){
+        award["Award_Amount"] = parseInt(award["Award_Amount"])
       });
       state.awardsData = data;
       var t1 = performance.now();
@@ -917,7 +922,7 @@ function initAwardsData(){
   
 };
 
-
+// add recipients data to the map
 function addRecipsToMap(d){
  
   var myIcon = L.icon({
@@ -1021,6 +1026,7 @@ function style(feature) {
   };
 };
 
+/* function to convert RGB values
 function RGBToHex(rgb) {
   // Choose correct separator
   let sep = rgb.indexOf(",") > -1 ? "," : " ";
@@ -1039,8 +1045,9 @@ function RGBToHex(rgb) {
     b = "0" + b;
 
   return "#" + r + g + b;
-};
+}; */
 
+// function to set map polygons border styling
 function getBorderStyle(feature,clustVar){
   var val = parseInt(feature.properties[clustVar])
   var district = feature.properties.AFFGEOID;
@@ -1054,12 +1061,13 @@ function getBorderStyle(feature,clustVar){
   return border;
 };
 
+// function to set map polygons fill opacity, depending on selection
 function getFillOpacity(feature){
   var district = feature.properties.AFFGEOID;
   if (state.currentCd === district) {return 0.9;}
   else {return 0.5;}
 
-}
+};
 
 
 
@@ -1130,7 +1138,7 @@ function zoomToFeature(e) {
   parcoords.unhighlight(unselected_dist_id);
   parcoords.highlight(selected_dist_id);
   
-  //showCdStats(e);
+  
 
 
   // change state
@@ -1144,7 +1152,7 @@ function zoomToFeature(e) {
   last_layer = last_layer[0];
   state.currentChloroLayer.resetStyle(last_layer);
 
-
+  showCdStats(e);
   // get the vocab for that district -- state gets reset here too
   getCdVocab(e);
   // reset style of last Cd
@@ -1379,8 +1387,219 @@ function showCdVocab(data){
 
 };
 
+// this function populates the funder recipient bar graph/stats tabs
+function showCdStats(e){
+  /** CONSTANTS */
+  // constants help us reference the same values throughout our code
+  var width = parseInt($('#bargraph').css('width')),
+    height = parseInt($('#bargraph').css('height')),
+    paddingInner = 0.2,
+    margin = { top: 20, bottom: 80, left: 60, right: 60 };
 
-function showCdStats(){
+  console.log("bargraph dims",width,height,paddingInner,margin)
+  console.log("cd data",state)
+
+  var district = e.target.feature.properties.AFFGEOID;
+  state.filteredCdAwards = state.awardsData.filter(d=>d.AFFGEOID_CD116 === district)
+
+  var data = state.filteredCdAwards;
+
+  //var agencies = data.map(d=>d.Agency)
+  //console.log('agencies in data',agencies)
+
+
+  var fundSummary = [];
+    data.reduce(function(res, value) {
+      if (!res[value.Agency]) {
+        res[value.Agency] = { Agency: value.Agency, 'sbir': 0, 'sttr': 0, 'total': 0};
+        fundSummary.push(res[value.Agency])
+
+      }
+      if (value.Program === "SBIR") {
+        res[value.Agency]['sbir'] += value.Award_Amount;
+        res[value.Agency]['total'] += value.Award_Amount;
+      }
+      else if (value.Program === "STTR") {
+        res[value.Agency]['sttr'] += value.Award_Amount;
+        res[value.Agency]['total'] += value.Award_Amount;
+      }
+      return res;
+    }, {});
+
+  fundSummary.sort((a, b) => b.total - a.total)
+  fundSummary.forEach(function(v){ delete v.total });
+
+  var countSummary = [];
+    data.reduce(function(res, value) {
+      if (!res[value.Agency]) {
+        res[value.Agency] = { Agency: value.Agency, 'sbir': 0, 'sttr': 0, 'total': 0};
+        countSummary.push(res[value.Agency])
+
+      }
+      if (value.Program === "SBIR") {
+        res[value.Agency]['sbir'] += 1;
+        res[value.Agency]['total'] += 1;
+
+      }
+      else if (value.Program === "STTR") {
+        res[value.Agency]['sttr'] += 1;
+        res[value.Agency]['total'] += 1;
+      }
+      return res;
+    }, {});
+    countSummary.sort((a, b) => b.total - a.total)
+    countSummary.forEach(function(v){ delete v.total });
+  
+
+  console.log("district data is",data, "SUMMARY",fundSummary,countSummary);
+ 
+  /*
+    // reference for d3.scales: https://github.com/d3/d3-scale
+    var xScale = d3
+      .scaleLinear()
+      .domain([0,d3.max(summaryData, d => d.Total_Funding)])
+      .range([margin.left,width - margin.right]);
+      
+  
+    var yScale = d3
+      .scaleBand()
+      .domain(summaryData.map(d => d.Agency))
+      .range([height - margin.bottom, margin.top])
+      .paddingInner(paddingInner);
+  
+    // reference for d3.axis: https://github.com/d3/d3-axis
+    var yAxis = d3.axisLeft(yScale)
+        .ticks(summaryData.length)
+        .tickSizeInner(5)
+        .tickSizeOuter(5);
+  
+    
+    var svg = d3
+      .select("#bargraph")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+  
+    // append rects
+    var rect = svg
+      .selectAll("rect")
+      .data(summaryData)
+      .join("rect")
+      .attr("y", d => yScale(d.Agency))
+      .attr("x", d => margin.left)
+      .attr("height", yScale.bandwidth())
+      .attr("width", d => xScale(d.Total_Funding));
+  
+    // append text
+    var text = svg
+      .selectAll("text")
+      .data(summaryData)
+      .join("text")
+      .attr("class", "label")
+      // this allows us to position the text in the center of the bar
+      .attr("y", d => yScale(d.Agency) + (yScale.bandwidth()/4))
+      .attr("x", d => xScale(d.Total_Funding) )
+      .text(d => d.Total_Funding)
+      .attr("dy", "0.1em")
+      .attr("font-size","0.2em")
+
+   
+  
+    svg
+      .append("g")
+      .attr("class", "axis")
+      .attr("transform", `translate(${margin.left}, 0)`)
+      .call(yAxis)
+      .selectAll(".tick text")
+      .call(wrap, margin.left);   
+      */
+  $(".bargraph-svg").remove();
+  var series = d3.stack()
+  .keys(["sbir","sttr"])
+  (fundSummary)
+    .map(d => (d.forEach(v => v.key = d.key), d))
+
+  console.log("SERIES",series)
+
+  var y = d3.scaleLinear()
+  .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
+  .rangeRound([height - margin.bottom, margin.top])
+ 
+
+  var x = d3.scaleBand()
+  .domain(fundSummary.map(d => d.Agency))
+  .range([margin.left, width - margin.right])
+  .padding(0.5)
+
+  var formatValue = x => isNaN(x) ? "N/A" : x.toLocaleString("en")
+  function formatTick(d) {
+    const s = (d / 1e6).toFixed(1);
+    return this.parentNode.nextSibling ? `\xa0${s}` : `$${s} million`;
+  }
+
+  var yAxis = g => g
+    .attr("transform", `translate(2.5,0)`)
+    .call(d3.axisRight(y)
+            .tickSize(width-7.5)
+            .tickFormat(formatTick)
+            .ticks(6))
+        .call(g => g.select(".domain")
+            .remove())
+        .call(g => g.selectAll(".tick:not(:first-of-type) line")
+            .attr("stroke-opacity", 0.5)
+            .attr("stroke-dasharray", "2,2"))
+        .call(g => g.selectAll(".tick text")
+            .attr("x", 4)
+            .attr("dy", -4))
+    .call(g => g.selectAll(".domain").remove())
+
+  var xAxis = g => g
+    .attr("transform", `translate(0,${height - margin.bottom})`)
+    .call(d3.axisBottom(x).tickSizeOuter(0))
+    .call(g => g.selectAll(".domain").remove())
+
+
+
+
+  var svg = d3.select("#bargraph")
+      .append("svg")
+      .attr("class","bargraph-svg")
+      .attr("width", width)
+      .attr("height", height);
+
+  svg.append("g")
+      .call(xAxis)
+        .selectAll(".tick text")
+        .attr("class","bar-ticks")
+        
+  svg.selectAll(".bar-ticks")
+      .call(wrap, x.bandwidth());
+
+  svg.append("g")
+      .call(yAxis);
+     
+
+  svg.append("g")
+      .selectAll("g")
+      .data(series)
+      .join("g")
+        .attr("fill", function(d){
+          return d.key == "sttr" ? "blue" : "black";
+        })
+      .selectAll("rect")
+      .data(d => d)
+      .join("rect")
+        .attr("x", (d, i) => x(d.data.Agency))
+        .attr("y", d => y(d[1]))
+        .attr("height", d => y(d[0]) - y(d[1]))
+        .attr("width", x.bandwidth())
+      .append("title")
+        .text(d => `${d.data.Agency} ${d.key}
+            ${formatValue(d.data[d.key])}`);
+
+    
+
+
 
 };
 
