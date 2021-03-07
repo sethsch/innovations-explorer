@@ -38,9 +38,6 @@ let state = {
   industData: [],
   industStats: [],
   currentChloroLayer: null,
-  cols: [],
-  usStates: [],
-  selectedPlace: "All States",
   defaultHiddenAxes: ["id","GEOID","name","state","profile"],
   hiddenAxes: ["id","GEOID","name","state","profile"],
   currentAxes: [],
@@ -55,7 +52,9 @@ let state = {
   currentCdVocab: [],
   filteredCdVocab: [],
   selectedVocab: "All",
-  lastVocab: null
+  lastVocab: null,
+  selectedGraph: "agency-graph",
+  lastGraph: null,
 };
 /**
  * 
@@ -324,6 +323,19 @@ function init() {
   // INIT Dropdown functionality
   d3.selectAll('.vocabsel')
   .on("click",d=>changeVocab(d))
+
+  d3.selectAll('.graphsel')
+  .on("click",function(e){
+    state.lastGraph = state.selectedGraph;
+    if (state.lastGraph != null) {
+      $("#"+state.lastGraph).attr("class","nav-link graphsel");
+    }
+    state.selectedGraph = e.target.id;
+    $("#"+state.selectedGraph).attr("class","nav-link active graphsel");
+    console.log("LAST GRAPHSEL",state.lastGraph,"CURRENT GRAPHSEL",state.selectedGraph)
+    getCdStats(state.currentCd);
+  })
+
 
 
   // Now call the draw function(s) to get going...
@@ -598,7 +610,7 @@ function draw() {
 //// END MAIN DRAW FUNCTION
 
 
-
+// change the vocab shown
 function changeVocab(e){
   // set the state vocab
   state.lastVocab = state.selectedVocab;
@@ -639,6 +651,119 @@ function changeVocab(e){
   //console.log("VOCAB SEL EVENT",e);
 
 }
+
+// change the graph shown
+
+function getCdStats(district){
+
+  state.filteredCdAwards = state.awardsData.filter(d=>d.AFFGEOID_CD116 === district)
+
+  var data = state.filteredCdAwards;
+  console.log("GOT THE STATS for",district,data)
+
+  var fundSummary = [];
+  var countSummary = [];
+
+  if (state.selectedGraph === "agency-graph"){
+    
+    data.reduce(function(res, value) {
+      if (!res[agencyNames[value.Agency]]) {
+        res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
+        fundSummary.push(res[agencyNames[value.Agency]])
+
+      }
+      if (value.Program === "SBIR") {
+        res[agencyNames[value.Agency]]['sbir'] += value.Award_Amount;
+        res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
+      }
+      else if (value.Program === "STTR") {
+        res[agencyNames[value.Agency]]['sttr'] += value.Award_Amount;
+        res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
+      }
+      return res;
+    }, {});
+
+    fundSummary.sort((a, b) => a.total - b.total)
+    fundSummary.forEach(function(v){ delete v.total });
+
+    
+    data.reduce(function(res, value) {
+        if (!res[agencyNames[value.Agency]]) {
+          res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
+          countSummary.push(res[agencyNames[value.Agency]])
+
+        }
+        if (value.Program === "SBIR") {
+          res[agencyNames[value.Agency]]['sbir'] += 1;
+          res[agencyNames[value.Agency]]['total'] += 1;
+
+        }
+        else if (value.Program === "STTR") {
+          res[agencyNames[value.Agency]]['sttr'] += 1;
+          res[agencyNames[value.Agency]]['total'] += 1;
+        }
+        return res;
+      }, {});
+      countSummary.sort((a, b) => a.total - b.total)
+      countSummary.forEach(function(v){ delete v.total });
+
+  }
+  else if (state.selectedGraph === "recips-graph"){
+    
+    data.reduce(function(res, value) {
+      if (!res[value.Company]) {
+        res[value.Company] = { Agency: value.Company, 'sbir': 0, 'sttr': 0, 'total': 0};
+        fundSummary.push(res[value.Company])
+
+      }
+      if (value.Program === "SBIR") {
+        res[value.Company]['sbir'] += value.Award_Amount;
+        res[value.Company]['total'] += value.Award_Amount;
+      }
+      else if (value.Program === "STTR") {
+        res[value.Company]['sttr'] += value.Award_Amount;
+        res[value.Company]['total'] += value.Award_Amount;
+      }
+      return res;
+    }, {});
+
+    fundSummary.sort((a, b) => a.total - b.total)
+    fundSummary.forEach(function(v){ delete v.total });
+
+    
+    data.reduce(function(res, value) {
+        if (!res[value.Company]) {
+          res[value.Company] = { Agency: value.Company, 'sbir': 0, 'sttr': 0, 'total': 0};
+          countSummary.push(res[value.Company])
+
+        }
+        if (value.Program === "SBIR") {
+          res[value.Company]['sbir'] += 1;
+          res[value.Company]['total'] += 1;
+
+        }
+        else if (value.Program === "STTR") {
+          res[value.Company]['sttr'] += 1;
+          res[value.Company]['total'] += 1;
+        }
+        return res;
+      }, {});
+      countSummary.sort((a, b) => a.total - b.total)
+      countSummary.forEach(function(v){ delete v.total });
+
+  };
+  
+  console.log("because we switched to recips I have",fundSummary)
+  showCdGraph(fundSummary,countSummary);
+  //console.log("VOCAB SEL EVENT",e);
+
+};
+
+  //var agencies = data.map(d=>d.Agency)
+  //console.log('agencies in data',agencies)
+
+
+  
 
 function updateHides(d){
   state.hiddenAxes.push(d);
@@ -1164,9 +1289,10 @@ function zoomToFeature(e) {
   last_layer = last_layer[0];
   state.currentChloroLayer.resetStyle(last_layer);
 
-  showCdStats(e);
+  
+  getCdStats(state.currentCd);
   // get the vocab for that district -- state gets reset here too
-  getCdVocab(e);
+  getCdVocab(state.currentCd);
   // reset style of last Cd
 
   // TO DO: update state for selected district, 
@@ -1237,10 +1363,9 @@ function brushMap(){
   
 };
 
-function getCdVocab(e){
+function getCdVocab(district){
   // change state
   //state.lastCd = state.currentCd
-  var district = e.target.feature.properties.AFFGEOID;
   //state.currentCd = district
   // if the CD is different from teh one already loaded, go forward, if not nothing
   if (state.currentCd !== state.lastCd){
@@ -1400,71 +1525,23 @@ function showCdVocab(data){
 };
 
 // this function populates the funder recipient bar graph/stats tabs
-function showCdStats(e){
-  /** CONSTANTS */
-  // constants help us reference the same values throughout our code
+function showCdGraph(fundSummary,countSummary) {
+
+  console.log("DATA GETS TO CD GRAPH AS",fundSummary,countSummary)
+
+
+
   var width = parseInt($('#bargraph').css('width')),
     height = parseInt($('#bargraph').css('height')),
     paddingInner = 0.2,
     margin = { right: 20, left: 50, 
       top: 50, bottom: 25 };
 
-  console.log("bargraph dims",width,height,paddingInner,margin)
-  console.log("cd data",state)
-
-  var district = e.target.feature.properties.AFFGEOID;
-  state.filteredCdAwards = state.awardsData.filter(d=>d.AFFGEOID_CD116 === district)
-
-  var data = state.filteredCdAwards;
-
-  //var agencies = data.map(d=>d.Agency)
-  //console.log('agencies in data',agencies)
-
-
-  var fundSummary = [];
-    data.reduce(function(res, value) {
-      if (!res[agencyNames[value.Agency]]) {
-        res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
-        fundSummary.push(res[agencyNames[value.Agency]])
-
-      }
-      if (value.Program === "SBIR") {
-        res[agencyNames[value.Agency]]['sbir'] += value.Award_Amount;
-        res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
-      }
-      else if (value.Program === "STTR") {
-        res[agencyNames[value.Agency]]['sttr'] += value.Award_Amount;
-        res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
-      }
-      return res;
-    }, {});
-
-  fundSummary.sort((a, b) => a.total - b.total)
-  fundSummary.forEach(function(v){ delete v.total });
-
-  var countSummary = [];
-    data.reduce(function(res, value) {
-      if (!res[agencyNames[value.Agency]]) {
-        res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
-        countSummary.push(res[agencyNames[value.Agency]])
-
-      }
-      if (value.Program === "SBIR") {
-        res[agencyNames[value.Agency]]['sbir'] += 1;
-        res[agencyNames[value.Agency]]['total'] += 1;
-
-      }
-      else if (value.Program === "STTR") {
-        res[agencyNames[value.Agency]]['sttr'] += 1;
-        res[agencyNames[value.Agency]]['total'] += 1;
-      }
-      return res;
-    }, {});
-    countSummary.sort((a, b) => a.total - b.total)
-    countSummary.forEach(function(v){ delete v.total });
+  //console.log("bargraph dims",width,height,paddingInner,margin)
+  //console.log("cd data",state)
   
 
-  console.log("district data is",data, "SUMMARY",fundSummary,countSummary);
+  //console.log("district data is",data, "SUMMARY",fundSummary,countSummary);
  
  
   $(".bargraph-svg").remove();
@@ -1542,7 +1619,7 @@ function showCdStats(e){
         .selectAll(".tick text")
         .attr("class","bar-y-ticks")
         //.attr("dy",-y.bandwidth()/4)
-        //.call(wrap, 8);
+        .call(wrap, margin.left);
         
       
     svg.append("g")
