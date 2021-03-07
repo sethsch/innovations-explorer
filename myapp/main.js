@@ -615,6 +615,9 @@ function changeVocab(e){
   // set the state vocab
   state.lastVocab = state.selectedVocab;
   state.selectedVocab = e.target.id;
+
+
+  
   // if user has clicked All again, don't change anything...
   if (state.selectedVocab == "All" && state.lastVocab == "All"){
 
@@ -712,7 +715,7 @@ function getCdStats(district){
     
     data.reduce(function(res, value) {
       if (!res[value.Company]) {
-        res[value.Company] = { Company: value.Company.replaceAll("&amp;","&"),
+        res[value.Company] = { Company: value.Company,
            'sbir': 0, 'sttr': 0, 'total': 0, 'count':0, 'sbir_count': 0,'sttr_count': 0
       };
         fundSummary.push(res[value.Company])
@@ -940,6 +943,16 @@ function showQueryPaths () {
 
 
 };
+// text casing function 
+function toTitleCase(str) {
+  return str.replace(
+    /\w\S*/g,
+    function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
+};
+
 
 // text wrapping function
 function wrap(text, width) {
@@ -1520,8 +1533,8 @@ function showCdGraph(fundSummary,countSummary) {
   var width = parseInt($('#bargraph').css('width')),
     height = parseInt($('#bargraph').css('height')),
     paddingInner = 0.2,
-    margin = { right: 30, left: 50, 
-      top: 40, bottom: 25 };
+    margin = { right: 40, left: 55, 
+      top: 30, bottom: 25 };
 
   //console.log("bargraph dims",width,height,paddingInner,margin)
   //console.log("cd data",state)
@@ -1605,7 +1618,7 @@ function showCdGraph(fundSummary,countSummary) {
           .selectAll(".tick text")
           .attr("class","bar-x-ticks")
           //.attr("transform",`translate(0,${margin.top})`)
-          //.call(wrap, parseInt((width-margin.left-margin.right)/12)   );
+          
           
 
     svg.append("g")
@@ -1731,10 +1744,11 @@ function showCdGraph(fundSummary,countSummary) {
 
     var table = d3.select('#bargraph')
       .append("table")
-      .attr("class","table table-striped recips-table")
+      .attr("class","table table-hover table-striped recips-table")
 
     table
       .append('thead')
+      .attr("class","table-dark")
       .append('tr')
         .selectAll('th')
         // Table column headers (here constant, but could be made dynamic)
@@ -1754,13 +1768,23 @@ function showCdGraph(fundSummary,countSummary) {
             // each row has data associated; we get it and enter it for the cells.
                 .data(function(d) {
                     console.log(d);
-                    return [d.Company, d.count, tableFundFormat(d.total)];
+                    return [d.Company, d.count, d.total];
                 })
+                .attr("id",d=>d.Company)
                 .enter()
                 .append("td")
-                .text(function(d) {
-                    return d;
+                .html(function(d,i){ 
+                  if(i == 0) {return toTitleCase(d.replaceAll("&amp;","&"));   }
+                  else if (i == 1) {return d;}
+                  else {return tableFundFormat(d)                  };
                 });
+                
+
+
+
+                ///.text(function(d) {
+                //    return d;
+                //});
 
   };
   
