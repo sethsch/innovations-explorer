@@ -185,7 +185,19 @@ let industryNames = {
   "PUBADMIN": "Public administration"}
 
 
-
+let agencyNames = {
+  "National Science Foundation":"NSF",
+  "Department of Health and Human Services": "HHS",
+  "Department of Defense": "DoD",
+  "Department of Education": "DoEd",
+  "Department of Commerce": "DoC",
+  "Department of Agriculture": "DoA",	
+  "National Aeronautics and Space Administration": "NASA",
+  "Department of Transportation": "DoT",
+  "Department of Homeland Security": "DoHS", 
+  "Department of Energy": "DoEnrg",
+  "Environmental Protection Agency": "EPA"
+}
 
 
 
@@ -1394,7 +1406,8 @@ function showCdStats(e){
   var width = parseInt($('#bargraph').css('width')),
     height = parseInt($('#bargraph').css('height')),
     paddingInner = 0.2,
-    margin = { top: 20, bottom: 80, left: 60, right: 60 };
+    margin = { top: 20, bottom: 40, 
+      left: 50, right: 20 };
 
   console.log("bargraph dims",width,height,paddingInner,margin)
   console.log("cd data",state)
@@ -1410,18 +1423,18 @@ function showCdStats(e){
 
   var fundSummary = [];
     data.reduce(function(res, value) {
-      if (!res[value.Agency]) {
-        res[value.Agency] = { Agency: value.Agency, 'sbir': 0, 'sttr': 0, 'total': 0};
-        fundSummary.push(res[value.Agency])
+      if (!res[agencyNames[value.Agency]]) {
+        res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
+        fundSummary.push(res[agencyNames[value.Agency]])
 
       }
       if (value.Program === "SBIR") {
-        res[value.Agency]['sbir'] += value.Award_Amount;
-        res[value.Agency]['total'] += value.Award_Amount;
+        res[agencyNames[value.Agency]]['sbir'] += value.Award_Amount;
+        res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
       }
       else if (value.Program === "STTR") {
-        res[value.Agency]['sttr'] += value.Award_Amount;
-        res[value.Agency]['total'] += value.Award_Amount;
+        res[agencyNames[value.Agency]]['sttr'] += value.Award_Amount;
+        res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
       }
       return res;
     }, {});
@@ -1431,19 +1444,19 @@ function showCdStats(e){
 
   var countSummary = [];
     data.reduce(function(res, value) {
-      if (!res[value.Agency]) {
-        res[value.Agency] = { Agency: value.Agency, 'sbir': 0, 'sttr': 0, 'total': 0};
-        countSummary.push(res[value.Agency])
+      if (!res[agencyNames[value.Agency]]) {
+        res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
+        countSummary.push(res[agencyNames[value.Agency]])
 
       }
       if (value.Program === "SBIR") {
-        res[value.Agency]['sbir'] += 1;
-        res[value.Agency]['total'] += 1;
+        res[agencyNames[value.Agency]]['sbir'] += 1;
+        res[agencyNames[value.Agency]]['total'] += 1;
 
       }
       else if (value.Program === "STTR") {
-        res[value.Agency]['sttr'] += 1;
-        res[value.Agency]['total'] += 1;
+        res[agencyNames[value.Agency]]['sttr'] += 1;
+        res[agencyNames[value.Agency]]['total'] += 1;
       }
       return res;
     }, {});
@@ -1571,9 +1584,10 @@ function showCdStats(e){
       .call(xAxis)
         .selectAll(".tick text")
         .attr("class","bar-ticks")
+        .call(wrap, x.bandwidth()/2);
         
   svg.selectAll(".bar-ticks")
-      .call(wrap, x.bandwidth());
+      .call(wrap, x.bandwidth()/2);
 
   svg.append("g")
       .call(yAxis);
