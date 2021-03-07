@@ -368,10 +368,13 @@ html, body {
 
 }
 #bargraph {
-    height: 94%;
+    height: 98%;
     width: 100%;
     /*background-color: rgb(235, 238, 240);*/
     border-top: 1.5px solid rgb(222,226,230);
+    overflow: auto;
+    overflow-wrap: break-word;
+    resize: both;
 }
 .bar-x-ticks{
     font-size: 1em;
