@@ -82,6 +82,71 @@ html, body {
     background-color: #555;
 }
 
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+    margin-left: 0.5em !important;
+    margin-right: 0.5em !important;
+    margin-bottom: 0.75em !important;
+    margin-top: 0.25em !important;
+
+}
+
+
+.awards-pop-header{
+    position: sticky;
+    background-color: #555;
+    color: white;
+    margin-bottom: 0.2em;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 0 !important;
+}
+.awards-pop-container{
+    max-height: 150px;
+    overflow-y: scroll;
+}
+
+.awards-pop-col{
+    margin: 0;
+}
+.awards-pop-company {
+    font-size: 1.2em;
+    margin-bottom: 0.2em !important;
+}
+
+/* the awards popover row item */
+.awards-pop-info{
+    border-bottom: 1px solid lightslategray;
+    margin-bottom: 0.33em;
+}
+.awards-pop-title {
+    font-size: 1em;
+    margin-top: 0.2em !important;
+    margin-bottom: 0 !important;
+
+    display: block;
+    padding: 0;
+    font-weight: 500;
+}
+.awards-pop-agency{
+    font-style: italic;
+    font-size: 0.85em;
+    margin-bottom: 0.35em !important;
+    margin-top: 0 !important;
+    display: block;
+    padding: 0;
+
+}
+.awards-pop-amount{
+    font-weight: 400;
+    margin: 0 !important;
+    padding: 0;
+    display: block;
+    border-width: 0;
+
+}
+
+
 #legend-infobar-nav{
     width: 100%;
     position: relative;
@@ -224,7 +289,7 @@ html, body {
 }
   
 .parcoords .axis .tick {
-    font-size: 0.75vw;
+    font-size: 1em;
 }
 
 
@@ -358,6 +423,16 @@ html, body {
 
 }
 
+.jump-button{
+    margin:0;
+    padding: 0;
+    color: lightgray;
+}
+
+.jump-button:hover{
+    color:darkslategray;
+}
+
 
 #bargraph-area, #vocab-pills-area {
     height: 40%;
@@ -371,7 +446,7 @@ html, body {
     height: 98%;
     width: 100%;
     /*background-color: rgb(235, 238, 240);*/
-    border-top: 1.5px solid rgb(222,226,230);
+    border: 1.5px solid rgb(222,226,230);
     overflow-y: scroll;
     
     
@@ -385,13 +460,14 @@ html, body {
 }
 
 #vocab-pills{
-    height: 80%;
+    height: 98%;
     width: 100%;
     background-color: rgb(235, 238, 240);
     border: 1.5px solid rgb(222,226,230);
     padding: 1em;
     overflow-y: scroll;
     display: inline-block;
+
  
 }
 .pill-container{

@@ -378,6 +378,11 @@ function draw() {
     .attr("class","label")
     .attr("transform","translate(0,-10) rotate(0)")
 
+  // change the tick format
+  parcoords.svg.selectAll(".axis .tick text").each(function(d, i) {
+      d3.select(this).text(d3.format(".0%")(d));
+  })
+
   // DRAW - establish popovers
   var popover = new bootstrap.Popover(document.querySelector('.label'), {
       container: 'body',
@@ -787,6 +792,11 @@ function updateHides(d){
   };
   //console.log("BEFORE RESETTING DIM",parcoords.state);
   parcoords.dimensions(state.currentAxes);
+
+  // change the tick format
+  parcoords.svg.selectAll(".axis .tick text").each(function(d, i) {
+    d3.select(this).text(d3.format(".0%")(d));
+  })
   //console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
   infobar.html(state.paletteInfoString);
   //console.log("brush state",parcoords.state)
@@ -987,74 +997,50 @@ function type(d) {
 
 // read the recipients and awards data and add recipients to map
 function initAwardsData(){
-  d3.csv('data/cd116_sbirRecipients_epsg4326.csv').then(function(data) {
 
-    // INIT - Process the data, select only the variables from it we need 
-    // Note: slickgrid needs each data element to have an 'id'
-    //data.forEach(function(d,i) { d.id = d.id || i; });
-    //console.log("RECIPS DATA AT FIRST LOAD",data)
-    var procData = [];
-    data.forEach(function(recipient) {
-      let rData = {};
-      rData["STATEFP"] = recipient["STATEFP"]
-      rData["AFFGEOID"] = recipient["AFFGEOID"]
-      rData["Company"] = recipient["Company"]
-      rData["DUNS"] = recipient["DUNS"]
-      rData["lat"] = parseFloat(recipient['Latitude'])
-      rData["long"] = parseFloat(recipient["Longitude"])
-      rData["distr_name"] = recipient["distr_name"]
-      rData["City"] = recipient["City"]
-      rData["County"] = recipient["County"]
-      rData["State"] = recipient["State"]
-      procData.push( rData );
-      });
-
-    //console.log("Processed recips",procData);
-    state.recipsData = procData;
-    addRecipsToMap(state.recipsData);
-  });
-  var t0 = performance.now();
   d3.csv('data/sbir_2008to2018_geoRefed.csv').then(function(data){
-      // Remember when we started
-      console.time("awardsload");
-      // Remember when we finished
-      data.forEach(function(award){
-        award["Award_Amount"] = parseInt(award["Award_Amount"])
-      });
-      state.awardsData = data;
-      var t1 = performance.now();
-      //console.log("state after awards",state.awardsData,"time",(t1 - t0) + " milliseconds.");
+    // Remember when we started
+    console.time("awardsload");
+    // Remember when we finished
+    data.forEach(function(award){
+      award["Award_Amount"] = parseInt(award["Award_Amount"])
     });
-  /*d3.json("data/0.json").then(
-    function(data){
-      console.log("JSONsample",data);
+    state.awardsData = data;
+    var t1 = performance.now();
+    //console.log("state after awards",state.awardsData,"time",(t1 - t0) + " milliseconds.");
+    d3.csv('data/cd116_sbirRecipients_epsg4326.csv').then(function(data) {
+
+      // INIT - Process the data, select only the variables from it we need 
+      // Note: slickgrid needs each data element to have an 'id'
+      //data.forEach(function(d,i) { d.id = d.id || i; });
+      //console.log("RECIPS DATA AT FIRST LOAD",data)
+      var procData = [];
+      data.forEach(function(recipient) {
+        let rData = {};
+        rData["STATEFP"] = recipient["STATEFP"]
+        rData["AFFGEOID"] = recipient["AFFGEOID"]
+        rData["Company"] = recipient["Company"]
+        rData["DUNS"] = recipient["DUNS"]
+        rData["Address1"] = recipient["Address1"]
+        rData["lat"] = parseFloat(recipient['Latitude'])
+        rData["long"] = parseFloat(recipient["Longitude"])
+        rData["distr_name"] = recipient["distr_name"]
+        rData["City"] = recipient["City"]
+        rData["County"] = recipient["County"]
+        rData["State"] = recipient["State"]
+        procData.push( rData );
+        });
+  
+      console.log("Processed recips",procData);
+      state.recipsData = procData;
+      addRecipsToMap(state.recipsData);
     });
-  */
-/*
-  var t0 = performance.now();
-  d3.json("data/cd116_vocab_aggs/5001600US0200.json").then(
-      function(data){
-        var t1 = performance.now();
-        state.vocabIndex = data;
-        console.log("JSONsample CongDist",state," load time congress agg file:",(t1 - t0)/1000 + " seconds.");
-    });
-    // single award vocab file
-    var t0 = performance.now();
-    d3.json("data/1.json").then(
-        function(data){
-          var t1 = performance.now();
-          state.vocabIndexSingle = data;
-          console.log("JSONsample award",state," load time single award index file:",(t1 - t0)/1000 + " seconds.");
-      });
-  */
-  /*var t0 = performance.now();
-  d3.json("data/sbir_2008to2018_FULLINDEX_clean.json").then(
-    function(data){
-      state.vocabIndex = data;
-      var t1 = performance.now();
-      console.log("time for vocab load",(t1 - t0)/1000 + " seconds.",state);
-    }
-  );*/
+  });
+
+  
+
+
+
   
 };
 
@@ -1073,21 +1059,90 @@ function addRecipsToMap(d){
     spiderfyOnMaxZoom: true,
     showCoverageOnHover: true,
     zoomToBoundsOnClick: true,
-    disableClusteringAtZoom: 12
+    disableClusteringAtZoom: 11
   });
  
-  for ( var i = 0; i < d.length; ++i )
-  {
-    var popup = d[i].Company +
-                '<br/>' + d[i].City 
-  
+  for ( var i = 0; i < d.length; ++i ) {
+    var company = d[i].Company
+    var duns = d[i].DUNS
+    var addr = d[i].Address1
+    
+    /*var awards = state.awardsData.filter(x=>x.Company === company)
+    //console.log("AWARDS FOR",d[i].Company,awards)
+    var pop_content = `<strong>${d[i].Company}</strong>`
+
+
+    for (var j = 0; j < awards.length; j++) {
+      pop_content = pop_content + awards[j].Award_Title
+    }*/
+
+    var pop_content = d[i].Company+"</br>" ;
+    /* 
+    '<svg width="400" height="110"><rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" /></svg>'+
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City + d[i].Company +
+                '<br/>' + d[i].City */
+
+    var popup = L.popup({maxHeight: 150}).setContent(pop_content);
+    //console.log("right after declaring w max height we get",popup)
+
     var m = L.marker( [d[i].lat, d[i].long], {icon: myIcon} )
-                    .bindPopup( popup );
+                    .bindPopup(pop_content+"Loading...")
+
+
+    m._leaflet_id = company+"_"+duns+"_"+addr;
+    m.on('click',function(e){
+      // on marker click, call the function to get the awards info for the popup
+      var popup = e.target.getPopup();
+      //var popup = L.popup({maxHeight: 150}).setContent(getMarkerAwards(e.target._leaflet_id));
+      popup.setContent(getMarkerAwards(e.target._leaflet_id));
+      popup({maxHeight: 150})
+      popup.update()
+      //(this).bindPopup()
+
+    });
+
   
     markerClusters.addLayer( m );
-  }
+  };
  
-  mymap.addLayer( markerClusters );
+  mymap.addLayer( markerClusters )
+};
+// function to get the marker popup dynamically so not all of them have to render before necessary
+// here the id is the company name, duns, and addr1
+function getMarkerAwards(id){
+
+    var awards = state.awardsData.filter(x=>x.Company+"_"+x.DUNS+"_"+x.Address1 === id)
+    var slug = id.split("_")
+    var company = toTitleCase(slug[0].replaceAll("&amp;","&"))
+    //console.log("AWARDS FOR",d[i].Company,awards)
+    var pop_header = `<div class="awards-pop-header"><p class="awards-pop-company"><strong>${company}</strong></p></div>`
+    var pop_content = ""
+    for (var j = 0; j < awards.length; j++) {
+      var title = awards[j]['Award_Title'].replaceAll("&amp;","&"),
+        agency = awards[j]['Agency'],
+        amount = awards[j]['Award_Amount'].toLocaleString(),
+        program = awards[j]['Program'],
+        year = awards[j]["Award_Year"]
+
+
+      pop_content = pop_content + `<div class="row awards-pop-info"><div class="col awards-pop-col"><p class="awards-pop-title">${title}</p><p class="awards-pop-agency">${agency} - (${program}) - ${year}</p></div><div class="col-auto awards-pop-col"><p class="awards-pop-amount">$${amount}</p></div></div>`
+      
+    }
+    return pop_header+'<div class="awards-pop-container">'+pop_content+'</div>' ;
+
 };
 
 
@@ -1188,11 +1243,11 @@ function getBorderStyle(feature,clustVar){
   var val = parseInt(feature.properties[clustVar])
   var district = feature.properties.AFFGEOID;
   var border =  val === 5 ?  ['darkslategray',0.5,0.6] :
-                val === 2 ? ['blue',1,0.6] :
-                  ['red',1,0.6];
+                val === 2 ? ['blue',1.25,0.6] :
+                  ['red',1.25,0.6];
   if (state.currentCd === district) {border[1] = 4; border[2] = 1}
   else if (state.lastCd === district && border[0] === 'darkslategray') {border[1] = 0.5; border[2] = 0.6}
-  else {border[1] = 1; border[2] = 0.6;}
+  else {border[1] = 1.25; border[2] = 0.6;}
 
   return border;
 };
@@ -1587,7 +1642,7 @@ function showCdGraph(fundSummary,countSummary) {
     .call(d3.axisTop(x)
             .tickSize(height-margin.top-margin.bottom)
             .tickFormat(formatTick)
-            .ticks(5))
+            .ticks(4))
         .call(g => g.select(".domain")
             .remove())
         .call(g => g.selectAll(".tick:not(:first-of-type) line")
