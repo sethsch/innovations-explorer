@@ -3,6 +3,13 @@ html, body {
     height: 100vw;
 
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+
+
+
+
+
 #title-panel{
     width: 100vw;
     padding: 2%;
@@ -77,7 +84,7 @@ html, body {
 }
 
 #map{
-    height: 32%;
+    height:32%;
     width: 100%;
     background-color: #555;
 }
@@ -88,36 +95,51 @@ html, body {
     margin-right: 0.5em !important;
     margin-bottom: 0.75em !important;
     margin-top: 0.25em !important;
+    
+}
+.leaflet-popup-content-wrapper{
+    border-radius: 6px !important;
+    background-color: #555 !important;
+}
+.leaflet-popup-tip {
+    background-color: #555 !important;
 
 }
+
 
 
 .awards-pop-header{
     position: sticky;
     background-color: #555;
     color: white;
-    margin-bottom: 0.2em;
+    line-height: 1.75em;
+    font-size: 1.2em;
+    margin-bottom: 0.3em;
     margin-left: 0 !important;
     margin-right: 0 !important;
     margin-top: 0 !important;
+    border-bottom: 2px solid whitesmoke ;
 }
 .awards-pop-container{
     max-height: 150px;
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: white !important;
 }
 
 .awards-pop-col{
     margin: 0;
 }
 .awards-pop-company {
-    font-size: 1.2em;
     margin-bottom: 0.2em !important;
 }
 
 /* the awards popover row item */
 .awards-pop-info{
-    border-bottom: 1px solid lightslategray;
+    border-bottom: 0.5px solid lightslategray;
     margin-bottom: 0.33em;
+    margin-left: 0.04em;
+    margin-right: 0.33em;
 }
 .awards-pop-title {
     font-size: 1em;
@@ -147,13 +169,47 @@ html, body {
 }
 
 
-#legend-infobar-nav{
+#profiler-nav{
     width: 100%;
     position: relative;
 }
 
+#legend-infobar{
+    background-color:rgb(248,249,250);
+    width: 100%;
+    position: relative;
+    height: 5vw;
+    padding-top: 0.5vw;
+    padding-bottom: 0.5vw;
+}
+
+.legend{
+    font-size: 0.6em;
+    margin-right: 2em;
+    margin-top: 0.75em;
+    max-width: 100%;
+    height: auto;
+    
+}
+.info-bar {
+    font-size: 0.72em;
+    text-anchor: left;
+    padding-left: 1em;
+    max-width: 100%;
+    height: auto;
+    
+}
+#bar-icons {
+    padding-left: 30%;
+    padding-right: 0%;
+    margin-right: 0;
+    height: fit-content;
+
+  
+    
+}
+/*
 .legend {
-    /* ref: https://fonts.google.com/specimen/Source+Sans+Pro?selection.family=Source+Sans+Pro */
     height: 4vw;
     padding-bottom: 0%;  
     float: left;
@@ -178,6 +234,7 @@ html, body {
 .legendCells .label text{
     color: white;
 }
+
 #info-bar {
     float: left;
     width: inherit;
@@ -190,6 +247,7 @@ html, body {
     margin-top: 0.5em;
 }
 
+
 .parcoords-info-circle{
     width: 100%;
     float: right;
@@ -197,11 +255,11 @@ html, body {
     vertical-align: bottom;
     transform: translate(96.5%,150%);
 
-}
-#info-circle-icon{
+}*/
+#info-circle-icon, #reload-parcoords-icon{
     fill: rgb(65, 65, 65);
 }
-#info-circle-icon:hover {
+#info-circle-icon:hover, #reload-parcoords-icon:hover {
     fill: #3c73eb;
 }
 
@@ -433,6 +491,10 @@ html, body {
     color:darkslategray;
 }
 
+.recips-table-header{
+    position:sticky;
+    top:0; 
+}
 
 #bargraph-area, #vocab-pills-area {
     height: 40%;
@@ -447,7 +509,8 @@ html, body {
     width: 100%;
     /*background-color: rgb(235, 238, 240);*/
     border: 1.5px solid rgb(222,226,230);
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
     
     
 }
@@ -465,7 +528,8 @@ html, body {
     background-color: rgb(235, 238, 240);
     border: 1.5px solid rgb(222,226,230);
     padding: 1em;
-    overflow-y: scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: inline-block;
 
  

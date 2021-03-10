@@ -7,13 +7,11 @@
 	
 		<title>Capstone Dashboard v1</title>
 
-		<!-- Google fonts -->
-		<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300" rel='stylesheet' type='text/css'>
-		<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 		
 		<!--Bootstrap css-->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 		<link rel='stylesheet' type='text/css' href="mockup_style.css">
+
 
 		<!-- SlickGrid -->
 		<link rel="stylesheet" href="./node_modules/slickgrid/slick.grid.css" type="text/css"/>
@@ -185,7 +183,7 @@
 					<div id="map"></div>
 					
 					<!--parallel coordinates options and search bar-->
-					<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="legend-infobar-nav">
+					<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="profiler-nav">
 						<!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						  <span class="navbar-toggler-icon"></span>
 						</button>
@@ -220,14 +218,10 @@
 					  </nav>
 
 					<!-- LEGEND / INFO BAR -->  
-					<nav class="navbar navbar-expand-lg navbar-light bg-light" id="legend-infobar-nav">
-						<div class="navbar-nav" id="navbarSupportedContent">
-						  <div class="navbar-nav mr-auto">
-							
-
-								<!--<text class="legendTitle">Deviations from Mean</text>-->
-								<!-- <div class="legend" id="legend"></div> -->
-								<div class="legend" id="legend">
+					<div class="container" id="legend-infobar">
+						<div class="row"">
+							<div class="col-sm-3" id="legend">
+								<div class="legend">
 									<svg>
 										<g>
 											<g class="legendCells">
@@ -255,33 +249,59 @@
 										</g>
 									</svg>
 								</div>
-
-
+							</div>
+							<div class="col-sm-8">
 								<div class='info-bar' id='info-bar'></div>
-								<div class="parcoords-info-circle">
-									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="black" class="bi bi-info-circle" id='info-circle-icon' viewBox="0 0 16 16">
-										<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-										<path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-									</svg> 			
-								</div>						
+							</div>
+							<div class="col-sm-1">
+								<div id="bar-icons" class="parcoords-info-circle" >
+								
+										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="black" class="bi bi-arrow-clockwise" id="reload-parcoords-icon" title="Reload chart" viewBox="0 0 20 20">
+											<path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+											<path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+										</svg>
+										<svg data-bs-toggle="modal" data-bs-target="#parcoordsInfoModal" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="black" class="bi bi-info-circle" id='info-circle-icon' viewBox="0 0 20 20">
+											<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+											<path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+										</svg> 
+
+								</div>
+							</div>
+						
+						</div>
+					</div>
+					<!-- Modal -->
+					<!-- Modal -->
+					<div class="modal fade" id="parcoordsInfoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"">
+						<div class="modal-content">
+							<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">User Tips: Parallel Coordinates Chart</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+							...
+							</div>
+							<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							</div>
+						</div>
+						</div>
+					</div>					
 
 
 								
 
 			
 						
-							</div>
-						</div>
-					</nav>
+						
 
 
 
 					
 
 					<!-- PARALLEL COORDINATES -->
-					<div id="parcoords-container">
-						<div id="parcoords" class="parcoords"></div>
-					</div>
+					<div id="parcoords-container"></div>
 				
 
 					<!-- TABLE -->
@@ -317,13 +337,13 @@
 								<h5>Funding Details</h5>
 							</div>
 							<div class="col-auto">
-								<a class="btn btn-block jump-button" href="#">
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+								<a class="btn btn-block jump-button">
+									<svg id="bargraph-jump-button-up" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
 										<path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
 									</svg>
 								</a>
-								<a class="btn btn-block jump-button" href="#">
-									<svg id="panel-jump-button" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+								<a class="btn btn-block jump-button">
+									<svg id="bargraph-jump-button-down" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
 										<path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
 									</svg>
 								</a>
@@ -353,16 +373,18 @@
 								<h5>Topics</h5>
 							</div>
 							<div class="col-auto">
-								<a class="btn btn-block jump-button" href="#">
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+								<a class="btn btn-block jump-button">
+									<svg id="vocab-jump-button-up" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
 										<path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
 									</svg>
 								</a>
+								<!--
 								<a class="btn btn-block jump-button" href="#">
-									<svg id="panel-jump-button" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+									<svg id="vocab-jump-button-down" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
 										<path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
 									</svg>
 								</a>
+								-->
 							</div>
 						</div>
 						<!-- <h5>Topics</h5> -->
@@ -501,6 +523,35 @@
 		var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
 		return new bootstrap.Popover(popoverTriggerEl)
 		})
+
+		// scroll up down buttons in right hand panel
+		$('#bargraph-jump-button-up').on("click",function() {
+			$('#summary-panel').scrollTop(0);
+		})
+		$('#bargraph-jump-button-down').on("click",function() {
+			var obj = $("#vocab-pills-area");
+			var childPos = obj.offset();
+			var parentPos = obj.parent().offset();
+			var childOffset = {
+				top: childPos.top - parentPos.top,
+				left: childPos.left - parentPos.left
+				};
+			$('#summary-panel').scrollTop(childOffset.top*1.5)
+		});
+		$('#vocab-jump-button-up').on("click",function() {
+			var obj = $("#bargraph-area");
+			var childPos = obj.offset();
+			//console.log("childposbargraph area",childPos)
+			var parentPos = obj.parent().offset();
+			var childOffset = {
+				top: childPos.top - parentPos.top,
+				left: childPos.left - parentPos.left
+				};
+			$('#summary-panel').scrollTop(0);
+
+		});
+	
+		
 
 		
 

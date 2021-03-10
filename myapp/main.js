@@ -2,6 +2,8 @@
 
 //var svg = d3.select("#example").style("width","800px").style("height","320px");
 
+//const { stat } = require("fs");
+
 //const { zoom } = require("d3");
 
 //const { standardDeviation } = require("simple-statistics");
@@ -48,13 +50,14 @@ let state = {
   selectedRows: [],
   unselRows: [],
   currentCd: null,
-  lastCd: null,
+  lastCd: "00",
   currentCdVocab: [],
   filteredCdVocab: [],
   selectedVocab: "All",
   lastVocab: null,
   selectedGraph: "agency-graph",
   lastGraph: null,
+  cdReclick: 0,
 };
 /**
  * 
@@ -119,6 +122,9 @@ var chloroScale = d3.scaleQuantize()
 
 // For the text search, set a buffer before the filtering starts to operate -- num of chars
 let buffer = 2;
+
+// for the map, we specify a max zoom level
+const maxZoomLevel = 10;
 
 let vocabs = ["EIGE","AGROVOC","STW","EU-SCIVOC","EUVOC","GEMET","MeSH"];
 // quick function for merging vocabs when necessary
@@ -291,6 +297,7 @@ function init() {
   initParcoords();
 
 
+
   // setting up grid
   /// TO DO: have the grid feature other data about the GEOID, like ranks
   // INIT - Slick Grid columns
@@ -361,6 +368,7 @@ function draw() {
     .bundleDimension(state.color) // bundle the parcoords on the color dimension
     .bundlingStrength(0.6)
     .brushMode("1D-axes")
+    .shadows()
  
 
  
@@ -403,19 +411,6 @@ function draw() {
     .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}">&times;</div>`
     ) // this adds the content, on click of content, remove axis
     .attr("data-bs-trigger",'manual')
-    // on right click = context menu 
-    /*.on("mouseenter", function (d) {
-      $(this).popover('show');
-      
-      event.preventDefault();
-
-      // add hide settings after some msec
-      var pop = $(this).popover();
-      pop.on('shown.bs.popover',function(){ 
-        setTimeout(function(){
-          pop.popover("hide")},1500); 
-      });
-    });*/
     .on("mouseenter", function() {
       var _this = this;
       setTimeout(function() {
@@ -529,16 +524,28 @@ function draw() {
     // Get the id of the item referenced in grid_row
     var item_id = grid.getDataItem(grid_row).id;
     var d = parcoords.brushed() || state.procData;
+    //var unsel_ids = dataView.getItems().filter(d=>d.id !== item_id);
+    //console.log("unsel ids",unsel_ids)
 
     // Get the element position of the id in the data object
-    elementPos = d.map(function(x) {return x.id; }).indexOf(item_id);
+    var elementPos = d.map(function(x) {return x.id; }).indexOf(item_id);
 
+    var unselItems = parcoords.data().filter(d=>d.id !== item_id)
+    console.log("el pos",elementPos,"unsel",unselItems)
     // Highlight that element in the parallel coordinates graph
+    parcoords.unmark(unselItems);
+    parcoords.unhighlight(unselItems);
+   
     parcoords.highlight([d[elementPos]]);
+    //showQueryPaths();
 
   });
   grid.onMouseLeave.subscribe(function(e,args) {
-    parcoords.unhighlight();
+    //parcoords.clear("highlight")
+    var marked_dist = d3.filter(parcoords.data(),d=>d.GEOID === state.currentCd);
+    parcoords.unhighlight(state.selectedRows);
+    parcoords.mark(marked_dist)
+    //showQueryPaths();
   });
 
   grid.onCellChange.subscribe(function (e, args) {
@@ -624,7 +631,7 @@ function changeVocab(e){
 
   
   // if user has clicked All again, don't change anything...
-  if (state.selectedVocab == "All" && state.lastVocab == "All"){
+  if (state.selectedVocab === "All" && state.lastVocab === "All"){
 
   }
   else if (e.target.id !== "All") {
@@ -676,7 +683,7 @@ function getCdStats(district){
     
     data.reduce(function(res, value) {
       if (!res[agencyNames[value.Agency]]) {
-        res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
+        res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency],  'sbir': 0, 'sttr': 0, 'total': 0};
         fundSummary.push(res[agencyNames[value.Agency]])
 
       }
@@ -721,6 +728,8 @@ function getCdStats(district){
     data.reduce(function(res, value) {
       if (!res[value.Company]) {
         res[value.Company] = { Company: value.Company,
+            row_id: String(value.Company)+"_"+String(value.DUNS)+"_"+String(value.Address1),
+            lat: value.latitude, lng: value.longitude,
            'sbir': 0, 'sttr': 0, 'total': 0, 'count':0, 'sbir_count': 0,'sttr_count': 0
       };
         fundSummary.push(res[value.Company])
@@ -933,8 +942,9 @@ function updateFilter() {
 // FUNCTION - clear the highlighting when the string has been removed from search to be below buffer
 function preClear(searchString) {
   if (searchString.length < buffer) {
-    //parcoords.unhighlight(data);
-    parcoords.clear("highlight")
+    //parcoords.unhighlight(parcoords.data());
+    parcoords.unmark()
+    parcoords.unhighlight(parcoords.data())
     
   }
 };
@@ -946,12 +956,13 @@ function showQueryPaths () {
   state.selectedRows = dataView.getItems().filter(d=> searchString.length > buffer && d[sortcol].toLowerCase().includes(searchString));
   state.unselRows = dataView.getItems().filter(d=>!d[sortcol].toLowerCase().includes(searchString));
 
-  //console.log( "Sel Size",state.selectedRows);
+   
+
   parcoords.unhighlight(state.unselRows);
   parcoords.highlight(state.selectedRows);
 
-
-
+  //console.log( "Sel Size",state.selectedRows);
+ 
 };
 // text casing function 
 function toTitleCase(str) {
@@ -1059,7 +1070,7 @@ function addRecipsToMap(d){
     spiderfyOnMaxZoom: true,
     showCoverageOnHover: true,
     zoomToBoundsOnClick: true,
-    disableClusteringAtZoom: 11
+    disableClusteringAtZoom: maxZoomLevel
   });
  
   for ( var i = 0; i < d.length; ++i ) {
@@ -1126,10 +1137,13 @@ function getMarkerAwards(id){
 
     var awards = state.awardsData.filter(x=>x.Company+"_"+x.DUNS+"_"+x.Address1 === id)
     var slug = id.split("_")
-    var company = toTitleCase(slug[0].replaceAll("&amp;","&"))
+    var company = toTitleCase(slug[0].replaceAll("&amp;","&")).replaceAll(" Llc"," LLC").replaceAll(" llc"," LLC").replaceAll(" INC"," Inc.")
     //console.log("AWARDS FOR",d[i].Company,awards)
     var pop_header = `<div class="awards-pop-header"><p class="awards-pop-company"><strong>${company}</strong></p></div>`
-    var pop_content = ""
+    var pop_content = "";
+    awards.sort(function(a, b) {
+      return parseFloat(b['Award_Amount']) - parseFloat(a['Award_Amount']);
+    });
     for (var j = 0; j < awards.length; j++) {
       var title = awards[j]['Award_Title'].replaceAll("&amp;","&"),
         agency = awards[j]['Agency'],
@@ -1297,12 +1311,19 @@ function highlightFeature(e) {
 
   if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       layer.bringToFront();
-  }
+  };
   //console.log("Map highlight e",e)
-  var selected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID === e.target.feature.properties.AFFGEOID)
+  var selected_dist_id = parcoords.data().filter(d=>d.GEOID === e.target.feature.properties.AFFGEOID);
+
+  var unselected_dist_id = parcoords.data().filter(d=>d.GEOID !== e.target.feature.properties.AFFGEOID);
+  //console.log("ON HIGHLIHGT","selected are",selected_dist_id,"unselected are",unselected_dist_id);
   //console.log("parcoords dist id",dist_id)
   // highlight the path in parcoords
-  parcoords.highlight(selected_dist_id);
+  parcoords.unhighlight(unselected_dist_id)
+  parcoords.unmark(unselected_dist_id)
+  parcoords.highlight(selected_dist_id); 
+
+
   //gridUpdate(selected_dist_id)
   //brushMap();
 
@@ -1310,7 +1331,17 @@ function highlightFeature(e) {
 // reset highlight
 function resetHighlight(e) {
   state.currentChloroLayer.resetStyle(e.target);
-  parcoords.unhighlight();
+  
+  // keep the highlighting set to only the selected Cd
+  var selected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID === e.target.feature.properties.AFFGEOID)
+  var unselected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID !== e.target.feature.properties.AFFGEOID)
+  var marked_dist = d3.filter(parcoords.data(),d=>d.GEOID === state.currentCd)
+  // update parcoords accordingly
+
+  parcoords.unhighlight(unselected_dist_id);
+  parcoords.mark(marked_dist);
+
+
   brushMap();
 };
 
@@ -1327,15 +1358,30 @@ function zoomToFeature(e) {
   var selected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID === e.target.feature.properties.AFFGEOID)
   var unselected_dist_id = d3.filter(parcoords.data(),d=>d.GEOID !== e.target.feature.properties.AFFGEOID)
   parcoords.unhighlight(unselected_dist_id);
+  parcoords.unmark(unselected_dist_id);
+  //parcoords.highlight(selected_dist_id);
+  
   parcoords.highlight(selected_dist_id);
-  
-  
 
 
   // change state
   state.lastCd = state.currentCd
   var district = e.target.feature.properties.AFFGEOID;
   state.currentCd = district
+
+  // if the user clicked the same district again, let's clear the parcoords highlighting
+  if (state.lastCd === state.currentCd && state.cdReclick === 0){
+    parcoords.unhighlight(selected_dist_id);
+    parcoords.unmark(selected_dist_id);
+    state.cdReclick += 1;
+  }
+  else if (state.lastCd === state.currentCd && state.cdReclick === 1) {
+    parcoords.mark(selected_dist_id);
+    parcoords.unmark(unselected_dist_id)
+    parcoords.unhighlight(unselected_dist_id);
+    state.cdReclick = 0;
+  };
+  
   // reset the last selected district 
   var map_layers = [state.currentChloroLayer._layers][0]
   var last_layer = Object.filter(map_layers, d => d.feature.properties.AFFGEOID === state.lastCd);
@@ -1366,6 +1412,8 @@ function onEachFeature(feature, layer) {
 
   });
 };
+
+
 function brushMap(){
   Object.filter = (obj, predicate) => 
   Object.keys(obj)
@@ -1405,7 +1453,8 @@ function brushMap(){
       state.currentChloroLayer.resetStyle(layer);
     };
 
-  }
+  };
+
   //console.log("NO BRUSHED",brushedrows);
   
   //state.currentChloroLayer._layer.forEach()
@@ -1460,7 +1509,7 @@ function showCdVocab(data){
   for (i=0; i<ag.length; i++){
     var yr = Object.keys(data[ag[i]])
     for (j=0; j<yr.length; j++){
-      if (state.selectedVocab == "All"){
+      if (state.selectedVocab === "All"){
         for (k=0; k<vocabs.length; k++){
           allvocab.push(data[ag[i]][yr[j]][vocabs[k]])
         }
@@ -1474,6 +1523,7 @@ function showCdVocab(data){
     }
   }
   allvocab = allvocab.filter(x => x !== undefined && String(Object.keys(x)[0]) !== "" && String(Object.keys(x)[0]).length > 2);
+  
   allvocab = mergeVocabs(allvocab)
   var sortedVocab = [];
   for (var term in allvocab) {
@@ -1576,6 +1626,26 @@ function showCdVocab(data){
    
 
 
+};
+
+// this function gets content from the map, 
+// and is modified to take an id and return the marker corresponding to it
+
+function getFeaturesInView(map) {
+  var features = [];
+  map.eachLayer( function(layer) {
+    if(layer instanceof L.Marker) {
+      features.push(layer)
+    }
+    if (Object.keys(layer).includes("_childClusters")){
+      var markers = layer.getAllChildMarkers();
+      for (i=0; i<markers.length; i++) {
+        features.push(markers[i])
+      }
+    };
+      
+  });
+  return features;
 };
 
 // this function populates the funder recipient bar graph/stats tabs
@@ -1792,6 +1862,11 @@ function showCdGraph(fundSummary,countSummary) {
   }
   else if (state.selectedGraph === "recips-graph"){
    
+    // so that rows can find the popups, we need to use the id
+    //  as an attribute to the row
+    // on row hover, we'll be able to open up the marker popup for that row
+   
+
     function tableFundFormat(d) {
       const s = (d / 1e6).toFixed(2);
       return `$${s}` 
@@ -1809,27 +1884,64 @@ function showCdGraph(fundSummary,countSummary) {
         // Table column headers (here constant, but could be made dynamic)
         .data(['Company', 'Grants Received', 'Funding ($M)'])
       .enter().append('th')
+        .attr("class","recips-table-header")
         .text(d => d);
+
 
     var tablebody = table.append("tbody");
     var rows = tablebody
                 .selectAll("tr")
                 .data(fundSummary)
                 .enter()
-                .append("tr");
+                .append("tr")
+                .attr("id",d=>d.row_id+"|"+d.lat+"|"+d.lng)
+                // on row click, we'll go there in the map and generate the popup
+                .on("click",function(e){
+                  var id = e.target.parentElement.id
+                  var recip_id = id.split("|")[0]
+                  console.log("e target parent element",e.target.parentElement)
+                  var zoom = mymap.getZoom() > maxZoomLevel ? mymap.getZoom() : maxZoomLevel;
+                  var recip_lat = id.split("|")[1]
+                  var recip_lng = id.split("|")[2]
+                  mymap.setView([recip_lat,recip_lng],zoom)
+
+                  var features = getFeaturesInView(mymap);
+                  //console.log("THIS IS YOUR MAP",mymap)
+                  //var features = getMarkers(mymap);
+                  var recip_marker = features.filter(d=>d._leaflet_id === recip_id);
+                  //console.log("HOVER TABLE ROW",e.target.parentElement.id, "recip marker",recip_marker,features)
+                  //recip_marker[i].openPopup();
+                  //console.log("PARENT IS",recip_marker[0]._parent)
+                  var marker = recip_marker[0]; 
+                  var lat = marker._latlng.lat; // get the marker's coords to go there and zoom beyond the cluster spiderfy
+                  var lng = marker._latlng.lng;
+                  
+
+                  mymap.setView([lat, lng], zoom);
+
+                  if (recip_marker.length > 0) {
+                    var popup = recip_marker[0].getPopup();
+    
+                    //var popup = L.popup({maxHeight: 150}).setContent(getMarkerAwards(e.target._leaflet_id));
+                    popup.setContent(getMarkerAwards(recip_id));
+                    //popup({maxHeight: 150})
+                    popup.update()
+                    recip_marker[0].openPopup();
+                  }
+                });
 
     // We built the rows using the nested array - now each row has its own array.
     var cells = rows.selectAll("td")
             // each row has data associated; we get it and enter it for the cells.
                 .data(function(d) {
-                    console.log(d);
+                    //console.log(d);
                     return [d.Company, d.count, d.total];
                 })
                 .attr("id",d=>d.Company)
                 .enter()
                 .append("td")
                 .html(function(d,i){ 
-                  if(i == 0) {return toTitleCase(d.replaceAll("&amp;","&"));   }
+                  if(i == 0) {return toTitleCase(d.replaceAll("&amp;","&")).replaceAll(" Llc"," LLC").replaceAll(" llc"," LLC").replaceAll(" INC"," Inc.");   }
                   else if (i == 1) {return d;}
                   else {return tableFundFormat(d)                  };
                 });
@@ -1848,10 +1960,25 @@ function showCdGraph(fundSummary,countSummary) {
 
 };
 
+// return markers from map
+function getMarkers(map) {
+  var markerList = [];
+  map._layers.forEach(function (layer) {
+    if ((layer instanceof L.Marker) && (map.getBounds().contains(layer.getLatLng()))) {
+      markerList.push(layer);
+    };
+  });
+
+  
+  return markerList;
+}
+
 
 
 
 function initParcoords(){
+
+  var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
   // PC INIT - set the state equal to the industryName keys minus the default hidden
   state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
   // INIT - set up the base of parcoords and its settings
@@ -1868,30 +1995,34 @@ function initParcoords(){
       bottom: 20,
     })*/
     .smoothness(0.13)
-    .alphaOnBrushed(0.2)
-    .alpha(0.5) // set bundling strength
-
+    .alphaOnBrushed(0.15)
+    .alpha(0.4) 
 
 
       // INIT - wire up the search textbox to apply the filter to the model
   $("#parcoords-search").keyup(function (e) {
     Slick.GlobalEditorLock.cancelCurrentEdit();
-
     // clear on Esc
     if (e.which == 27) {
       this.value = "";
     }
-
     searchString = this.value.toLowerCase();
-
     // get ahead of ourselves to avoid the full-highligted graph
     preClear(searchString);
     updateFilter();
-    
   });
+
   state.currentHiddenAxes = state.defaultHiddenAxes;
   state.color = state.defaultColor;
+// Parcoords Reload Button
+  $("#reload-parcoords-icon").on("click",function(){
+    $("#parcoords").remove();
+    state.hiddenAxes = state.defaultHiddenAxes;
+    initParcoords();
+    draw();
+  });
 
+  
 };
 
 
@@ -1966,22 +2097,6 @@ if (document.exitFullscreen) {
   document.msExitFullscreen();
 }
 };
-
-
-$(document).ready(function(){
-$(".btn btn-block").on('click', function(event) {
-  if (this.hash !== "") {
-  event.preventDefault();
-  var hash = this.hash;
-  $('html, body').animate({
-    scrollTop: $(hash).offset().top
-  }, 800, function(){
-    window.location.hash = hash;
-  });
-  } 
-  //openFullscreen();
-});
-});
 
 
 
