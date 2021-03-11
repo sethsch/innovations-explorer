@@ -148,26 +148,27 @@
 						</a>
 						<ul class="dropdown-menu year-input-container" aria-labelledby="years-select">
 
-							<form>
-								<div class="form-row align-items-center">
-								  <div class="col-auto my-1">
-									<label for="inlineFormInputY1" class="col-sm-2 col-form-label col-form-label-sm year-input-label">From</label>
-									<input type="text" class="form-control mb-2 mr-sm-2 year-input" id="inlineFormInputY1" placeholder="2008">	
-								  </div>								
-								  <div class="col-auto my-1">
-									<label for="inlineFormInputY2" class="col-sm-2 col-form-label col-form-label-sm year-input-label">To</label>
-									<input type="text" class="form-control mb-2 mr-sm-2 year-input" id="inlineFormInputY1" placeholder="2018">
-								  </div>
+							<form class="form-row align-items-center">
+								<div class="col-auto my-1">
+									<label for="year-select-1" class="col-sm-2 col-form-label year-input-label">From</label>
+									<select id="year-select-1" class="form-select form-select-sm mb-3 year-input" aria-label=".form-select-sm example">
+										
+									  </select>
 								</div>
-								<div class="form-row align-items-center">
-								  <div class="col-auto my-1">
-									<button type="submit" class="btn btn-secondary btn-sm btn-block year-update-btn">Update</button>
-								  </div>
+								<div class="col-auto my-1">
+									<label for="year-select-2" class="col-sm-2 col-form-label year-input-label">To</label>
+									<select id="year-select-2" class="form-select form-select-sm mb-3 year-input" aria-label=".form-select-sm example">
+										
+									  </select>
 								</div>
-							  </form>
+
+							</form>
+							<div class="form-row align-items-center">
+								<div class="col-auto my-1 update-divider">
+								  <button type="submit" class="btn btn-secondary btn-sm btn-block year-update-btn" id="year-update-btn">Update</button>
+								</div>
+							</div>
 							
-
-
 
 						</ul>
 						
@@ -180,58 +181,56 @@
 							<form class="form-inline form-check">
 								
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Department of Defense</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Defense">
+									<label class="form-check-label agency-input" for="Department-of-Defense">Department of Defense</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Department of Homeland Security</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Homeland-Security">
+									<label class="form-check-label agency-input" for="Department-of-Homeland-Security">Department of Homeland Security</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Environmental Protection Agency</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Environmental-Protection-Agency" checked>
+									<label class="form-check-label agency-input" for="Environmental-Protection-Agency">Environmental Protection Agency</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Department of Energy</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Energy">
+									<label class="form-check-label agency-input" for="Department-of-Energy">Department of Energy</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Department of Education</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Education">
+									<label class="form-check-label agency-input" for="Department-of-Education">Department of Education</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Department of Transportation</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Transportation">
+									<label class="form-check-label agency-input" for="Department-of-Transportation">Department of Transportation</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Department of Agriculture</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Agriculture">
+									<label class="form-check-label agency-input" for="Department-of-Agriculture">Department of Agriculture</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Department of Commerce</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Commerce" checked>
+									<label class="form-check-label agency-input" for="Department-of-Commerce">Department of Commerce</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">Department of Health and Human Services</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Health-and-Human-Services">
+									<label class="form-check-label agency-input" for="Department-of-Health-and-Human-Services">Department of Health and Human Services</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">National Science Foundation</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="National-Science-Foundation" checked>
+									<label class="form-check-label agency-input" for="National-Science-Foundation">National Science Foundation</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input" id="exampleCheck1">
-									<label class="form-check-label agency-input" for="exampleCheck1">National Aeronautics and Space Administration</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="National-Aeronautics-and-Space-Administration">
+									<label class="form-check-label agency-input" for="National-Aeronautics-and-Space-Administration">National Aeronautics and Space Administration</label>
 								</div>
-								<div class="form-row align-items-center agency-input-divider">
-									<div class="col-auto my-1">
-										<button type="submit" class="btn btn-secondary btn-sm btn-block agency-update-btn">Update</button>
-									</div>
-								</div>
-								
-								
-								
+								<div class="agency-input-divider"></div>
 							</form>
+							<div class="form-row align-items-center">
+								<div class="col-auto my-1 update-divider">
+								  <button type="submit" class="btn btn-secondary btn-sm btn-block agency-update-btn" id="agency-update-btn">Update</button>
+								</div>
+							</div>
 						</ul>
 						
 
@@ -582,7 +581,27 @@
 			$('#summary-panel').scrollTop(0);
 
 		});
-		// enable slider
+		// enable year form validation
+		// Example starter JavaScript for disabling form submissions if there are invalid fields
+		(function () {
+		'use strict'
+
+		// Fetch all the forms we want to apply custom Bootstrap validation styles to
+		var forms = document.querySelectorAll('.needs-validation')
+
+		// Loop over them and prevent submission
+		Array.prototype.slice.call(forms)
+			.forEach(function (form) {
+			form.addEventListener('submit', function (event) {
+				if (!form.checkValidity()) {
+				event.preventDefault()
+				event.stopPropagation()
+				}
+
+				form.classList.add('was-validated')
+			}, false)
+			})
+		})();
  
 
 

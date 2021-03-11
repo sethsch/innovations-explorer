@@ -34,12 +34,16 @@ let state = {
   data: [],
   procData: [],
   awardsData: [],
+  filtAwards: [],
   filteredCdAwards: [],
-  parData: [],
   recipsData: [],
+  filtRecipsData: [],
   industData: [],
   industStats: [],
   currentChloroLayer: null,
+  selectedYears: ["2008","2018"],
+  yearRange: [],
+  selectedAgencies: ["National Science Foundation","Environmental Protection Agency","Department of Commerce"],
   defaultHiddenAxes: ["id","GEOID","name","state","profile"],
   hiddenAxes: ["id","GEOID","name","state","profile"],
   currentAxes: [],
@@ -346,6 +350,57 @@ function init() {
     console.log("LAST GRAPHSEL",state.lastGraph,"CURRENT GRAPHSEL",state.selectedGraph)
     getCdStats(state.currentCd);
   })
+  // agencies checkboxes
+  d3.selectAll(".form-check-input")
+  .on("change",function(){
+    if (d3.select(this).property('checked') == true) {
+      state.selectedAgencies.push($(this).attr("id").replaceAll("-"," "));
+      //console.log("checked so selected agencies is",state.selectedAgencies,"selected is");
+    }
+    else {
+      state.selectedAgencies = state.selectedAgencies.filter(d=>d !== $(this).attr("id").replaceAll("-"," "));
+      //console.log("unchecked so selected agencies is",state.selectedAgencies,"clicked on",$(this).attr("id"));
+    }
+  });
+ 
+  let years = [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018];
+
+  // year select menus
+  // set up the default state
+  state.yearRange = changeYears(state.selectedYears);
+  // set up the selectors
+  var y1_select = d3.select("#year-select-1")
+                    .selectAll('option')
+                    .data(years).enter()
+                    .append('option')
+                    .text(function (d) { return d; })
+
+  d3.select('#year-select-1').node().value = "2008";
+
+  var y2_select =    d3.select("#year-select-2")
+                        .selectAll('option')
+                        .data(years).enter()
+                        .append('option')
+                        .text(function (d) {return d;});
+
+  d3.select('#year-select-2').node().value = "2018";
+
+  d3.select("#year-select-1").on("change",function(){
+      state.selectedYears[0] = d3.select('#year-select-1').node().value;
+      changeYears();
+    }  
+  )
+  d3.select("#year-select-2").on("change",function(){
+    state.selectedYears[1] = d3.select('#year-select-2').node().value;
+    changeYears();
+    }  
+  )
+  // years update button
+  $("#year-update-btn").on("click",filterAwardsRecips)
+  // agency update button
+  $("#agency-update-btn").on("click",filterAwardsRecips)
+
+
 
 
 
@@ -354,6 +409,8 @@ function init() {
 
 
 };
+
+
 
 
 function draw() {
@@ -625,6 +682,21 @@ function draw() {
 };
 //// END MAIN DRAW FUNCTION
 
+// change the selected date range
+function changeYears(){
+  const range = (start, stop, step = 1) =>
+  Array(Math.ceil((stop - start) / step)).fill(start).map((x, y) => x + y * step)
+
+  const toNumbers = arr => arr.map(Number);
+  var year_vals = toNumbers(state.selectedYears)
+  year_vals.sort(function(a, b){return a-b});
+
+  var yearsRange = range(year_vals[0],year_vals[1]+1,1);
+  state.yearRange = yearsRange;
+  console.log("YEARS RANGE",yearsRange,"state",state.selectedYears,state.yearRange)
+  //return yearsRange;
+};
+
 
 // change the vocab shown
 function changeVocab(e){
@@ -675,6 +747,7 @@ function changeVocab(e){
 
 function getCdStats(district){
 
+  // MARCH 11: update this to take awards from filtered Awards for agency/year
   state.filteredCdAwards = state.awardsData.filter(d=>d.AFFGEOID_CD116 === district)
 
   var data = state.filteredCdAwards;
@@ -799,8 +872,7 @@ function updateHides(d){
   parcoords.svg.selectAll(".dimension")
   .attr("axis-id",(d,i)=>state.currentAxes[i]);
 
-  //state.parData = state.procData
-  //delete state.parData[d]
+
   // if that item was the color palette, pass the selection onto the first axis still available
   // and update the palette string
   if (state.color === d) {
@@ -1054,17 +1126,21 @@ function initAwardsData(){
         procData.push( rData );
         });
   
-      console.log("Processed recips",procData);
+      //console.log("Processed recips",procData);
       state.recipsData = procData;
+      // MARCH 11: update this call to go to the filters, from teh filter functs, proceed with call to add recips
       addRecipsToMap(state.recipsData);
     });
   });
-
   
+};
 
 
+function filterAwardsRecips(){
+  var recips = state.recipsData;
+  var awards = state.awardsData;
+  console.log("update button works")
 
-  
 };
 
 // add recipients data to the map
@@ -1146,7 +1222,7 @@ function addRecipsToMap(d){
 // function to get the marker popup dynamically so not all of them have to render before necessary
 // here the id is the company name, duns, and addr1
 function getMarkerAwards(id){
-
+    // MARCH 11: update this call to ensure it filters from the filtered award data
     var awards = state.awardsData.filter(x=>x.Company+"_"+x.DUNS+"_"+x.Address1 === id)
     var slug = id.split("_")
     var company = toTitleCase(slug[0].replaceAll("&amp;","&")).replaceAll(" Llc"," LLC").replaceAll(" llc"," LLC").replaceAll(" INC"," Inc.")
@@ -1518,7 +1594,9 @@ function showCdVocab(data){
 
   var ag = Object.keys(data);
   var allvocab = []
+  // MARCH 11: update this to reflect state.selectedagencies
   for (i=0; i<ag.length; i++){
+    // MARCH 11: update this to reflect state.selectedyears
     var yr = Object.keys(data[ag[i]])
     for (j=0; j<yr.length; j++){
       if (state.selectedVocab === "All"){
