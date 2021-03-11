@@ -227,7 +227,7 @@ html, body {
 .info-bar {
     font-size: 0.72em;
     text-anchor: left;
-    padding-left: 1em;
+    padding-left: 2em;
     max-width: 100%;
     height: auto;
     
