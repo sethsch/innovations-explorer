@@ -126,6 +126,10 @@ let buffer = 2;
 // for the map, we specify a max zoom level
 const maxZoomLevel = 10;
 
+// colors for the bar graph
+const sbir_color = "#181818";
+const sttr_color = "#808080";
+
 let vocabs = ["EIGE","AGROVOC","STW","EU-SCIVOC","EUVOC","GEMET","MeSH"];
 // quick function for merging vocabs when necessary
 const mergeVocabs = data => {
@@ -722,6 +726,8 @@ function getCdStats(district){
       countSummary.sort((a, b) => a.total - b.total)
       countSummary.forEach(function(v){ delete v.total });
 
+      showCdGraph(fundSummary,countSummary)
+
   }
   else if (state.selectedGraph === "recips-graph"){
     
@@ -751,14 +757,20 @@ function getCdStats(district){
     }, {});
 
     fundSummary.sort((a, b) => b.total - a.total)
-    //fundSummary.forEach(function(v){ delete v.total });
+    showCdGraph(fundSummary,countSummary);
 
 
-  };
+  }
+  else if (state.selectedGraph === "grants-graph"){
+        /*Hubzone_Owned: "N"
+        Number_Employees: "17"
+        Phase: "Phase II"
+        Program: "SBIR"
+        Socially_and_Economically_Disadvantaged: "N"
+        Woman_Owned: "Y"*/
+  }
   
-  console.log("because we switched to recips I have",fundSummary)
-  showCdGraph(fundSummary,countSummary);
-  //console.log("VOCAB SEL EVENT",e);
+
 
 };
 
@@ -1758,7 +1770,7 @@ function showCdGraph(fundSummary,countSummary) {
         .data(series)
         .join("g")
           .attr("fill", function(d){
-            return d.key == "sttr" ? "blue" : "black";
+            return d.key == "sttr" ? sttr_color : sbir_color;
           })
         .selectAll("rect")
         .data(d => d)
@@ -1771,7 +1783,42 @@ function showCdGraph(fundSummary,countSummary) {
           .text(d => `${d.data.Agency} ${d.key}
               ${formatValue(d.data[d.key])}`);
 
+    // add the legend
+    var legend = svg.append("g")
+          .attr("class","agency-bar-legend")
 
+    legend
+        .append("rect")
+        .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom*3})`)
+        .attr("height",margin.left/3)
+        .attr("width",margin.left/3)
+        .attr("fill",sbir_color)
+        
+
+    legend
+        .append("text")
+        .attr("class","agency-bar-legend-label")
+        .attr("transform",`translate(${ (width-margin.right*3) + 24},${height-margin.bottom*2.55})`)
+        .text("SBIR Grants")
+        .attr("font-size","0.8em")
+        
+    legend
+        .append("rect")
+        .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom*2})`)
+        .attr("height",margin.left/3)
+        .attr("width",margin.left/3)
+        .attr("fill",sttr_color)
+        
+
+      legend
+        .append("text")
+        .attr("class","agency-bar-legend-label")
+        .attr("transform",`translate(${ (width-margin.right*3) + 24},${height-margin.bottom*1.55})`)
+        .text("STTR Grants")
+        .attr("font-size","0.8em")
+
+
+        
       // Vertical Bars
     /*
     var series = d3.stack()

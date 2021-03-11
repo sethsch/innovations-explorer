@@ -11,7 +11,8 @@
 		<!--Bootstrap css-->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 		<link rel='stylesheet' type='text/css' href="mockup_style.css">
-
+		
+ 
 
 		<!-- SlickGrid -->
 		<link rel="stylesheet" href="./node_modules/slickgrid/slick.grid.css" type="text/css"/>
@@ -79,9 +80,13 @@
 		<script src="./node_modules/simple-statistics/dist/simple-statistics.min.js"></script>
 		<script src='https://unpkg.com/simple-statistics@7.5.0/dist/simple-statistics.min.js'></script>
 		<script src="https://unpkg.com/d3-scale-cluster@1.3.1/dist/d3-scale-cluster.min.js"></script>
+
+
 		
-			
-	
+
+		
+		
+		
 	</head>
 	<body>
 
@@ -137,18 +142,99 @@
 					<li class="nav-item active">
 						<a class="nav-link" href="#">Link</a>
 					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#">Years</a>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" id="years-select" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Years
+						</a>
+						<ul class="dropdown-menu year-input-container" aria-labelledby="years-select">
+
+							<form>
+								<div class="form-row align-items-center">
+								  <div class="col-auto my-1">
+									<label for="inlineFormInputY1" class="col-sm-2 col-form-label col-form-label-sm year-input-label">From</label>
+									<input type="text" class="form-control mb-2 mr-sm-2 year-input" id="inlineFormInputY1" placeholder="2008">	
+								  </div>								
+								  <div class="col-auto my-1">
+									<label for="inlineFormInputY2" class="col-sm-2 col-form-label col-form-label-sm year-input-label">To</label>
+									<input type="text" class="form-control mb-2 mr-sm-2 year-input" id="inlineFormInputY1" placeholder="2018">
+								  </div>
+								</div>
+								<div class="form-row align-items-center">
+								  <div class="col-auto my-1">
+									<button type="submit" class="btn btn-secondary btn-sm btn-block year-update-btn">Update</button>
+								  </div>
+								</div>
+							  </form>
+							
+
+
+
+						</ul>
+						
 					</li>
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" href="#" id="collapsingNavbar3MenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-						Agencies
+						<a class="nav-link dropdown-toggle" id="agency-select" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Agencies-Dropdown
 						</a>
-						<ul class="dropdown-menu" aria-labelledby="collapsing3NavbarMenuLink">
-						<li><a class="dropdown-item" href="#">User guide</a></li>
-						<li><a class="dropdown-item" href="#">Background</a></li>
-						<li><a class="dropdown-item" href="#">Data sources</a></li>
+						<ul class="dropdown-menu agency-input-container" aria-labelledby="agency-select">
+							<form class="form-inline form-check">
+								
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Department of Defense</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Department of Homeland Security</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Environmental Protection Agency</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Department of Energy</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Department of Education</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Department of Transportation</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Department of Agriculture</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Department of Commerce</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">Department of Health and Human Services</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">National Science Foundation</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input" id="exampleCheck1">
+									<label class="form-check-label agency-input" for="exampleCheck1">National Aeronautics and Space Administration</label>
+								</div>
+								<div class="form-row align-items-center agency-input-divider">
+									<div class="col-auto my-1">
+										<button type="submit" class="btn btn-secondary btn-sm btn-block agency-update-btn">Update</button>
+									</div>
+								</div>
+								
+								
+								
+							</form>
 						</ul>
+						
+
 					</li>
 				</ul>
 				<ul class="nav navbar-nav ml-auto w-100 justify-content-end" style="padding-right: 4%;">
@@ -395,7 +481,7 @@
 							<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="vocabs-dropdown" role="button" aria-expanded="false">From vocabulary</a>
 							<ul class="dropdown-menu">
-								<li><h6 class="dropdown-header">External vocabularies</h6></li>
+								<li><h6 class="dropdown-header">Controlled vocabularies</h6></li>
 								<li><hr class="dropdown-divider"></li>
 								<li><a class="dropdown-item vocabsel" id="GEMET">GEMET</a></li>
 								<li><a class="dropdown-item vocabsel" id="EIGE">EIGE</a></li>
@@ -416,62 +502,7 @@
 						</ul>
 						<!-- D3 would add pills here, right now many are pasted to show scrolling functionality
 						to add the title text with d3, see: https://chartio.com/resources/tutorials/how-to-show-data-on-mouseover-in-d3js/-->
-						<div class="container-fluid" id="vocab-pills">
-							<!-- 
-							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
-								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
-								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
-								data-bs-original-title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
-								Profile <span class="badge bg-secondary">9</span>
-							</button>
-							
-							<button type="button" class="btn rounded-pill btn-primary text-wrap btn-sm" id="term-badge" 
-								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
-								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
-								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
-								Profile long long long long and so much longer longer and more still even longer <span class="badge bg-secondary">9</span>
-							</button>
-							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
-								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
-								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
-								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
-								Profile <span class="badge bg-secondary">9</span>
-							</button>
-
-							<button type="button" class="btn rounded-pill btn-primary text-wrap btn-sm" id="term-badge" 
-								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
-								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
-								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
-								Profile long long long long <span class="badge bg-secondary">9</span>
-							</button>
-
-							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
-								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
-								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
-								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
-								Profile <span class="badge bg-secondary">9</span>
-							</button>
-							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
-								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
-								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
-								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
-								Profile <span class="badge bg-secondary">9</span>
-							</button>
-							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
-								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
-								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
-								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
-								Profile <span class="badge bg-secondary">9</span>
-							</button>
-							<button type="button" class="btn rounded-pill btn-primary btn-sm" id="term-badge" 
-								data-bs-toggle="tooltip" data-bs-placement="auto" data-bs-container="body" 
-								data-bs-trigger="hover" data-bs-delay="300" data-bs-html="true" 
-								title="In <u><b>20</u></b> <em>district</em> grants,<br/><u><b>25</u></b> <em>nationally</em>">
-								Profile <span class="badge bg-secondary">9</span>
-							</button>
-							-->
-							
-						</div>
+						<div class="container-fluid" id="vocab-pills"></div>
 		
 					</div>
 					<!-- END VOCAB PILLS-->
@@ -493,6 +524,7 @@
 			<div class="row flex-shrink-0" id="footer-row">
 				<div class="col-12 border">Footer </div>
 			</div>
+		
 			
 	</div>
 	
@@ -550,7 +582,10 @@
 			$('#summary-panel').scrollTop(0);
 
 		});
-	
+		// enable slider
+ 
+
+
 		
 
 		
