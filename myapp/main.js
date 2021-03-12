@@ -66,6 +66,8 @@ let state = {
   selectedGraph: "agency-graph",
   lastGraph: null,
   cdReclick: 0,
+  scope: "all_distr",
+  fundedGEOIDS: []
 };
 /**
  * 
@@ -128,6 +130,19 @@ var chloroScale = d3.scaleQuantize()
   .range(d3.schemeSpectral[6].reverse());
 
 
+function fundedChloro(feature,normVar){
+  if (state.scope !== "all_distr"){
+    if (state.fundedGEOIDS.includes(feature.properties.AFFGEOID)){
+      return chloroScale(feature.properties[normVar]);
+    }
+    else {return "lightslategray";}
+  }
+  else {return chloroScale(feature.properties[normVar])}
+  
+  
+}
+
+
 // For the text search, set a buffer before the filtering starts to operate -- num of chars
 let buffer = 2;
 
@@ -155,6 +170,7 @@ const mergeVocabs = data => {
   return result; //(7)
 };
 
+// MARCH 12 -- attribute names should go in state for multiple datasets
 // For parcoords, we need lists of variable names; as in the data abbrevs and spelled out for the UI
 var attributes = ["GEOID","distr_name","us_state","ind_profile","pct_agro",	"pct_construct",	"pct_manufact",
       "pct_wholesale",	"pct_retail",	"pct_transport_util",
@@ -245,6 +261,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
            procData.push( distData );
       })
       //console.log("FILT",procData);
+      state.acsData = procData;
       state.procData = procData;
       //console.log("state proc",state)
 
@@ -339,10 +356,11 @@ function init() {
   pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
 
 
-  // INIT Dropdown functionality
+  // INIT Dropdown functionality for vocab selector
   d3.selectAll('.vocabsel')
   .on("click",d=>changeVocab(d))
 
+  // INIT Dropdown functionality on graph selector
   d3.selectAll('.graphsel')
   .on("click",function(e){
     state.lastGraph = state.selectedGraph;
@@ -351,10 +369,11 @@ function init() {
     }
     state.selectedGraph = e.target.id;
     $("#"+state.selectedGraph).attr("class","nav-link active graphsel");
-    console.log("LAST GRAPHSEL",state.lastGraph,"CURRENT GRAPHSEL",state.selectedGraph)
+    //console.log("LAST GRAPHSEL",state.lastGraph,"CURRENT GRAPHSEL",state.selectedGraph)
     getCdStats(state.currentCd);
   })
-  // agencies checkboxes
+
+  // INIT Dropdown of checkboxes for agencies input
   d3.selectAll(".form-check-input")
   .on("change",function(){
     if (d3.select(this).property('checked') == true) {
@@ -366,12 +385,9 @@ function init() {
       //console.log("unchecked so selected agencies is",state.selectedAgencies,"clicked on",$(this).attr("id"));
     }
   });
- 
-  let years = [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018];
 
-  // year select menus
-  // set up the default state
-  //state.yearRange = changeYears(state.selectedYears);
+  // INIT Dropdown of input for years
+  let years = [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018];
   // set up the selectors
   var y1_select = d3.select("#year-select-1")
                     .selectAll('option')
@@ -405,11 +421,21 @@ function init() {
   $("#agency-update-btn").on("click",filterAwardsRecips)
 
 
-
-
+  // setup the radio buttons
+  d3.selectAll("input[name='fund-radio']").on("change", function(){
+    //console.log(this.value);
+    state.scope = this.value;
+      // remove any old map layer 
+      if (state.currentChloroLayer !== null) {
+        mymap.removeLayer(state.currentChloroLayer);
+        //console.log("I REMOVED THE MAP LAYER",state.currentChloroLayer)
+      };
+    draw();
+  });
 
   // Now call the draw function(s) to get going...
   draw();
+
 
 
 };
@@ -418,7 +444,20 @@ function init() {
 
 
 function draw() {
- 
+
+
+  if (state.scope === "all_distr") {
+    state.procData = state.acsData
+    //console.log("all geos",state)
+  }
+  else if (state.scope === "funded_distr") {
+    //var fundedGEOIDS = state.filtAwards
+    var acsFilt = state.acsData.filter(d=>state.fundedGEOIDS.includes(d.AFFGEOID));
+    
+    //console.log("funded geos only", acsFilt)
+  }
+
+  // MARCH 12 -- this should get the proc data for the selected dataset
   // Initial draw of parcoords
   parcoords
     .data(state.procData)
@@ -596,7 +635,7 @@ function draw() {
     var elementPos = d.map(function(x) {return x.id; }).indexOf(item_id);
 
     var unselItems = parcoords.data().filter(d=>d.id !== item_id)
-    console.log("el pos",elementPos,"unsel",unselItems)
+    //console.log("el pos",elementPos,"unsel",unselItems)
     // Highlight that element in the parallel coordinates graph
     parcoords.unmark(unselItems);
     parcoords.unhighlight(unselItems);
@@ -697,7 +736,7 @@ function changeYears(){
 
   var yearsRange = range(year_vals[0],year_vals[1]+1,1);
   state.yearRange = yearsRange;
-  console.log("YEARS RANGE",yearsRange,"state",state.selectedYears,state.yearRange)
+  //console.log("YEARS RANGE",yearsRange,"state",state.selectedYears,state.yearRange)
   //return yearsRange;
 };
 
@@ -758,7 +797,7 @@ function getCdStats(district){
   state.filteredCdAwards = state.filtAwards.filter(d=>d.AFFGEOID_CD116 === district)
 
   var data = state.filteredCdAwards;
-  console.log("GOT THE STATS for",district,data)
+  //console.log("GOT THE STATS for",district,data)
 
   var fundSummary = [];
   var countSummary = [];
@@ -858,14 +897,16 @@ function getCdStats(district){
   //console.log('agencies in data',agencies)
 
 
-  
-
 function updateHides(d){
   state.hiddenAxes.push(d);
   state.hiddenAxes = [... new Set(state.hiddenAxes)]
 
   var justHidden = state.currentAxes.indexOf(d);
   //console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes);
+
+
+  // MARCH 12 - if updating parcoords plot, current Axes come from diff source than industryNames
+
 
   state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes.includes( el ) );
   //console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
@@ -933,7 +974,13 @@ function change_color(dimension) {
 
 
   state.color = dimension;
+
+  // MARCH 12 - palette info String would change for switched parcoords data,
+  // Likely we'd also want an alternate, unidimensional color scale for funding data
   state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.color]}</br>${get_infobar_stats(state.color)}`
+
+
+
 
   //console.log("color Dim",state.color)
   parcoords.svg.selectAll(".dimension")
@@ -941,6 +988,7 @@ function change_color(dimension) {
     .filter(function(d,i) { return state.currentAxes[i] == dimension; })
     .style("font-weight", "bold")
 
+  // MARCH 12 - want to change this with alternate color scale if it's not industries data
   parcoords.color(zcolor(parcoords.data(),dimension)).render();
 
   
@@ -1036,6 +1084,8 @@ function preClear(searchString) {
     //parcoords.unhighlight(parcoords.data());
     parcoords.unmark()
     parcoords.unhighlight(parcoords.data())
+    // MARCH 12 -- add a reset of the map zoom
+    mymap.setView([39.425,-94.796], 3.5);
     
   }
 };
@@ -1047,11 +1097,23 @@ function showQueryPaths () {
   state.selectedRows = dataView.getItems().filter(d=> searchString.length > buffer && d[sortcol].toLowerCase().includes(searchString));
   state.unselRows = dataView.getItems().filter(d=>!d[sortcol].toLowerCase().includes(searchString));
 
+  
    
 
   parcoords.unhighlight(state.unselRows);
   parcoords.highlight(state.selectedRows);
 
+  // MARCH 12 -- zoom to the highlighted features bounds
+  //var layers_ix = Object.keys(state.currentChloroLayer._layers)
+  var layers = getDistricts(mymap)
+  var selGEOID = state.selectedRows.map(d=>d.GEOID)
+
+  var filtLayers = layers.filter(d=>Object.keys(d).includes("feature"))
+  filtLayers = filtLayers.filter(d=>selGEOID.includes(d.feature.properties.AFFGEOID))
+  //var filt_ix = d3.map(filtLayers,d=>layers_ix.indexOf(d))
+  filtLayers = new L.featureGroup(filtLayers);
+  console.log("layers on query mpaths",layers,selGEOID,filtLayers)
+  mymap.fitBounds(filtLayers.getBounds());
   //console.log( "Sel Size",state.selectedRows);
  
 };
@@ -1095,7 +1157,58 @@ function type(d) {
   d.value = +d.value;
   return d;
 };
+// setup the parcoords plot
+function initParcoords(){
 
+  var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
+  // PC INIT - set the state equal to the industryName keys minus the default hidden
+
+  // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
+  state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
+  // INIT - set up the base of parcoords and its settings
+  parcoords = ParCoords()("#parcoords")
+    .rate(20)
+    .composite("darker-over")
+    //.brushedColor("#000")
+    .mode("queue") // progressive rendering
+    //.width(d3.max([800, 220]))
+    /*.margin({
+      top: 10,
+      left: 10,
+      right: 50,
+      bottom: 20,
+    })*/
+    .smoothness(0.13)
+    .alphaOnBrushed(0.15)
+    .alpha(0.4) 
+
+
+      // INIT - wire up the search textbox to apply the filter to the model
+  $("#parcoords-search").keyup(function (e) {
+    Slick.GlobalEditorLock.cancelCurrentEdit();
+    // clear on Esc
+    if (e.which == 27) {
+      this.value = "";
+    }
+    searchString = this.value.toLowerCase();
+    // get ahead of ourselves to avoid the full-highligted graph
+    preClear(searchString);
+    updateFilter();
+  });
+
+  // MARCH 12 -- these would change depending on data source for pc data
+  state.currentHiddenAxes = state.defaultHiddenAxes;
+  state.color = state.defaultColor;
+// Parcoords Reload Button
+  $("#reload-parcoords-icon").on("click",function(){
+    $("#parcoords").remove();
+    state.hiddenAxes = state.defaultHiddenAxes;
+    initParcoords();
+    draw();
+  });
+
+  
+};
 
 // read the recipients and awards data and add recipients to map
 function initAwardsData(){
@@ -1151,6 +1264,44 @@ function filterAwardsRecips(){
   state.filtAwards = state.awardsData.filter( d=> state.yearRange.includes(parseInt(d.Award_Year))) ;
   state.filtAwards = state.filtAwards.filter( d=> state.selectedAgencies.includes(d.Agency));
 
+
+  state.fundedGEOIDS = [...new Set(d3.map(state.filtAwards,d=>d.AFFGEOID_CD116))];
+
+
+  // getting aggregates by the year and agency for each to display in teh parcoords is intensive..
+  // this needs to happen in python to prep a json file, if necessary
+  /*
+  var fundingStats = [];
+  let geo_list = d3.map(state.procData,d=>d.GEOID)
+  // make agency level summary stats by geography
+  for (i = 0; i < 437; i++) {
+    let geo = geo_list[i];
+    //console.log('GEO?',geo)
+    var res = {"AFFGEOID":geo};
+    for (a = 0; a< Object.keys(agencyNames).length; a++){
+      // we'll show for all agencies in the parcoords
+      let awards = state.awardsData.filter(d=> state.yearRange.includes(parseInt(d.Award_Year)));
+      awards = awards.filter(d=>d.AFFGEOID_CD116 === geo);
+      awards = awards.filter(d=>d.Agency == Object.keys(agencyNames)[a]);
+      if (awards.length === 0 ){
+        res[Object.values(agencyNames)[a]] = 0
+      }
+      else {
+          function amount(item){
+            return parseInt(item.Award_Amount);
+          }
+          function sum(prev, next){
+            return prev + next;
+          }
+          res[Object.values(agencyNames)[a]] = awards.map(amount).reduce(sum);
+      }
+    }
+    fundingStats.push(res)
+
+  }
+  console.log("FUNDING STATS SUM",fundingStats)*/
+
+
   // filter recipients based on the awards in the current selection
 
   var slugs = [];
@@ -1161,13 +1312,20 @@ function filterAwardsRecips(){
   state.filtRecipsData = state.recipsData.filter( award => slugs.includes(String(award['Company'])+String(award["DUNS"])+String(award["Address1"])) )
 
   // filtered the data
-  console.log("filtered the data","awards",state.filtAwards,"recips",state.filtRecipsData)
+  //console.log("filtered the data","awards",state.filtAwards,"recips",state.filtRecipsData)
   // now add the recips to the map, update Cd Vocab and Stats as needed
   addRecipsToMap(state.filtRecipsData);
   getCdStats(state.currentCd);
   getCdVocab(state.currentCd);
 
 };
+
+
+// MARCH 12 - compute aggregate stats depending on the filter, for parcoords switch
+function getFundingParcoordsData(){
+
+};
+
 
 // add recipients data to the map
 function addRecipsToMap(d){
@@ -1287,6 +1445,7 @@ function initIndustData(){
 
 
   var geojson = d3.json("data/cd116_5yearACS2018_LISAclust.geojson").then(function(data){
+    
     var pctCols = ["pct_agro",	"pct_construct",	"pct_manufact",
     "pct_wholesale",	"pct_retail",	"pct_transport_util",
     "pct_information",	"pct_finance_realest",	"pct_prof_sci_mgmt_adm",
@@ -1317,15 +1476,9 @@ function initIndustData(){
 
     };
     
-    //console.log("dim stats",dimStats,parseFloat(data.features[i].properties[pctCols[j]]))
-    //data.features[i].properties["norm_"+pctCols[j]] = (parseFloat(data.features[i].properties[pctCols[j]]) - dimStats[0]) / dimStats[1];
-
     state.industData = distr_data;
 
-    industStats_global = state.industStats;
     change_map_color();
-    //console.log("INDUSTSTATS",state.industStats);
-    //console.log("DIM STATS",dimensionStats(d3.map(state.industData.features,d=>d.properties['pct_agro'])));
 
     });
 
@@ -1344,7 +1497,8 @@ function style(feature) {
   //console.log("SELECTED VAR",selectedVar,"NORM VAR",normVar);
 // do what you want to do with `data` here...
   return {
-      fillColor: chloroScale(feature.properties[normVar]),
+      fillColor: fundedChloro(feature,normVar),
+      //chloroScale(feature.properties[normVar]),
       color: getBorderStyle(feature,clustVar)[0],
       weight: getBorderStyle(feature,clustVar)[1],
       opacity: getBorderStyle(feature,clustVar)[2],
@@ -1375,6 +1529,8 @@ function RGBToHex(rgb) {
 }; */
 
 // function to set map polygons border styling
+
+// MARCH 12 - update to switch for nonfunded districts
 function getBorderStyle(feature,clustVar){
   var val = parseInt(feature.properties[clustVar])
   var district = feature.properties.AFFGEOID;
@@ -1387,7 +1543,7 @@ function getBorderStyle(feature,clustVar){
 
   return border;
 };
-
+// MARCH 12 - update to switch for nonfunded districts
 // function to set map polygons fill opacity, depending on selection
 function getFillOpacity(feature){
   var district = feature.properties.AFFGEOID;
@@ -1396,8 +1552,7 @@ function getFillOpacity(feature){
 
 };
 
-
-
+// MARCH 12 -- update to flip for parcoords data
 function get_infobar_stats(dimension){
   var industries =  [ ...shortAttributeNames.values() ];
   var selectedVar = industries.indexOf(dimension);
@@ -1410,6 +1565,7 @@ function get_infobar_stats(dimension){
   var outString = `<strong>Sector Employment Avg.:</strong> ${Math.round(avg*100)}% </br><strong>Std. Deviation:</strong> ${Math.round(dev*100)}%`
   return outString;
 };
+
 
 // chloropleth district highlight
 function highlightFeature(e) {
@@ -1507,7 +1663,7 @@ function zoomToFeature(e) {
   // reset the last selected district 
   var map_layers = [state.currentChloroLayer._layers][0]
   var last_layer = Object.filter(map_layers, d => d.feature.properties.AFFGEOID === state.lastCd);
-  console.log("LAST LAYER",last_layer)
+  //console.log("LAST LAYER",last_layer)
   last_layer = last_layer[0];
   state.currentChloroLayer.resetStyle(last_layer);
 
@@ -1593,10 +1749,10 @@ function getCdVocab(district){
   //state.lastCd = state.currentCd
   //state.currentCd = district
   // if the CD is different from teh one already loaded, go forward, if not nothing
-  if (state.currentCd !== state.lastCd && state.currentCdVocab != []){
+  if (state.currentCd !== null && state.currentCd !== state.lastCd && state.currentCdVocab != []){
     fetch("data/cd116_vocab_aggs/"+district+".json").then(response => {
       if (!response.ok) {
-        console.log(response);
+        //console.log(response);
         state.currentCdVocab = [];
         // remove any existing pills
         d3.selectAll('.pill-container').remove();
@@ -1649,14 +1805,14 @@ function showCdVocab(data){
   });
 
   var ag = Object.keys(data).filter( d => state.selectedAgencies.includes(d))
-  console.log("filt ag",ag)
+  //console.log("filt ag",ag)
   var allvocab = []
   // MARCH 11: update this to reflect state.selectedagencies
   for (i=0; i<ag.length; i++){
     // MARCH 11: update this to reflect state.selectedyears
     var yr = Object.keys(data[ag[i]]).filter( d => state.yearRange.includes(parseInt(d)) )
 
-    console.log('FILT YEAR',yr)
+    //console.log('FILT YEAR',yr)
     for (j=0; j<yr.length; j++){
       if (state.selectedVocab === "All"){
         for (k=0; k<vocabs.length; k++){
@@ -1675,7 +1831,7 @@ function showCdVocab(data){
   
   allvocab = mergeVocabs(allvocab)
 
-  console.log("ALL VOCAB AG YEAR FILT",allvocab)
+  //console.log("ALL VOCAB AG YEAR FILT",allvocab)
   var sortedVocab = [];
   for (var term in allvocab) {
     sortedVocab.push([term, allvocab[term]]);
@@ -1802,7 +1958,7 @@ function getFeaturesInView(map) {
 // this function populates the funder recipient bar graph/stats tabs
 function showCdGraph(fundSummary,countSummary) {
 
-  console.log("DATA GETS TO CD GRAPH AS",fundSummary,countSummary)
+  //console.log("DATA GETS TO CD GRAPH AS",fundSummary,countSummary)
 
   
 
@@ -1836,7 +1992,7 @@ function showCdGraph(fundSummary,countSummary) {
     (fundSummary)
       .map(d => (d.forEach(v => v.key = d.key), d))
 
-    console.log("SERIES",series)
+    //console.log("SERIES",series)
 
     // x scale is for total funding amts
     var x = d3.scaleLinear()
@@ -2089,7 +2245,7 @@ function showCdGraph(fundSummary,countSummary) {
                 .on("click",function(e){
                   var id = e.target.parentElement.id
                   var recip_id = id.split("|")[0]
-                  console.log("e target parent element",e.target.parentElement)
+                  //console.log("e target parent element",e.target.parentElement)
                   var zoom = mymap.getZoom() > maxZoomLevel ? mymap.getZoom() : maxZoomLevel;
                   var recip_lat = id.split("|")[1]
                   var recip_lng = id.split("|")[2]
@@ -2161,70 +2317,19 @@ function getMarkers(map) {
 
   
   return markerList;
-}
-
-
-
-
-function initParcoords(){
-
-  var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
-  // PC INIT - set the state equal to the industryName keys minus the default hidden
-  state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
-  // INIT - set up the base of parcoords and its settings
-  parcoords = ParCoords()("#parcoords")
-    .rate(20)
-    .composite("darker-over")
-    //.brushedColor("#000")
-    .mode("queue") // progressive rendering
-    //.width(d3.max([800, 220]))
-    /*.margin({
-      top: 10,
-      left: 10,
-      right: 50,
-      bottom: 20,
-    })*/
-    .smoothness(0.13)
-    .alphaOnBrushed(0.15)
-    .alpha(0.4) 
-
-
-      // INIT - wire up the search textbox to apply the filter to the model
-  $("#parcoords-search").keyup(function (e) {
-    Slick.GlobalEditorLock.cancelCurrentEdit();
-    // clear on Esc
-    if (e.which == 27) {
-      this.value = "";
-    }
-    searchString = this.value.toLowerCase();
-    // get ahead of ourselves to avoid the full-highligted graph
-    preClear(searchString);
-    updateFilter();
+};
+// return the map districts
+function getDistricts(map) {
+  var layerList = [];
+  map.eachLayer(function(layer){
+    if (!(layer instanceof L.Marker)) {
+      layerList.push(layer)
+    };
   });
 
-  state.currentHiddenAxes = state.defaultHiddenAxes;
-  state.color = state.defaultColor;
-// Parcoords Reload Button
-  $("#reload-parcoords-icon").on("click",function(){
-    $("#parcoords").remove();
-    state.hiddenAxes = state.defaultHiddenAxes;
-    initParcoords();
-    draw();
-  });
-
-  
+  return layerList;
 };
 
-
-
-
-
-
-
-
-
-// monochrome set view: [39.425,-94.796], 3.68
-// albers USA set view: [-1.746,1.281],4.05
 
 
 
@@ -2261,7 +2366,7 @@ window.onresize = function() {
   draw();
   
 
-  };
+};
 
 /* Get the documentElement (<html>) to display the page in fullscreen */
 var elem = document.documentElement;
