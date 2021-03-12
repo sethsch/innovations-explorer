@@ -2,6 +2,8 @@
 
 //var svg = d3.select("#example").style("width","800px").style("height","320px");
 
+//const { filter } = require("topojson-simplify");
+
 //const { stat } = require("fs");
 
 //const { zoom } = require("d3");
@@ -41,9 +43,11 @@ let state = {
   industData: [],
   industStats: [],
   currentChloroLayer: null,
+  lastClusterGroup: null,
+  currentClusterGroup: null,
   selectedYears: ["2008","2018"],
-  yearRange: [],
-  selectedAgencies: ["National Science Foundation","Environmental Protection Agency","Department of Commerce"],
+  yearRange: [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018],
+  selectedAgencies: ["National Science Foundation","Environmental Protection Agency","Department of Commerce","Department of Transportation","Department of Energy"],
   defaultHiddenAxes: ["id","GEOID","name","state","profile"],
   hiddenAxes: ["id","GEOID","name","state","profile"],
   currentAxes: [],
@@ -367,7 +371,7 @@ function init() {
 
   // year select menus
   // set up the default state
-  state.yearRange = changeYears(state.selectedYears);
+  //state.yearRange = changeYears(state.selectedYears);
   // set up the selectors
   var y1_select = d3.select("#year-select-1")
                     .selectAll('option')
@@ -712,6 +716,7 @@ function changeVocab(e){
   }
   else if (e.target.id !== "All") {
         // unselect the All tab
+   
     $('#All').attr("class","nav-link vocabsel");
     // add active for the dropdown and change the text
     $('#vocabs-dropdown')
@@ -719,7 +724,9 @@ function changeVocab(e){
       .text(e.target.id.replace("textrank-tfidf_keywords","Extracted")+" Vocabulary")
 
     // show it as the selected item in the dropdown
-    $('#'+state.lastVocab).attr("class","dropdown-item") // reset all selections
+    if (state.lastVocab != "All"){
+      $('#'+state.lastVocab).attr("class","dropdown-item") // reset all selections
+    };
     $('#'+e.target.id).attr("class","dropdown-item active") // update active sel
 
   }
@@ -748,7 +755,7 @@ function changeVocab(e){
 function getCdStats(district){
 
   // MARCH 11: update this to take awards from filtered Awards for agency/year
-  state.filteredCdAwards = state.awardsData.filter(d=>d.AFFGEOID_CD116 === district)
+  state.filteredCdAwards = state.filtAwards.filter(d=>d.AFFGEOID_CD116 === district)
 
   var data = state.filteredCdAwards;
   console.log("GOT THE STATS for",district,data)
@@ -1129,7 +1136,7 @@ function initAwardsData(){
       //console.log("Processed recips",procData);
       state.recipsData = procData;
       // MARCH 11: update this call to go to the filters, from teh filter functs, proceed with call to add recips
-      addRecipsToMap(state.recipsData);
+      filterAwardsRecips();
     });
   });
   
@@ -1137,15 +1144,40 @@ function initAwardsData(){
 
 
 function filterAwardsRecips(){
-  var recips = state.recipsData;
-  var awards = state.awardsData;
-  console.log("update button works")
+ 
+  //console.log("update button works");
+  // filter awards by years and agencies
+  console.log("stateyear range",state.yearRange,"sel years",state.selectedYears)
+  state.filtAwards = state.awardsData.filter( d=> state.yearRange.includes(parseInt(d.Award_Year))) ;
+  state.filtAwards = state.filtAwards.filter( d=> state.selectedAgencies.includes(d.Agency));
+
+  // filter recipients based on the awards in the current selection
+
+  var slugs = [];
+  state.filtAwards.forEach(function(award) {
+    var s = String(award['Company'])+String(award["DUNS"])+String(award["Address1"])
+    slugs.push(s)
+  })
+  state.filtRecipsData = state.recipsData.filter( award => slugs.includes(String(award['Company'])+String(award["DUNS"])+String(award["Address1"])) )
+
+  // filtered the data
+  console.log("filtered the data","awards",state.filtAwards,"recips",state.filtRecipsData)
+  // now add the recips to the map, update Cd Vocab and Stats as needed
+  addRecipsToMap(state.filtRecipsData);
+  getCdStats(state.currentCd);
+  getCdVocab(state.currentCd);
 
 };
 
 // add recipients data to the map
 function addRecipsToMap(d){
  
+  // if there is a previous cluster group already down, log it as the last, remove it
+  state.lastClusterGroup = state.currentClusterGroup == null ? null : state.currentClusterGroup;
+  if (state.lastClusterGroup != null) {
+    state.lastClusterGroup.clearLayers();
+  }
+
   var myIcon = L.icon({
     iconUrl: 'award-fill.svg',
     iconRetinaUrl: 'award-fill.svg',
@@ -1216,14 +1248,15 @@ function addRecipsToMap(d){
   
     markerClusters.addLayer( m );
   };
- 
+  state.currentClusterGroup = markerClusters;
   mymap.addLayer( markerClusters )
 };
+
 // function to get the marker popup dynamically so not all of them have to render before necessary
 // here the id is the company name, duns, and addr1
 function getMarkerAwards(id){
     // MARCH 11: update this call to ensure it filters from the filtered award data
-    var awards = state.awardsData.filter(x=>x.Company+"_"+x.DUNS+"_"+x.Address1 === id)
+    var awards = state.filtAwards.filter(x=>x.Company+"_"+x.DUNS+"_"+x.Address1 === id)
     var slug = id.split("_")
     var company = toTitleCase(slug[0].replaceAll("&amp;","&")).replaceAll(" Llc"," LLC").replaceAll(" llc"," LLC").replaceAll(" INC"," Inc.")
     //console.log("AWARDS FOR",d[i].Company,awards)
@@ -1237,10 +1270,11 @@ function getMarkerAwards(id){
         agency = awards[j]['Agency'],
         amount = awards[j]['Award_Amount'].toLocaleString(),
         program = awards[j]['Program'],
+        phase = awards[j]['Phase'],
         year = awards[j]["Award_Year"]
 
 
-      pop_content = pop_content + `<div class="row awards-pop-info"><div class="col awards-pop-col"><p class="awards-pop-title">${title}</p><p class="awards-pop-agency">${agency} - (${program}) - ${year}</p></div><div class="col-auto awards-pop-col"><p class="awards-pop-amount">$${amount}</p></div></div>`
+      pop_content = pop_content + `<div class="row awards-pop-info"><div class="col awards-pop-col"><p class="awards-pop-title">${title}</p><p class="awards-pop-agency">${agency} </br>(${program}, ${phase}) - ${year}</p></div><div class="col-auto awards-pop-col"><p class="awards-pop-amount">$${amount}</p></div></div>`
       
     }
     return pop_header+'<div class="awards-pop-container">'+pop_content+'</div>' ;
@@ -1397,9 +1431,9 @@ function highlightFeature(e) {
 
   
 
-  if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+  /*if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       layer.bringToFront();
-  };
+  };*/
   //console.log("Map highlight e",e)
   var selected_dist_id = parcoords.data().filter(d=>d.GEOID === e.target.feature.properties.AFFGEOID);
 
@@ -1559,7 +1593,27 @@ function getCdVocab(district){
   //state.lastCd = state.currentCd
   //state.currentCd = district
   // if the CD is different from teh one already loaded, go forward, if not nothing
-  if (state.currentCd !== state.lastCd){
+  if (state.currentCd !== state.lastCd && state.currentCdVocab != []){
+    fetch("data/cd116_vocab_aggs/"+district+".json").then(response => {
+      if (!response.ok) {
+        console.log(response);
+        state.currentCdVocab = [];
+        // remove any existing pills
+        d3.selectAll('.pill-container').remove();
+        //showCdVocab(state.currentCdVocab);
+        throw new Error("unable to fetch");
+        
+
+      }
+      return response.json();
+    }).then(data => {
+      console.log("LOADED FILE","data/cd116_vocab_aggs/"+district+".json")
+      state.currentCdVocab = data;
+    })
+    showCdVocab(state.currentCdVocab)
+
+
+    /*
       // get the full vocab file and put it in state
       d3.json("data/cd116_vocab_aggs/"+district+".json").then(function(data){
         state.currentCdVocab = data;
@@ -1569,6 +1623,7 @@ function getCdVocab(district){
       // pass the vocab to the show function, where it's filtered properly by the state params
       showCdVocab(state.currentCdVocab)
       //console.log("CD VOCAB",state.currentCdVocab)
+      */
   }
   else {}
 
@@ -1577,6 +1632,7 @@ function getCdVocab(district){
 
 function showCdVocab(data){
 
+  //console.log("SHOW CD VOCAB",data)
   // remove any existing pills
   d3.selectAll('.pill-container').remove();
   // close any open popovers
@@ -1592,12 +1648,15 @@ function showCdVocab(data){
     });
   });
 
-  var ag = Object.keys(data);
+  var ag = Object.keys(data).filter( d => state.selectedAgencies.includes(d))
+  console.log("filt ag",ag)
   var allvocab = []
   // MARCH 11: update this to reflect state.selectedagencies
   for (i=0; i<ag.length; i++){
     // MARCH 11: update this to reflect state.selectedyears
-    var yr = Object.keys(data[ag[i]])
+    var yr = Object.keys(data[ag[i]]).filter( d => state.yearRange.includes(parseInt(d)) )
+
+    console.log('FILT YEAR',yr)
     for (j=0; j<yr.length; j++){
       if (state.selectedVocab === "All"){
         for (k=0; k<vocabs.length; k++){
@@ -1615,6 +1674,8 @@ function showCdVocab(data){
   allvocab = allvocab.filter(x => x !== undefined && String(Object.keys(x)[0]) !== "" && String(Object.keys(x)[0]).length > 2);
   
   allvocab = mergeVocabs(allvocab)
+
+  console.log("ALL VOCAB AG YEAR FILT",allvocab)
   var sortedVocab = [];
   for (var term in allvocab) {
     sortedVocab.push([term, allvocab[term]]);
@@ -1708,9 +1769,9 @@ function showCdVocab(data){
         )
     );
 
-    var popover = new bootstrap.Popover(document.querySelector(".pill-container"),{
+    /*var popover = new bootstrap.Popover(document.querySelector(".pill-container"),{
       container: '#vocab-pills',
-    });
+    });*/
    
     
    
@@ -1861,40 +1922,44 @@ function showCdGraph(fundSummary,countSummary) {
           .text(d => `${d.data.Agency} ${d.key}
               ${formatValue(d.data[d.key])}`);
 
-    // add the legend
-    var legend = svg.append("g")
-          .attr("class","agency-bar-legend")
-
-    legend
-        .append("rect")
-        .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom*3})`)
-        .attr("height",margin.left/3)
-        .attr("width",margin.left/3)
-        .attr("fill",sbir_color)
-        
-
-    legend
-        .append("text")
-        .attr("class","agency-bar-legend-label")
-        .attr("transform",`translate(${ (width-margin.right*3) + 24},${height-margin.bottom*2.55})`)
-        .text("SBIR Grants")
-        .attr("font-size","0.8em")
-        
-    legend
-        .append("rect")
-        .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom*2})`)
-        .attr("height",margin.left/3)
-        .attr("width",margin.left/3)
-        .attr("fill",sttr_color)
-        
+    // add the legend if we've already selected a CD
+    if (state.currentCd != null) {
+      var legend = svg.append("g")
+      .attr("class","agency-bar-legend")
 
       legend
-        .append("text")
-        .attr("class","agency-bar-legend-label")
-        .attr("transform",`translate(${ (width-margin.right*3) + 24},${height-margin.bottom*1.55})`)
-        .text("STTR Grants")
-        .attr("font-size","0.8em")
+          .append("rect")
+          .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom})`)
+          .attr("height",margin.left/4)
+          .attr("width",margin.left/4)
+          .attr("fill",sbir_color)
 
+      legend
+          .append("rect")
+          .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom- margin.left/3})`)
+          .attr("height",margin.left/4)
+          .attr("width",margin.left/4)
+          .attr("fill",sttr_color)
+          
+
+      legend
+          .append("text")
+          .attr("class","agency-bar-legend-label")
+          .attr("transform",`translate(${ (width-margin.right*3) + 20},${height-margin.left/4})`)
+          .text("SBIR Grants")
+          .attr("font-size","0.8em")
+          
+
+        legend
+          .append("text")
+          .attr("class","agency-bar-legend-label")
+          .attr("transform",`translate(${ (width-margin.right*3) + 20},${height-(margin.left*7/12)})`)
+          .text("STTR Grants")
+          .attr("font-size","0.8em")
+
+    }
+
+    
 
         
       // Vertical Bars

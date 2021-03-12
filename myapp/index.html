@@ -176,31 +176,6 @@
 						</a>
 						<ul class="dropdown-menu agency-input-container" aria-labelledby="agency-select">
 							<form class="form-inline form-check">
-								
-								<div class="form-group">
-									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Defense">
-									<label class="form-check-label agency-input" for="Department-of-Defense">Department of Defense</label>
-								</div>
-								<div class="form-group">
-									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Homeland-Security">
-									<label class="form-check-label agency-input" for="Department-of-Homeland-Security">Department of Homeland Security</label>
-								</div>
-								<div class="form-group">
-									<input type="checkbox" class="form-check-input agency-checkbox" id="Environmental-Protection-Agency" checked>
-									<label class="form-check-label agency-input" for="Environmental-Protection-Agency">Environmental Protection Agency</label>
-								</div>
-								<div class="form-group">
-									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Energy">
-									<label class="form-check-label agency-input" for="Department-of-Energy">Department of Energy</label>
-								</div>
-								<div class="form-group">
-									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Education">
-									<label class="form-check-label agency-input" for="Department-of-Education">Department of Education</label>
-								</div>
-								<div class="form-group">
-									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Transportation">
-									<label class="form-check-label agency-input" for="Department-of-Transportation">Department of Transportation</label>
-								</div>
 								<div class="form-group">
 									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Agriculture">
 									<label class="form-check-label agency-input" for="Department-of-Agriculture">Department of Agriculture</label>
@@ -210,17 +185,42 @@
 									<label class="form-check-label agency-input" for="Department-of-Commerce">Department of Commerce</label>
 								</div>
 								<div class="form-group">
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Defense">
+									<label class="form-check-label agency-input" for="Department-of-Defense">Department of Defense</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Education">
+									<label class="form-check-label agency-input" for="Department-of-Education">Department of Education</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Energy" checked>
+									<label class="form-check-label agency-input" for="Department-of-Energy">Department of Energy</label>
+								</div>
+								<div class="form-group">
 									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Health-and-Human-Services">
 									<label class="form-check-label agency-input" for="Department-of-Health-and-Human-Services">Department of Health and Human Services</label>
 								</div>
 								<div class="form-group">
-									<input type="checkbox" class="form-check-input agency-checkbox" id="National-Science-Foundation" checked>
-									<label class="form-check-label agency-input" for="National-Science-Foundation">National Science Foundation</label>
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Homeland-Security">
+									<label class="form-check-label agency-input" for="Department-of-Homeland-Security">Department of Homeland Security</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Department-of-Transportation" checked>
+									<label class="form-check-label agency-input" for="Department-of-Transportation">Department of Transportation</label>
+								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input agency-checkbox" id="Environmental-Protection-Agency" checked>
+									<label class="form-check-label agency-input" for="Environmental-Protection-Agency">Environmental Protection Agency</label>
 								</div>
 								<div class="form-group">
 									<input type="checkbox" class="form-check-input agency-checkbox" id="National-Aeronautics-and-Space-Administration">
 									<label class="form-check-label agency-input" for="National-Aeronautics-and-Space-Administration">National Aeronautics and Space Administration</label>
 								</div>
+								<div class="form-group">
+									<input type="checkbox" class="form-check-input agency-checkbox" id="National-Science-Foundation" checked>
+									<label class="form-check-label agency-input" for="National-Science-Foundation">National Science Foundation</label>
+								</div>
+								
 								<div class="agency-input-divider"></div>
 							</form>
 							<div class="form-row align-items-center">
@@ -233,19 +233,21 @@
 
 					</li>
 				</ul>
-				<ul class="nav navbar-nav ml-auto w-100 justify-content-end" style="padding-right: 4%;">
-					<li class="nav-item">
-						<a class="nav-link" href="#">Right</a>
-					</li>
+				<ul class="nav navbar-nav ml-auto w-100 justify-content-end" style="padding-right: 6%;">
+					
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="collapsingNavbar3MenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 						About
 						</a>
-						<ul class="dropdown-menu" aria-labelledby="collapsing3NavbarMenuLink">
-						<li><a class="dropdown-item" href="#">User guide</a></li>
-						<li><a class="dropdown-item" href="#">Background</a></li>
-						<li><a class="dropdown-item" href="#">Data sources</a></li>
+						<ul class="dropdown-menu about-menu-container" aria-labelledby="collapsing3NavbarMenuLink">
+							<li><a class="dropdown-item" href="#">User guide</a></li>
+							<li><a class="dropdown-item" href="#">Background</a></li>
+							<li><a class="dropdown-item" href="#">Data sources</a></li>
 						</ul>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="#"></a>
 					</li>
 				</ul>
 			</div>
@@ -471,26 +473,26 @@
 						</div>
 						<!-- <h5>Topics</h5> -->
 						<ul class="nav nav-tabs">
-							<li class="nav-item" id="allvocabs-tab">
-								<a class="nav-link active vocabsel" aria-current="page" id="All">All</a>
+							<li class="nav-item">
+								<a class="nav-link active vocabsel" id="All">All</a>
 							</li>
 							<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="vocabs-dropdown" role="button" aria-expanded="false">From vocabulary</a>
-							<ul class="dropdown-menu">
-								<li><h6 class="dropdown-header">Controlled vocabularies</h6></li>
-								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item vocabsel" id="GEMET">GEMET</a></li>
-								<li><a class="dropdown-item vocabsel" id="EIGE">EIGE</a></li>
-								<li><a class="dropdown-item vocabsel" id="AGROVOC">AGROVOC</a></li>
-								<li><a class="dropdown-item vocabsel" id="STW">STW</a></li>
-								<li><a class="dropdown-item vocabsel" id="EUSCIVOC">EU-SCIVOC</a></li>
-								<li><a class="dropdown-item vocabsel" id="EUVOC">EUVOC</a></li>
-								<li><a class="dropdown-item vocabsel" id="MeSH">MeSH</a></li>
-								<li><h6 class="dropdown-header">Emergent vocabulary</h6></li>
-								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item vocabsel" id="textrank-tfidf_keywords">Extracted keywords</a></li>
+								<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="vocabs-dropdown" role="button" aria-expanded="false">From vocabulary</a>
+								<ul class="dropdown-menu">
+									<li><h6 class="dropdown-header">Controlled vocabularies</h6></li>
+									<div class="dropdown-divider"></div>
+									<li><a class="dropdown-item vocabsel" id="GEMET">GEMET</a></li>
+									<li><a class="dropdown-item vocabsel" id="EIGE">EIGE</a></li>
+									<li><a class="dropdown-item vocabsel" id="AGROVOC">AGROVOC</a></li>
+									<li><a class="dropdown-item vocabsel" id="STW">STW</a></li>
+									<li><a class="dropdown-item vocabsel" id="EUSCIVOC">EU-SCIVOC</a></li>
+									<li><a class="dropdown-item vocabsel" id="EUVOC">EUVOC</a></li>
+									<li><a class="dropdown-item vocabsel" id="MeSH">MeSH</a></li>
+									<li><h6 class="dropdown-header">Emergent vocabulary</h6></li>
+									<div class="dropdown-divider"></div>
 
-							</ul>
+									<li><a class="dropdown-item vocabsel" id="textrank-tfidf_keywords">Extracted keywords</a></li>
+								</ul>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link" href="#">Info</a>
