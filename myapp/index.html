@@ -93,7 +93,8 @@
 		<!-- TITLE -->
 	<section id="intro-section">
 		<div id="title-panel">
-			<h1 id="page-title">Exploring Publicly Funded Innovation Economies</h1>
+			<h1 id="page-title">Public Innovations Explorer</h1>
+			<h3 id="page-subtitle"><em>Exploring public funding of innovation economies</em></h3>
 			<div id="intro-panel">
 				<p>Sriracha biodiesel taxidermy organic post-ironic, Intelligentsia salvia mustache 90's code editing brunch. Butcher polaroid VHS art party, hashtag Brooklyn deep v PBR narwhal sustainable mixtape swag wolf squid tote bag. Tote bag cronut semiotics,
 					raw denim deep v taxidermy messenger bag. Tofu YOLO Etsy, direct trade ethical Odd Future jean shorts paleo. Forage Shoreditch tousled aesthetic irony, street art organic Bushwick artisan cliche semiotics ugh synth chillwave meditation.
@@ -133,43 +134,12 @@
 		<!-- examples: https://www.codeply.com/go/qhaBrcWp3v -->
 		<!-- example 3 - Navbar with brand left, links on center and right that collapse into the vert mobile menu-->
 		<nav class="navbar navbar-dark sticky-top navbar-expand-md bg-dark justify-content-center" id="navbar-top">
-			<h1 href="/" class="navbar-brand d-flex w-50 mr-auto" style="padding-left: 4%;">Innovation Economies Explorer</h1>
+			<h1 href="/" class="navbar-brand d-flex w-50 mr-auto" style="padding-left: 4%;">Public Innovations Explorer</h1>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
 				<ul class="navbar-nav w-100 justify-content-center">
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle" id="years-select" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Award Years
-						</a>
-						<ul class="dropdown-menu year-input-container" aria-labelledby="years-select">
-
-							<form class="form-row align-items-center">
-								<div class="col-auto my-1">
-									<label for="year-select-1" class="col-sm-2 col-form-label year-input-label">From</label>
-									<select id="year-select-1" class="form-select form-select-sm mb-3 year-input" aria-label=".form-select-sm example">
-										
-									  </select>
-								</div>
-								<div class="col-auto my-1">
-									<label for="year-select-2" class="col-sm-2 col-form-label year-input-label">To</label>
-									<select id="year-select-2" class="form-select form-select-sm mb-3 year-input" aria-label=".form-select-sm example">
-										
-									  </select>
-								</div>
-
-							</form>
-							<div class="form-row align-items-center">
-								<div class="col-auto my-1 update-divider">
-								  <button type="submit" class="btn btn-secondary btn-sm btn-block year-update-btn" id="year-update-btn">Update</button>
-								</div>
-							</div>
-							
-
-						</ul>
-						
-					</li>
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" id="agency-select" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 							Federal Funding Agencies
@@ -232,6 +202,37 @@
 						
 
 					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" id="years-select" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Award Years
+						</a>
+						<ul class="dropdown-menu year-input-container" aria-labelledby="years-select">
+
+							<form class="form-row align-items-center">
+								<div class="col-auto my-1">
+									<label for="year-select-1" class="col-sm-2 col-form-label year-input-label">From</label>
+									<select id="year-select-1" class="form-select form-select-sm mb-3 year-input" aria-label=".form-select-sm example">
+										
+									  </select>
+								</div>
+								<div class="col-auto my-1">
+									<label for="year-select-2" class="col-sm-2 col-form-label year-input-label">To</label>
+									<select id="year-select-2" class="form-select form-select-sm mb-3 year-input" aria-label=".form-select-sm example">
+										
+									  </select>
+								</div>
+
+							</form>
+							<div class="form-row align-items-center">
+								<div class="col-auto my-1 update-divider">
+								  <button type="submit" class="btn btn-secondary btn-sm btn-block year-update-btn" id="year-update-btn">Update</button>
+								</div>
+							</div>
+							
+
+						</ul>
+						
+					</li>
 				</ul>
 				<ul class="nav navbar-nav ml-auto w-100 justify-content-end" style="padding-right: 6%;">
 					
@@ -275,8 +276,14 @@
 						<div class="navbar-nav" id="navbarSupportedContent" style="padding-right: 5%;">
 						  <div class="navbar-nav mr-auto">
 								<li class="nav-item dropdown">
-									<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-									Congressional District profiler
+									<!-- removed dropdown functionality from this link for now:
+										to add it back:
+										class="nav-link dropdown-toggle"
+										role="button" data-bs-toggle="dropdown"
+									
+									-->
+									<a class="nav-link" id="navbarDropdown"  aria-expanded="false">
+									Congressional district profiler
 									</a>
 									<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 									<li><h6 class="dropdown-header">By socio-economic profile</h6></li>
@@ -296,7 +303,7 @@
 							</div>
 						</div>
 							<form class="form-inline">
-								<input class="form-control form-control-sm" type="search" placeholder="Search states" aria-label="Search districts" id="parcoords-search">
+								<input class="form-control form-control-sm" type="search" placeholder="Search states" aria-label="Search districts" id="parcoords-search" onkeypress="return event.keyCode!=13">
 							</form>
 					  </nav>
 
@@ -403,13 +410,12 @@
 					<!-- SUMMARY TEXT-->
 
 					<!-- use d3 to populate the selected district's name-->	
-					<h5 id="district-summary-title">Welcome to the Innovation Economies Explorer</h5>
+					<h5 id="district-summary-title">Welcome to the Public Innovations Explorer</h5>
 			
 					<div id="district-summary-text">
 						<p>Explore funding by Federal agencies to small businesses for innovative research activities and technology transfer through the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) grant making programs. </p>
 							
-						<p>Select the Federal agencies and years of interest from the <em>dropdown menus</em> above.</p>
-						<p>You can explore the <strong>map</strong> to find recipients and details about grants they were awarded.  Use the <strong>parallel coordinates plot</strong> to filter the congressional districts on the map, and identify hot spots and cold spots for different kinds of underlying economic activities. Click on a congressional district to see a summary of its funded research activities, labor profile and topics extracted from the funded research taking place there.</p>
+						<p><strong>Select</strong> the Federal agencies and years of interest from the menus in the navigation bar above. You can <strong>explore</strong> the map to find companies, and details about grants they were awarded.  Use the parallel coordinates plot to <strong>filter</strong> the congressional districts on the map, and identify hot spots and cold spots for different kinds of underlying economic activities. <strong>Click</strong> on a congressional district to see a summary of its funded research activities, labor profile and topics extracted from the funded research taking place there.</p>
 	
 
 					</div>
@@ -442,7 +448,7 @@
 							<a class="nav-link graphsel" id="recips-graph">Recipients</a>
 							</li>
 							<li class="nav-item">
-							<a class="nav-link graphsel" id="grants-graph">Grant types</a>
+							<a class="nav-link graphsel" id="grants-graph">Grant details</a>
 							</li>
 						</ul>
 						<div id="bargraph"></div>

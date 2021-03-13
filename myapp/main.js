@@ -57,7 +57,7 @@ let state = {
   changedOpt: null,
   selectedRows: [],
   unselRows: [],
-  currentCd: null,
+  currentCd: "99",
   lastCd: "00",
   currentCdVocab: [],
   filteredCdVocab: [],
@@ -150,8 +150,10 @@ let buffer = 2;
 const maxZoomLevel = 10;
 
 // colors for the bar graph
-const sbir_color = "#181818";
+//const sbir_color = "#181818";
 const sttr_color = "#808080";
+const sbir_color = "#0F6EFD"
+//const sttr_color = "#808080";
 
 let vocabs = ["EIGE","AGROVOC","STW","EU-SCIVOC","EUVOC","GEMET","MeSH"];
 // quick function for merging vocabs when necessary
@@ -793,101 +795,167 @@ function changeVocab(e){
 
 function getCdStats(district){
 
-  // MARCH 11: update this to take awards from filtered Awards for agency/year
-  state.filteredCdAwards = state.filtAwards.filter(d=>d.AFFGEOID_CD116 === district)
-
-  var data = state.filteredCdAwards;
-  //console.log("GOT THE STATS for",district,data)
-
-  var fundSummary = [];
-  var countSummary = [];
-
-  if (state.selectedGraph === "agency-graph"){
-    
-    data.reduce(function(res, value) {
-      if (!res[agencyNames[value.Agency]]) {
-        res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency],  'sbir': 0, 'sttr': 0, 'total': 0};
-        fundSummary.push(res[agencyNames[value.Agency]])
-
-      }
-      if (value.Program === "SBIR") {
-        res[agencyNames[value.Agency]]['sbir'] += value.Award_Amount;
-        res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
-      }
-      else if (value.Program === "STTR") {
-        res[agencyNames[value.Agency]]['sttr'] += value.Award_Amount;
-        res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
-      }
-      return res;
-    }, {});
-
-    fundSummary.sort((a, b) => a.total - b.total)
-    fundSummary.forEach(function(v){ delete v.total });
-
-    
-    data.reduce(function(res, value) {
-        if (!res[agencyNames[value.Agency]]) {
-          res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
-          countSummary.push(res[agencyNames[value.Agency]])
-
-        }
-        if (value.Program === "SBIR") {
-          res[agencyNames[value.Agency]]['sbir'] += 1;
-          res[agencyNames[value.Agency]]['total'] += 1;
-
-        }
-        else if (value.Program === "STTR") {
-          res[agencyNames[value.Agency]]['sttr'] += 1;
-          res[agencyNames[value.Agency]]['total'] += 1;
-        }
-        return res;
-      }, {});
-      countSummary.sort((a, b) => a.total - b.total)
-      countSummary.forEach(function(v){ delete v.total });
-
-      showCdGraph(fundSummary,countSummary)
+  if (district === "99"){
+    showCdGraph("99","99")
 
   }
-  else if (state.selectedGraph === "recips-graph"){
+  else {
+        // MARCH 11: update this to take awards from filtered Awards for agency/year
+      state.filteredCdAwards = state.filtAwards.filter(d=>d.AFFGEOID_CD116 === district)
+
+      var data = state.filteredCdAwards;
+      //console.log("GOT THE STATS for",district,data)
+
+      var fundSummary = [];
+      var countSummary = [];
+
+      if (state.selectedGraph === "agency-graph"){
+        
+        data.reduce(function(res, value) {
+          if (!res[agencyNames[value.Agency]]) {
+            res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency],  'sbir': 0, 'sttr': 0, 'total': 0};
+            fundSummary.push(res[agencyNames[value.Agency]])
+
+          }
+          if (value.Program === "SBIR") {
+            res[agencyNames[value.Agency]]['sbir'] += value.Award_Amount;
+            res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
+          }
+          else if (value.Program === "STTR") {
+            res[agencyNames[value.Agency]]['sttr'] += value.Award_Amount;
+            res[agencyNames[value.Agency]]['total'] += value.Award_Amount;
+          }
+          return res;
+        }, {});
+
+        fundSummary.sort((a, b) => a.total - b.total)
+        fundSummary.forEach(function(v){ delete v.total });
+
+        
+        data.reduce(function(res, value) {
+            if (!res[agencyNames[value.Agency]]) {
+              res[agencyNames[value.Agency]] = { Agency: agencyNames[value.Agency], 'sbir': 0, 'sttr': 0, 'total': 0};
+              countSummary.push(res[agencyNames[value.Agency]])
+
+            }
+            if (value.Program === "SBIR") {
+              res[agencyNames[value.Agency]]['sbir'] += 1;
+              res[agencyNames[value.Agency]]['total'] += 1;
+
+            }
+            else if (value.Program === "STTR") {
+              res[agencyNames[value.Agency]]['sttr'] += 1;
+              res[agencyNames[value.Agency]]['total'] += 1;
+            }
+            return res;
+          }, {});
+          countSummary.sort((a, b) => a.total - b.total)
+          countSummary.forEach(function(v){ delete v.total });
+
+          showCdGraph(fundSummary,countSummary)
+
+      }
+      else if (state.selectedGraph === "recips-graph"){
+        
+        data.reduce(function(res, value) {
+          if (!res[value.Company]) {
+            res[value.Company] = { Company: value.Company,
+                row_id: String(value.Company)+"_"+String(value.DUNS)+"_"+String(value.Address1),
+                lat: value.latitude, lng: value.longitude,
+              'sbir': 0, 'sttr': 0, 'total': 0, 'count':0, 'sbir_count': 0,'sttr_count': 0
+          };
+            fundSummary.push(res[value.Company])
+
+          }
+          if (value.Program === "SBIR") {
+            res[value.Company]['sbir'] += value.Award_Amount;
+            res[value.Company]['total'] += value.Award_Amount;
+            res[value.Company]['sbir_count'] += 1;
+            res[value.Company]['count'] += 1;
+          }
+          else if (value.Program === "STTR") {
+            res[value.Company]['sttr'] += value.Award_Amount;
+            res[value.Company]['total'] += value.Award_Amount;
+            res[value.Company]['sttr_count'] += 1;
+            res[value.Company]['count'] += 1;
+          }
+          return res;
+        }, {});
+
+        fundSummary.sort((a, b) => b.total - a.total)
+        showCdGraph(fundSummary,countSummary);
+
+
+      }
+      else if (state.selectedGraph === "grants-graph"){
+            /*Hubzone_Owned: "N"
+            Number_Employees: "17"
+            Phase: "Phase II"
+            Program: "SBIR"
+            Socially_and_Economically_Disadvantaged: "N"
+            Woman_Owned: "Y"*/
+            data.reduce(function(res, value) {
+              if (!res[district]) {
+                res[district] = { district: district,
+                  'women_owned':0, 'women_owned_count':0, 
+                  'socioecon':0 , 'socioecon_count': 0,
+                  'hubzone':0 , 'hubzone_count':0,
+                  'phase_1': 0, 'phase_1_count':0,
+                  'phase_2': 0, 'phase_2_count':0,
+                  'employees': [],
+                  'award_amts': [],
+                  'companies': [],
+                  'sbir': 0, 'sttr': 0, 'total': 0, 'count':0, 'sbir_count': 0,'sttr_count': 0
+              };
+                fundSummary.push(res[district])
     
-    data.reduce(function(res, value) {
-      if (!res[value.Company]) {
-        res[value.Company] = { Company: value.Company,
-            row_id: String(value.Company)+"_"+String(value.DUNS)+"_"+String(value.Address1),
-            lat: value.latitude, lng: value.longitude,
-           'sbir': 0, 'sttr': 0, 'total': 0, 'count':0, 'sbir_count': 0,'sttr_count': 0
-      };
-        fundSummary.push(res[value.Company])
+              }
+              if (value.Program === "SBIR") {
+                res[district]['sbir'] += value.Award_Amount;
+                res[district]['total'] += value.Award_Amount;
+                res[district]['sbir_count'] += 1;
+                res[district]['count'] += 1;
+              }
+              else if (value.Program === "STTR") {
+                res[district]['sttr'] += value.Award_Amount;
+                res[district]['total'] += value.Award_Amount;
+                res[district]['sttr_count'] += 1;
+                res[district]['count'] += 1;
+              }
+              if (value.Phase === "Phase II") {
+                res[district]['phase_2'] += value.Award_Amount;
+                res[district]['phase_2_count'] += 1;
+              }
+              else {
+                res[district]['phase_1'] += value.Award_Amount;
+                res[district]['phase_1_count'] += 1;
+              }
+              if (value.Socially_and_Economically_Disadvantaged === "Y") {
+                res[district]['socioecon'] += value.Award_Amount;
+                res[district]['socioecon_count'] += 1;
+              }
+              if (value.Woman_Owned === "Y"){
+                res[district]['women_owned'] += value.Award_Amount;
+                res[district]['women_owned_count'] += 1;
+              }
+              if (value.Hubzone_Owned === "Y"){
+                res[district]['hubzone'] += value.Award_Amount;
+                res[district]['hubzone_count'] += 1;
+              }
+              res[district]['employees'].push(parseInt(value.Number_Employees))
+              res[district]['award_amts'].push(parseInt(value.Award_Amount))
+              res[district]['companies'].push(value.Company)
 
+
+              return res;
+            }, {});
+    
+            
+            showCdGraph(fundSummary,countSummary);
+    
       }
-      if (value.Program === "SBIR") {
-        res[value.Company]['sbir'] += value.Award_Amount;
-        res[value.Company]['total'] += value.Award_Amount;
-        res[value.Company]['sbir_count'] += 1;
-        res[value.Company]['count'] += 1;
-      }
-      else if (value.Program === "STTR") {
-        res[value.Company]['sttr'] += value.Award_Amount;
-        res[value.Company]['total'] += value.Award_Amount;
-        res[value.Company]['sttr_count'] += 1;
-        res[value.Company]['count'] += 1;
-      }
-      return res;
-    }, {});
-
-    fundSummary.sort((a, b) => b.total - a.total)
-    showCdGraph(fundSummary,countSummary);
-
-
-  }
-  else if (state.selectedGraph === "grants-graph"){
-        /*Hubzone_Owned: "N"
-        Number_Employees: "17"
-        Phase: "Phase II"
-        Program: "SBIR"
-        Socially_and_Economically_Disadvantaged: "N"
-        Woman_Owned: "Y"*/
-  }
+  
+  };
   
 
 
@@ -1097,9 +1165,6 @@ function showQueryPaths () {
   state.selectedRows = dataView.getItems().filter(d=> searchString.length > buffer && d[sortcol].toLowerCase().includes(searchString));
   state.unselRows = dataView.getItems().filter(d=>!d[sortcol].toLowerCase().includes(searchString));
 
-  
-   
-
   parcoords.unhighlight(state.unselRows);
   parcoords.highlight(state.selectedRows);
 
@@ -1112,8 +1177,8 @@ function showQueryPaths () {
   filtLayers = filtLayers.filter(d=>selGEOID.includes(d.feature.properties.AFFGEOID))
   //var filt_ix = d3.map(filtLayers,d=>layers_ix.indexOf(d))
   filtLayers = new L.featureGroup(filtLayers);
-  console.log("layers on query mpaths",layers,selGEOID,filtLayers)
-  mymap.fitBounds(filtLayers.getBounds());
+  //console.log("layers on query mpaths",layers,selGEOID,filtLayers)
+  mymap.fitBounds(filtLayers.getBounds().pad(0.5));
   //console.log( "Sel Size",state.selectedRows);
  
 };
@@ -1190,6 +1255,8 @@ function initParcoords(){
     if (e.which == 27) {
       this.value = "";
     }
+
+  
     searchString = this.value.toLowerCase();
     // get ahead of ourselves to avoid the full-highligted graph
     preClear(searchString);
@@ -1617,6 +1684,7 @@ function resetHighlight(e) {
   // update parcoords accordingly
 
   parcoords.unhighlight(unselected_dist_id);
+  
   parcoords.mark(marked_dist);
 
 
@@ -1749,24 +1817,23 @@ function getCdVocab(district){
   //state.lastCd = state.currentCd
   //state.currentCd = district
   // if the CD is different from teh one already loaded, go forward, if not nothing
-  if (state.currentCd !== null && state.currentCd !== state.lastCd && state.currentCdVocab != []){
+  if (state.currentCd !== "99" && state.currentCd !== state.lastCd){
     fetch("data/cd116_vocab_aggs/"+district+".json").then(response => {
       if (!response.ok) {
         //console.log(response);
         state.currentCdVocab = [];
         // remove any existing pills
         d3.selectAll('.pill-container').remove();
-        //showCdVocab(state.currentCdVocab);
+        showCdVocab(state.currentCdVocab);
         throw new Error("unable to fetch");
-        
-
       }
       return response.json();
     }).then(data => {
       console.log("LOADED FILE","data/cd116_vocab_aggs/"+district+".json")
       state.currentCdVocab = data;
+      showCdVocab(state.currentCdVocab)
+
     })
-    showCdVocab(state.currentCdVocab)
 
 
     /*
@@ -1781,29 +1848,21 @@ function getCdVocab(district){
       //console.log("CD VOCAB",state.currentCdVocab)
       */
   }
-  else {}
+  else {
+    console.log("we got to the false condition for no rasno?")
+  }
 
 };
 
 
 function showCdVocab(data){
 
-  //console.log("SHOW CD VOCAB",data)
-  // remove any existing pills
-  d3.selectAll('.pill-container').remove();
-  // close any open popovers
-  $(document).ready(function(){
-    $(".vocab-popover").popover();
-  
-    $(document).on('click', function(){
-        $(".vocab-popover").popover('hide');
-    });
-  
-    $('.vocab-popover').click(function(){
-        return false;
-    });
-  });
 
+
+
+  console.log("I got this data",data);
+
+  // FILTER THE DATA BY YEARS AND AGENCIES....
   var ag = Object.keys(data).filter( d => state.selectedAgencies.includes(d))
   //console.log("filt ag",ag)
   var allvocab = []
@@ -1843,17 +1902,84 @@ function showCdVocab(data){
 
   state.filteredCdVocab = sortedVocab;
 
+  console.log("the filtered vocab returns",state.filteredCdVocab)
 
-  //console.log("CD VOCAB",state.currentCdVocab)
+  if (state.filteredCdVocab.length === 0){
+    d3.selectAll('.pill-container').remove();
+    d3.select('.no-data-vocab').remove();
 
-  // draw the term badges
-  var vocabArea = d3.select("#vocab-pills")
-    .selectAll("term-badge")
-    .data(state.filteredCdVocab)
-    .join(
-      enter => enter.append("div")
+
+    var vocabArea = d3.select("#vocab-pills").append("p").attr("class","no-data-vocab").text("This district did not receive funding in the selected years from the selected agencies. Select another district or expand the criteria to see more about this district.")
+  }
+  else  {
+      //console.log("SHOW CD VOCAB",data)
+    // remove any existing pills
+    d3.selectAll('.pill-container').remove();
+    d3.select('.no-data-vocab').remove();
+
+    // close any open popovers
+    $(document).ready(function(){
+      $(".vocab-popover").popover();
+    
+      $(document).on('click', function(){
+          $(".vocab-popover").popover('hide');
+      });
+    
+      $('.vocab-popover').click(function(){
+          return false;
+      });
+    });
+
+
+
+
+    //console.log("CD VOCAB",state.currentCdVocab)
+
+    // draw the term badges
+    var vocabArea = d3.select("#vocab-pills")
+      .selectAll("pill-container")
+      .data(state.filteredCdVocab)
+      .join(
+        enter => enter.append("div")
+          .attr("class","pill-container")
+          .attr("id",state.currentCd+"_vocab")
+          .attr("data-bs-toggle","popover")
+          .attr("data-bs-placement","top")
+          .attr("data-bs-html","true")
+          .attr("data-bs-custom-class","vocab-popover")
+          .attr("data-bs-container","#vocab-pills")
+          // add this function to all popover axis-remove text
+          .attr("data-bs-content",  (d,i)=> "In X grants in district,</br>Y nationally")
+          // this adds the content, on click of content, remove axis
+          .attr("data-bs-trigger","click")
+          /*.on("mouseenter", function() {
+            var _this = this;
+            setTimeout(function() {
+              $(_this).popover('show');
+              }, 150);
+              $('.pill-container').not(this).popover('hide');
+            })
+            .on("mouseleave", function() {
+            var _this = this;
+            setTimeout(function() {
+              if (!$(".vocab-popover:hover").length) {
+                $(_this).popover("hide");
+                }
+              }, 0);
+            })*/
+            .html(function(d){
+              var pillButton = `<button type="button" class="btn rounded-pill btn-primary btn-sm"`+
+              ` id="term-badge">`+
+              // add one to the term freq count, as some of the underly counts were extracted but then not re- counted quite right...
+              `${d[0].replaceAll("_"," ").replaceAll(" abbr","")} <span class="badge bg-secondary">${d[1]+1}</span></button>`
+              return pillButton;
+            })
+          .call(enter => enter.transition()
+                ),
+        update => update
         .attr("class","pill-container")
         .attr("id",state.currentCd+"_vocab")
+        // add this function to all popover axis-remove text
         .attr("data-bs-toggle","popover")
         .attr("data-bs-placement","top")
         .attr("data-bs-html","true")
@@ -1878,56 +2004,24 @@ function showCdVocab(data){
               }
             }, 0);
           })*/
+          // this adds the content, on click of content, remove axis
           .html(function(d){
-            var pillButton = `<button type="button" class="btn rounded-pill btn-primary btn-sm"`+
-            ` id="term-badge">`+
+            var pillButton = '<button type="button" class="btn rounded-pill btn-primary btn-sm"'+
+            ' id="term-badge">'+
             `${d[0].replaceAll("_"," ")} <span class="badge bg-secondary">${d[1]}</span></button>`
             return pillButton;
           })
-        .call(enter => enter.transition()
-              ),
-      update => update
-      .attr("class","pill-container")
-      .attr("id",state.currentCd+"_vocab")
-      // add this function to all popover axis-remove text
-      .attr("data-bs-toggle","popover")
-      .attr("data-bs-placement","top")
-      .attr("data-bs-html","true")
-      .attr("data-bs-custom-class","vocab-popover")
-      .attr("data-bs-container","#vocab-pills")
-      // add this function to all popover axis-remove text
-      .attr("data-bs-content",  (d,i)=> "In X grants in district,</br>Y nationally")
-      // this adds the content, on click of content, remove axis
-      .attr("data-bs-trigger","click")
-      /*.on("mouseenter", function() {
-        var _this = this;
-        setTimeout(function() {
-          $(_this).popover('show');
-          }, 150);
-          $('.pill-container').not(this).popover('hide');
-        })
-        .on("mouseleave", function() {
-        var _this = this;
-        setTimeout(function() {
-          if (!$(".vocab-popover:hover").length) {
-            $(_this).popover("hide");
-            }
-          }, 0);
-        })*/
-        // this adds the content, on click of content, remove axis
-        .html(function(d){
-          var pillButton = '<button type="button" class="btn rounded-pill btn-primary btn-sm"'+
-          ' id="term-badge">'+
-          `${d[0].replaceAll("_"," ")} <span class="badge bg-secondary">${d[1]}</span></button>`
-          return pillButton;
-        })
-        .call(update => update.transition()
-        )
-    );
+          .call(update => update.transition()
+          )
+      );
 
     /*var popover = new bootstrap.Popover(document.querySelector(".pill-container"),{
       container: '#vocab-pills',
     });*/
+
+
+  }
+  
    
     
    
@@ -1958,352 +2052,450 @@ function getFeaturesInView(map) {
 // this function populates the funder recipient bar graph/stats tabs
 function showCdGraph(fundSummary,countSummary) {
 
-  //console.log("DATA GETS TO CD GRAPH AS",fundSummary,countSummary)
 
-  
-
-  var width = parseInt($('#bargraph').css('width')),
-    height = parseInt($('#bargraph').css('height')),
-    paddingInner = 0.2,
-    margin = { right: 40, left: 55, 
-      top: 30, bottom: 25 };
-
-  //console.log("bargraph dims",width,height,paddingInner,margin)
-  //console.log("cd data",state)
-  
-
-  //console.log("district data is",data, "SUMMARY",fundSummary,countSummary);
- 
- 
   $(".bargraph-svg").remove();
   $(".recips-table").remove();
+  $(".agency-bar-legend").remove();
+  $(".no-data-graph").remove();
+  $("#grants-graph-container").remove();
 
-  var nbars = fundSummary.length
-  if (height < ((nbars * 28) + margin.top)) {
-    height = (nbars*28)+margin.top
+  // if we're at the start of the app...
+  if (fundSummary === "99") {
+    // put intro text in the panel to start
+  }
+  // else, if there is data in the summary... 
+  else if (Object.keys(fundSummary).length > 0){
 
-  };
+    // bar graph for agency funding
+    if (state.selectedGraph === "agency-graph") {
 
-
-  if (state.selectedGraph === "agency-graph") {
-    // Horizontal Bars
-    var series = d3.stack()
-    .keys(["sbir","sttr"])
-    (fundSummary)
-      .map(d => (d.forEach(v => v.key = d.key), d))
-
-    //console.log("SERIES",series)
-
-    // x scale is for total funding amts
-    var x = d3.scaleLinear()
-    .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
-    .rangeRound([margin.left, width - margin.right])
-
-    // y scale is for agencies
-    var y = d3.scaleBand()
-    .domain(fundSummary.map(d => d.Agency))
-    .range([height - margin.bottom, margin.top])
-    .padding(paddingInner)
-
-
-    var formatValue = y => isNaN(y) ? "N/A" : y.toLocaleString("en")
-    // funding format string
-    function formatTick(d) {
-      const s = (d / 1e6).toFixed(1);
-      return this.parentNode.nextSibling ? `\xa0$${s}` : `$${s} million`;
-    }
-
-    // draw axis ticks the height of the graph
-    var xAxis = g => g
-    .attr("transform", `translate(0,${height-margin.bottom})`)
-    .call(d3.axisTop(x)
-            .tickSize(height-margin.top-margin.bottom)
-            .tickFormat(formatTick)
-            .ticks(4))
-        .call(g => g.select(".domain")
-            .remove())
-        .call(g => g.selectAll(".tick:not(:first-of-type) line")
-            .attr("stroke-opacity", 0.5)
-            .attr("stroke-dasharray", "2,2"))
-        .call(g => g.selectAll(".tick text")
-            .attr("x", 0)
-            .attr("dy", -4))
-    .call(g => g.selectAll(".domain").remove())
-
-    // vertical axis anchros left, 
-    var yAxis = g => g
-    .attr("transform", `translate(${margin.left-4},0)`)
-    .call(d3.axisLeft(y).tickSizeOuter(0).tickSize(4))
-    .call(g => g.selectAll(".domain").remove())
-    .call(g => g.selectAll(".tick line").remove())
-
-    // create the svg
-    var svg = d3.select("#bargraph")
-    .append("svg")
-    .attr("class","bargraph-svg")
-    .attr("width", width)
-    .attr("height", height);
-
-
-    svg.append("g")
-        .call(xAxis)
-          .selectAll(".tick text")
-          .attr("class","bar-x-ticks")
-          //.attr("transform",`translate(0,${margin.top})`)
-          
-          
-
-    svg.append("g")
-        .call(yAxis)
-        .selectAll(".tick text")
-        .attr("class","bar-y-ticks")
-        .call(wrap, margin.left);
-        
-      
-    svg.append("g")
-        .selectAll("g")
-        .data(series)
-        .join("g")
-          .attr("fill", function(d){
-            return d.key == "sttr" ? sttr_color : sbir_color;
-          })
-        .selectAll("rect")
-        .data(d => d)
-        .join("rect")
-          .attr("y", (d, i) => y(d.data.Agency))
-          .attr("x", d => x(d[0]))
-          .attr("width", d => x(d[1]) - x(d[0]))
-          .attr("height", y.bandwidth())
-        .append("title")
-          .text(d => `${d.data.Agency} ${d.key}
-              ${formatValue(d.data[d.key])}`);
-
-    // add the legend if we've already selected a CD
-    if (state.currentCd != null) {
-      var legend = svg.append("g")
-      .attr("class","agency-bar-legend")
-
-      legend
-          .append("rect")
-          .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom})`)
-          .attr("height",margin.left/4)
-          .attr("width",margin.left/4)
-          .attr("fill",sbir_color)
-
-      legend
-          .append("rect")
-          .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom- margin.left/3})`)
-          .attr("height",margin.left/4)
-          .attr("width",margin.left/4)
-          .attr("fill",sttr_color)
-          
-
-      legend
-          .append("text")
-          .attr("class","agency-bar-legend-label")
-          .attr("transform",`translate(${ (width-margin.right*3) + 20},${height-margin.left/4})`)
-          .text("SBIR Grants")
-          .attr("font-size","0.8em")
-          
-
-        legend
-          .append("text")
-          .attr("class","agency-bar-legend-label")
-          .attr("transform",`translate(${ (width-margin.right*3) + 20},${height-(margin.left*7/12)})`)
-          .text("STTR Grants")
-          .attr("font-size","0.8em")
-
-    }
-
-    
-
-        
-      // Vertical Bars
-    /*
-    var series = d3.stack()
-    .keys(["sbir","sttr"])
-    (fundSummary)
-      .map(d => (d.forEach(v => v.key = d.key), d))
-
-    console.log("SERIES",series)
-
-    var y = d3.scaleLinear()
-    .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
-    .rangeRound([height - margin.bottom, margin.top])
+      var width = parseInt($('#bargraph').css('width')),
+      height = parseInt($('#bargraph').css('height')),
+      paddingInner = 0.2,
+      margin = { right: 40, left: 55, 
+        top: 30, bottom: 25 };
   
-
-    var x = d3.scaleBand()
-    .domain(fundSummary.map(d => d.Agency))
-    .range([margin.left, width - margin.right])
-    .padding(0.5)
-
-    var formatValue = x => isNaN(x) ? "N/A" : x.toLocaleString("en")
-    function formatTick(d) {
-      const s = (d / 1e6).toFixed(1);
-      return this.parentNode.nextSibling ? `\xa0${s}` : `$${s} million`;
-    }
-
-    var yAxis = g => g
-      .attr("transform", `translate(2.5,0)`)
-      .call(d3.axisRight(y)
-              .tickSize(width-7.5)
+      // Horizontal Bars
+      var series = d3.stack()
+      .keys(["sbir","sttr"])
+      (fundSummary)
+        .map(d => (d.forEach(v => v.key = d.key), d))
+  
+      //console.log("SERIES",series)
+  
+      // x scale is for total funding amts
+      var x = d3.scaleLinear()
+      .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
+      .rangeRound([margin.left, width - margin.right])
+  
+      // y scale is for agencies
+      var y = d3.scaleBand()
+      .domain(fundSummary.map(d => d.Agency))
+      .range([height - margin.bottom, margin.top])
+      .padding(paddingInner)
+  
+  
+      var formatValue = y => isNaN(y) ? "N/A" : y.toLocaleString("en")
+      // funding format string
+      function formatTick(d) {
+        const s = (d / 1e6).toFixed(1);
+        return this.parentNode.nextSibling ? `\xa0$${s}` : `$${s} million`;
+      }
+  
+      // draw axis ticks the height of the graph
+      var xAxis = g => g
+      .attr("transform", `translate(0,${height-margin.bottom})`)
+      .call(d3.axisTop(x)
+              .tickSize(height-margin.top-margin.bottom)
               .tickFormat(formatTick)
-              .ticks(6))
+              .ticks(4))
           .call(g => g.select(".domain")
               .remove())
           .call(g => g.selectAll(".tick:not(:first-of-type) line")
               .attr("stroke-opacity", 0.5)
               .attr("stroke-dasharray", "2,2"))
           .call(g => g.selectAll(".tick text")
-              .attr("x", 4)
+              .attr("x", 0)
               .attr("dy", -4))
       .call(g => g.selectAll(".domain").remove())
-
-    var xAxis = g => g
-      .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x).tickSizeOuter(0))
+  
+      // vertical axis anchros left, 
+      var yAxis = g => g
+      .attr("transform", `translate(${margin.left-4},0)`)
+      .call(d3.axisLeft(y).tickSizeOuter(0).tickSize(4))
       .call(g => g.selectAll(".domain").remove())
-
-
-
-
-    var svg = d3.select("#bargraph")
-        .append("svg")
-        .attr("class","bargraph-svg")
-        .attr("width", width)
-        .attr("height", height);
-
-    svg.append("g")
-        .call(xAxis)
+      .call(g => g.selectAll(".tick line").remove())
+  
+      // create the svg
+      var svg = d3.select("#bargraph")
+      .append("svg")
+      .attr("class","bargraph-svg")
+      .attr("width", width)
+      .attr("height", height);
+  
+  
+      svg.append("g")
+          .call(xAxis)
+            .selectAll(".tick text")
+            .attr("class","bar-x-ticks")
+            //.attr("transform",`translate(0,${margin.top})`)
+            
+            
+  
+      svg.append("g")
+          .call(yAxis)
           .selectAll(".tick text")
-          .attr("class","bar-ticks")
-          .call(wrap, x.bandwidth()/2);
+          .attr("class","bar-y-ticks")
+          .call(wrap, margin.left);
           
-    svg.selectAll(".bar-ticks")
-        .call(wrap, x.bandwidth()/2);
-
-    svg.append("g")
-        .call(yAxis);
+        
+      svg.append("g")
+          .selectAll("g")
+          .data(series)
+          .join("g")
+            .attr("fill", function(d){
+              return d.key == "sttr" ? sttr_color : sbir_color;
+            })
+          .selectAll("rect")
+          .data(d => d)
+          .join("rect")
+            .attr("class","bargraph-rect")
+            .attr("y", (d, i) => y(d.data.Agency))
+            .attr("x", d => x(d[0]))
+            .attr("width", d => x(d[1]) - x(d[0]))
+            .attr("height", y.bandwidth())
+          .append("title")
+            .text(d => `${d.data.Agency} ${d.key}
+                ${formatValue(d.data[d.key])}`);
+  
+      // add the legend if we've already selected a CD
+      if (state.currentCd != null || Object.keys(series).length > 0) {
+        var legend = svg.append("g")
+        .attr("class","agency-bar-legend")
+  
+        legend
+            .append("rect")
+            .attr("class","bargraph-legend-rect")
+            .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom})`)
+            .attr("height",margin.left/4)
+            .attr("width",margin.left/4)
+            .attr("fill",sbir_color)
+  
+        legend
+            .append("rect")
+            .attr("class","bargraph-legend-rect")
+            .attr("transform",`translate(${width-margin.right*3},${height-margin.bottom- margin.left/3})`)
+            .attr("height",margin.left/4)
+            .attr("width",margin.left/4)
+            .attr("fill",sttr_color)
+            
+  
+        legend
+            .append("text")
+            .attr("class","agency-bar-legend-label")
+            .attr("transform",`translate(${ (width-margin.right*3) + 20},${height-margin.left/4})`)
+            .text("SBIR Grants")
+            .attr("font-size","0.8em")
+            
+  
+          legend
+            .append("text")
+            .attr("class","agency-bar-legend-label")
+            .attr("transform",`translate(${ (width-margin.right*3) + 20},${height-(margin.left*7/12)})`)
+            .text("STTR Grants")
+            .attr("font-size","0.8em")
+  
+      }
+  
       
-
-    svg.append("g")
-        .selectAll("g")
-        .data(series)
-        .join("g")
-          .attr("fill", function(d){
-            return d.key == "sttr" ? "blue" : "black";
-          })
-        .selectAll("rect")
-        .data(d => d)
-        .join("rect")
-          .attr("x", (d, i) => x(d.data.Agency))
-          .attr("y", d => y(d[1]))
-          .attr("height", d => y(d[0]) - y(d[1]))
-          .attr("width", x.bandwidth())
-        .append("title")
-          .text(d => `${d.data.Agency} ${d.key}
-              ${formatValue(d.data[d.key])}`);
-
-    */
-  }
-  else if (state.selectedGraph === "recips-graph"){
-   
-    // so that rows can find the popups, we need to use the id
-    //  as an attribute to the row
-    // on row hover, we'll be able to open up the marker popup for that row
-   
-
-    function tableFundFormat(d) {
-      const s = (d / 1e6).toFixed(2);
-      return `$${s}` 
-    }
-
-    var table = d3.select('#bargraph')
-      .append("table")
-      .attr("class","table table-hover table-striped recips-table")
-
-    table
-      .append('thead')
-      .attr("class","table-dark")
-      .append('tr')
-        .selectAll('th')
-        // Table column headers (here constant, but could be made dynamic)
-        .data(['Company', 'Grants Received', 'Funding ($M)'])
-      .enter().append('th')
-        .attr("class","recips-table-header")
-        .text(d => d);
-
-
-    var tablebody = table.append("tbody");
-    var rows = tablebody
-                .selectAll("tr")
-                .data(fundSummary)
-                .enter()
-                .append("tr")
-                .attr("id",d=>d.row_id+"|"+d.lat+"|"+d.lng)
-                // on row click, we'll go there in the map and generate the popup
-                .on("click",function(e){
-                  var id = e.target.parentElement.id
-                  var recip_id = id.split("|")[0]
-                  //console.log("e target parent element",e.target.parentElement)
-                  var zoom = mymap.getZoom() > maxZoomLevel ? mymap.getZoom() : maxZoomLevel;
-                  var recip_lat = id.split("|")[1]
-                  var recip_lng = id.split("|")[2]
-                  mymap.setView([recip_lat,recip_lng],zoom)
-
-                  var features = getFeaturesInView(mymap);
-                  //console.log("THIS IS YOUR MAP",mymap)
-                  //var features = getMarkers(mymap);
-                  var recip_marker = features.filter(d=>d._leaflet_id === recip_id);
-                  //console.log("HOVER TABLE ROW",e.target.parentElement.id, "recip marker",recip_marker,features)
-                  //recip_marker[i].openPopup();
-                  //console.log("PARENT IS",recip_marker[0]._parent)
-                  var marker = recip_marker[0]; 
-                  var lat = marker._latlng.lat; // get the marker's coords to go there and zoom beyond the cluster spiderfy
-                  var lng = marker._latlng.lng;
-                  
-
-                  mymap.setView([lat, lng], zoom);
-
-                  if (recip_marker.length > 0) {
-                    var popup = recip_marker[0].getPopup();
+  
+          
+        // Vertical Bars
+      /*
+      var series = d3.stack()
+      .keys(["sbir","sttr"])
+      (fundSummary)
+        .map(d => (d.forEach(v => v.key = d.key), d))
+  
+      console.log("SERIES",series)
+  
+      var y = d3.scaleLinear()
+      .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
+      .rangeRound([height - margin.bottom, margin.top])
     
-                    //var popup = L.popup({maxHeight: 150}).setContent(getMarkerAwards(e.target._leaflet_id));
-                    popup.setContent(getMarkerAwards(recip_id));
-                    //popup({maxHeight: 150})
-                    popup.update()
-                    recip_marker[0].openPopup();
-                  }
-                });
+  
+      var x = d3.scaleBand()
+      .domain(fundSummary.map(d => d.Agency))
+      .range([margin.left, width - margin.right])
+      .padding(0.5)
+  
+      var formatValue = x => isNaN(x) ? "N/A" : x.toLocaleString("en")
+      function formatTick(d) {
+        const s = (d / 1e6).toFixed(1);
+        return this.parentNode.nextSibling ? `\xa0${s}` : `$${s} million`;
+      }
+  
+      var yAxis = g => g
+        .attr("transform", `translate(2.5,0)`)
+        .call(d3.axisRight(y)
+                .tickSize(width-7.5)
+                .tickFormat(formatTick)
+                .ticks(6))
+            .call(g => g.select(".domain")
+                .remove())
+            .call(g => g.selectAll(".tick:not(:first-of-type) line")
+                .attr("stroke-opacity", 0.5)
+                .attr("stroke-dasharray", "2,2"))
+            .call(g => g.selectAll(".tick text")
+                .attr("x", 4)
+                .attr("dy", -4))
+        .call(g => g.selectAll(".domain").remove())
+  
+      var xAxis = g => g
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).tickSizeOuter(0))
+        .call(g => g.selectAll(".domain").remove())
+  
+  
+  
+  
+      var svg = d3.select("#bargraph")
+          .append("svg")
+          .attr("class","bargraph-svg")
+          .attr("width", width)
+          .attr("height", height);
+  
+      svg.append("g")
+          .call(xAxis)
+            .selectAll(".tick text")
+            .attr("class","bar-ticks")
+            .call(wrap, x.bandwidth()/2);
+            
+      svg.selectAll(".bar-ticks")
+          .call(wrap, x.bandwidth()/2);
+  
+      svg.append("g")
+          .call(yAxis);
+        
+  
+      svg.append("g")
+          .selectAll("g")
+          .data(series)
+          .join("g")
+            .attr("fill", function(d){
+              return d.key == "sttr" ? "blue" : "black";
+            })
+          .selectAll("rect")
+          .data(d => d)
+          .join("rect")
+            .attr("x", (d, i) => x(d.data.Agency))
+            .attr("y", d => y(d[1]))
+            .attr("height", d => y(d[0]) - y(d[1]))
+            .attr("width", x.bandwidth())
+          .append("title")
+            .text(d => `${d.data.Agency} ${d.key}
+                ${formatValue(d.data[d.key])}`);
+  
+      */
+    }
+    // table of recipients
+    else if (state.selectedGraph === "recips-graph"){
+     
+      // so that rows can find the popups, we need to use the id
+      //  as an attribute to the row
+      // on row hover, we'll be able to open up the marker popup for that row
+     
+  
+      function tableFundFormat(d) {
+        const s = (d / 1e6).toFixed(2);
+        return `$${s}` 
+      }
+  
+      var table = d3.select('#bargraph')
+        .append("table")
+        .attr("class","table table-hover table-striped recips-table")
+  
+      table
+        .append('thead')
+        .attr("class","table-dark")
+        .append('tr')
+          .selectAll('th')
+          // Table column headers (here constant, but could be made dynamic)
+          .data(['Company', 'Grants Received', 'Funding ($M)'])
+        .enter().append('th')
+          .attr("class","recips-table-header")
+          .text(d => d);
+  
+  
+      var tablebody = table.append("tbody");
+      var rows = tablebody
+                  .selectAll("tr")
+                  .data(fundSummary)
+                  .enter()
+                  .append("tr")
+                  .attr("id",d=>d.row_id+"|"+d.lat+"|"+d.lng)
+                  // on row click, we'll go there in the map and generate the popup
+                  .on("click",function(e){
+                    var id = e.target.parentElement.id
+                    var recip_id = id.split("|")[0]
+                    //console.log("e target parent element",e.target.parentElement)
+                    var zoom = mymap.getZoom() > maxZoomLevel ? mymap.getZoom() : maxZoomLevel;
+                    var recip_lat = id.split("|")[1]
+                    var recip_lng = id.split("|")[2]
+                    mymap.setView([recip_lat,recip_lng],zoom)
+  
+                    var features = getFeaturesInView(mymap);
+                    //console.log("THIS IS YOUR MAP",mymap)
+                    //var features = getMarkers(mymap);
+                    var recip_marker = features.filter(d=>d._leaflet_id === recip_id);
+                    //console.log("HOVER TABLE ROW",e.target.parentElement.id, "recip marker",recip_marker,features)
+                    //recip_marker[i].openPopup();
+                    //console.log("PARENT IS",recip_marker[0]._parent)
+                    var marker = recip_marker[0]; 
+                    var lat = marker._latlng.lat; // get the marker's coords to go there and zoom beyond the cluster spiderfy
+                    var lng = marker._latlng.lng;
+                    
+  
+                    mymap.setView([lat, lng], zoom);
+  
+                    if (recip_marker.length > 0) {
+                      var popup = recip_marker[0].getPopup();
+      
+                      //var popup = L.popup({maxHeight: 150}).setContent(getMarkerAwards(e.target._leaflet_id));
+                      popup.setContent(getMarkerAwards(recip_id));
+                      //popup({maxHeight: 150})
+                      popup.update()
+                      recip_marker[0].openPopup();
+                    }
+                  });
+  
+      // We built the rows using the nested array - now each row has its own array.
+      var cells = rows.selectAll("td")
+              // each row has data associated; we get it and enter it for the cells.
+                  .data(function(d) {
+                      //console.log(d);
+                      return [d.Company, d.count, d.total];
+                  })
+                  .attr("id",d=>d.Company)
+                  .enter()
+                  .append("td")
+                  .html(function(d,i){ 
+                    if(i == 0) {return toTitleCase(d.replaceAll("&amp;","&")).replaceAll(" Llc"," LLC").replaceAll(" llc"," LLC").replaceAll(" INC"," Inc.");   }
+                    else if (i == 1) {return d;}
+                    else {return tableFundFormat(d)                  };
+                  });
+                  
+  
+  
+  
+                  ///.text(function(d) {
+                  //    return d;
+                  //});
+  
+    }
+    // grants indicators
+    else if (state.selectedGraph === "grants-graph"){
+        var indicators = d3.select("#bargraph")
+          .append("div")
+          .attr("class","container grants-graph")
+          .attr("id","grants-graph-container")
+          .data(fundSummary)
 
-    // We built the rows using the nested array - now each row has its own array.
-    var cells = rows.selectAll("td")
-            // each row has data associated; we get it and enter it for the cells.
-                .data(function(d) {
-                    //console.log(d);
-                    return [d.Company, d.count, d.total];
-                })
-                .attr("id",d=>d.Company)
-                .enter()
-                .append("td")
-                .html(function(d,i){ 
-                  if(i == 0) {return toTitleCase(d.replaceAll("&amp;","&")).replaceAll(" Llc"," LLC").replaceAll(" llc"," LLC").replaceAll(" INC"," Inc.");   }
-                  else if (i == 1) {return d;}
-                  else {return tableFundFormat(d)                  };
-                });
-                
+        console.log("grants graph fund summ",fundSummary)
+
+        function formatFund(d) {
+          if (parseInt(d) > 1e6){
+            var s = (parseInt(d) / 1e6).toFixed(1);
+            return `$${s} M`;
+          }
+          else {
+            var s = (parseInt(d) / 1e3).toFixed(1);
+            return `$${s} K`;
+          }
+        };
+
+        // 
+        var first_row = indicators.append("div").attr("class","row justify-content-md-center grants-detail-row")
+      
+            first_row.append("div").attr("class","col-sm-5 grants-detail-col")
+              .append("div").attr("class","row indicator-main-row")
+              .append("p").attr("class","indicator-main-stat")
+              .text(d=>formatFund(d.total))
+              .append("div").attr("class","row indicator-sub-row")
+              .append("p").attr("class","indicator-sub-stat")
+              .html(d=>"total awarded, to</br><strong>"+String([...new Set(d.companies)].length)+" grantee(s)</strong> ")
+
+            first_row.append("div").attr("class","col-sm-5 grants-detail-col")
+              .append("div").attr("class","row indicator-main-row")
+              .append("p").attr("class","indicator-main-stat")
+              .text(d=>formatFund(d3.median(d.award_amts)))
+              .append("div").attr("class","row indicator-sub-row")
+              .append("p").attr("class","indicator-sub-stat")
+              .text("Median award amount")
+
+        var second_row = indicators.append("div").attr("class","row justify-content-md-center grants-detail-row")
+
+            second_row.append("div").attr("class","col-sm-5 grants-detail-col")
+              .append("div").attr("class","row indicator-main-row")
+              .append("p").attr("class","indicator-main-stat")
+              .text(d=>formatFund(d.phase_1))
+              .append("div").attr("class","row indicator-sub-row")
+              .append("p").attr("class","indicator-sub-stat")
+              .html(d=>"Phase I funding</br><strong>"+String(d.phase_1_count)+" grants</strong>")
+
+            second_row.append("div").attr("class","col-sm-5 grants-detail-col")
+              .append("div").attr("class","row indicator-main-row")
+              .append("p").attr("class","indicator-main-stat")
+              .text(d=>formatFund(d.phase_2))
+              .append("div").attr("class","row indicator-sub-row")
+              .append("p").attr("class","indicator-sub-stat")
+              .html(d=>"Phase II funding</br><strong>"+String(d.phase_2_count)+" grants</strong>")
+       
+        var third_row = indicators.append("div").attr("class","row justify-content-md-center grants-detail-row")
+
+            third_row.append("div").attr("class","col-sm-5 grants-detail-col")
+              .append("div").attr("class","row indicator-main-row")
+              .append("p").attr("class","indicator-main-stat")
+              .text(d=> d3.format(".0%")(d.women_owned/d.total))
+              .append("div").attr("class","row indicator-sub-row")
+              .append("p").attr("class","indicator-sub-stat")
+              .html(d=>"funding to companies <strong>owned by women</strong>")
+              
+            third_row.append("div").attr("class","col-sm-5 grants-detail-col")
+              .append("div").attr("class","row indicator-main-row")
+              .append("p").attr("class","indicator-main-stat")
+              .text(d=> d3.format(".0%")(d.socioecon/d.total))
+              .append("div").attr("class","row indicator-sub-row")
+              .append("p").attr("class","indicator-sub-stat")
+              .html(d=>"funding to companies owned by <strong>socially & economically disadvantaged</strong> groups<strong>")
+
+        
+
+        var final_row = indicators.append("div").attr("class","row justify-content-center grants-detail-row")
+
+            final_row.append("div").attr("class","col-sm-5 grants-detail-col")
+              .append("div").attr("class","row indicator-main-row")
+              .append("p").attr("class","indicator-main-stat")
+              .text(d=> d3.format(".0%")(d.hubzone/d.total))
+              .append("div").attr("class","row indicator-sub-row")
+              .append("p").attr("class","indicator-sub-stat")
+              .html(d=>"funding to companies in <strong>hub-zones</strong>")
 
 
 
-                ///.text(function(d) {
-                //    return d;
-                //});
+
+
+
+        //indicators
+    };
+
+  }
+  // else show the no data message... 
+  else {
+    var graphArea = d3.select("#bargraph").append("p").attr("class","no-data-graph").text("This district did not receive funding in the selected years from the selected agencies. Select another district or expand the criteria to see more about this district.")
 
   };
-  
-
-
-
+ 
 };
 
 // return markers from map

@@ -16,8 +16,14 @@ html, body {
 }
 #page-title{
     text-align: center;
-    margin-top: 1em;
-    margin-bottom: 1em;
+    margin-top: 0.5em;
+    margin-bottom: 0.25em;
+}
+
+#page-subtitle{
+    text-align: center;
+    margin-top: 0.25em;
+    margin-bottom: 0.5em;
 }
 
 #intro-panel{
@@ -129,10 +135,12 @@ html, body {
 }
 .leaflet-popup-content-wrapper{
     border-radius: 6px !important;
-    background-color: #555 !important;
+    background-color: rgb(33,38,41) !important;
+    opacity: 0.9;
 }
 .leaflet-popup-tip {
-    background-color: #555 !important;
+    background-color: rgb(33,38,41) !important;
+    opacity: 0.9;
 
 }
 
@@ -140,7 +148,8 @@ html, body {
 
 .awards-pop-header{
     position: sticky;
-    background-color: #555;
+    background-color: rgb(33,38,41);
+    opacity: 0.9;
     color: white;
     line-height: 1.75em;
     font-size: 1.25em;
@@ -536,10 +545,19 @@ html, body {
     font-size: 0.9em;
 
 }
+.no-data-graph, .no-data-vocab{
+    font-size: 0.87em;
+    font-style: italic;
+}
+.no-data-graph {
+    padding: 1em;
+}
+
+
 #bargraph {
     height: 98%;
     width: 100%;
-    /*background-color: rgb(235, 238, 240);*/
+    background-color: #f8f9fa;
     border: 1.5px solid rgb(222,226,230);
     overflow-y: auto;
     overflow-x: hidden;
@@ -554,10 +572,68 @@ html, body {
     font-size: 1.15em;
 }
 
+.bargraph-rect{
+    /*box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;*/
+
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+
+}
+
+.bargraph-legend-rect{
+  /*box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;*/
+
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+
+}
+
+
+.grants-graph{
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+}
+
+.grants-details-row {
+    height: 15%;
+}
+.grants-detail-col {
+    background-color:  rgb(33,38,41);
+    fill-opacity: 0.4;
+    margin: 0.2em;
+    border-radius: 6px;
+    padding-top: 7.5%;
+    /*box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;*/
+
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;   
+
+    color: whitesmoke
+
+}
+
+.indicator-main-row, .indicator-sub-row{
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+.indicator-main-stat{
+    font-size: 1.35em;
+    font-weight: bold;
+}
+.indicator-sub-stat{
+    font-size: 0.65em;
+    font-weight: lighter;
+
+}
+
+
+
+
 #vocab-pills{
     height: 98%;
     width: 100%;
-    background-color: rgb(235, 238, 240);
+    background-color: #f8f9fa;
     border: 1.5px solid rgb(222,226,230);
     padding: 1em;
     overflow-y: auto;
@@ -577,6 +653,9 @@ html, body {
 #term-badge{
     margin: 0.2em;
     font-size: 0.9em;
+    /*box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;*/
+
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 
 
