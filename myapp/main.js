@@ -151,8 +151,8 @@ const maxZoomLevel = 10;
 
 // colors for the bar graph
 //const sbir_color = "#181818";
-const sttr_color = "#808080";
-const sbir_color = "#0F6EFD"
+const sttr_color = "rgb(33,38,41,0.9)";
+const sbir_color = "rgb(15,110,253,0.9)"
 //const sttr_color = "#808080";
 
 let vocabs = ["EIGE","AGROVOC","STW","EU-SCIVOC","EUVOC","GEMET","MeSH"];
@@ -1909,7 +1909,7 @@ function showCdVocab(data){
     d3.select('.no-data-vocab').remove();
 
 
-    var vocabArea = d3.select("#vocab-pills").append("p").attr("class","no-data-vocab").text("This district did not receive funding in the selected years from the selected agencies. Select another district or expand the criteria to see more about this district.")
+    var vocabArea = d3.select("#vocab-pills").append("p").attr("class","no-data-vocab").text("There are no keywords from the selected vocabularies, or this district did not receive funding in the selected years from the selected agencies. Select another vocabulary, or expand the criteria to learn more about this district.")
   }
   else  {
       //console.log("SHOW CD VOCAB",data)
@@ -2069,6 +2069,7 @@ function showCdGraph(fundSummary,countSummary) {
     // bar graph for agency funding
     if (state.selectedGraph === "agency-graph") {
 
+
       var width = parseInt($('#bargraph').css('width')),
       height = parseInt($('#bargraph').css('height')),
       paddingInner = 0.2,
@@ -2165,8 +2166,8 @@ function showCdGraph(fundSummary,countSummary) {
             .attr("width", d => x(d[1]) - x(d[0]))
             .attr("height", y.bandwidth())
           .append("title")
-            .text(d => `${d.data.Agency} ${d.key}
-                ${formatValue(d.data[d.key])}`);
+            .text(d => `${d.data.Agency}, ${String(d.key).toUpperCase()} Funding (${state.yearRange[0]}-${state.yearRange[state.yearRange.length - 1]}):
+            $${formatValue(d.data[d.key])}`);
   
       // add the legend if we've already selected a CD
       if (state.currentCd != null || Object.keys(series).length > 0) {
@@ -2423,7 +2424,7 @@ function showCdGraph(fundSummary,countSummary) {
               .text(d=>formatFund(d.total))
               .append("div").attr("class","row indicator-sub-row")
               .append("p").attr("class","indicator-sub-stat")
-              .html(d=>"total awarded, to</br><strong>"+String([...new Set(d.companies)].length)+" grantee(s)</strong> ")
+              .html(d=>"Total awarded, to</br><strong>"+String([...new Set(d.companies)].length)+" grantee(s)</strong> ")
 
             first_row.append("div").attr("class","col-sm-5 grants-detail-col")
               .append("div").attr("class","row indicator-main-row")
@@ -2431,7 +2432,7 @@ function showCdGraph(fundSummary,countSummary) {
               .text(d=>formatFund(d3.median(d.award_amts)))
               .append("div").attr("class","row indicator-sub-row")
               .append("p").attr("class","indicator-sub-stat")
-              .text("Median award amount")
+              .html(d=>"Median award, across</br><strong>"+String(d.award_amts.length)+" grants</strong>")
 
         var second_row = indicators.append("div").attr("class","row justify-content-md-center grants-detail-row")
 
@@ -2459,7 +2460,7 @@ function showCdGraph(fundSummary,countSummary) {
               .text(d=> d3.format(".0%")(d.women_owned/d.total))
               .append("div").attr("class","row indicator-sub-row")
               .append("p").attr("class","indicator-sub-stat")
-              .html(d=>"funding to companies <strong>owned by women</strong>")
+              .html(d=>"Funding to companies <strong>owned by women</strong>")
               
             third_row.append("div").attr("class","col-sm-5 grants-detail-col")
               .append("div").attr("class","row indicator-main-row")
@@ -2467,7 +2468,7 @@ function showCdGraph(fundSummary,countSummary) {
               .text(d=> d3.format(".0%")(d.socioecon/d.total))
               .append("div").attr("class","row indicator-sub-row")
               .append("p").attr("class","indicator-sub-stat")
-              .html(d=>"funding to companies owned by <strong>socially & economically disadvantaged</strong> groups<strong>")
+              .html(d=>"Funding to companies owned by <strong>socially & economically disadvantaged</strong> groups<strong>")
 
         
 
@@ -2479,7 +2480,7 @@ function showCdGraph(fundSummary,countSummary) {
               .text(d=> d3.format(".0%")(d.hubzone/d.total))
               .append("div").attr("class","row indicator-sub-row")
               .append("p").attr("class","indicator-sub-stat")
-              .html(d=>"funding to companies in <strong>hub-zones</strong>")
+              .html(d=>"Funding to companies in <strong>hub-zones</strong>")
 
 
 
@@ -2492,7 +2493,7 @@ function showCdGraph(fundSummary,countSummary) {
   }
   // else show the no data message... 
   else {
-    var graphArea = d3.select("#bargraph").append("p").attr("class","no-data-graph").text("This district did not receive funding in the selected years from the selected agencies. Select another district or expand the criteria to see more about this district.")
+    var graphArea = d3.select("#bargraph").append("p").attr("class","no-data-graph").text("This district does not appear to have received funding in the selected years from the selected agencies. Select another district or expand the criteria to learn more about this district.")
 
   };
  

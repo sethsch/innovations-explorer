@@ -5,11 +5,6 @@ html, body {
 }
 
 
-
-
-
-
-
 #title-panel{
     width: 100vw;
     padding: 2%;
@@ -85,8 +80,7 @@ html, body {
 }
 .year-input-container, .agency-input-container{
     width: 100%;
-    background-color: rgb(33,38,41);
-    opacity: 0.9;
+    background-color: rgb(33,38,41,0.9);
     padding: 0.5em;
     color:white;
 }
@@ -95,7 +89,25 @@ html, body {
 }
 .year-update-btn, .agency-update-btn {
     width: 100%;
+   
+   
 }
+
+
+.year-update-btn:hover, .year-update-btn:focus, .year-update-btn:active, .year-update-btn.active, .open>.dropdown-toggle.year-update-btn {
+    color: #fff;
+    background-color:  rgb(15,110,253,0.95);
+    border-color:  rgb(15,110,253,0.95); /*set the color you want here*/
+}
+.agency-update-btn:hover, .agency-update-btn:focus, .agency-update-btn:active, .agency-update-btn.active, .open>.dropdown-toggle.agency-update-btn {
+    color: #fff;
+    background-color:  rgb(15,110,253,0.95);
+    border-color:  rgb(15,110,253,0.95); /*set the color you want here*/
+}
+
+
+
+
 .update-divider {
     padding-top: 0.5em;
     border-top: 1px solid whitesmoke;
@@ -122,7 +134,6 @@ html, body {
 #map{
     height:32%;
     width: 100%;
-    background-color: #555;
 }
 
 
@@ -215,11 +226,13 @@ html, body {
 
 #legend-infobar{
     background-color:rgb(248,249,250);
+    box-shadow: 0 2px 1px -1px  rgba(60, 64, 67, 0.15);
     width: 100%;
     position: relative;
     height: 5vw;
     padding-top: 0.5vw;
     padding-bottom: 0.5vw;
+    margin-bottom: 0.75%;
 }
 
 .legend{
@@ -520,6 +533,10 @@ html, body {
 
 }
 
+#district-summary-text {
+
+}
+
 .jump-button{
     margin:0;
     padding: 0;
@@ -558,6 +575,9 @@ html, body {
     height: 98%;
     width: 100%;
     background-color: #f8f9fa;
+    /*box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;*/
+
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     border: 1.5px solid rgb(222,226,230);
     overflow-y: auto;
     overflow-x: hidden;
@@ -574,14 +594,14 @@ html, body {
 
 .bargraph-rect{
     /*box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;*/
-
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-
 }
+
+
+
 
 .bargraph-legend-rect{
   /*box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;*/
-
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 
 }
@@ -598,7 +618,7 @@ html, body {
     height: 15%;
 }
 .grants-detail-col {
-    background-color:  rgb(33,38,41);
+    background-color:  rgb(33,38,41,0.9);
     fill-opacity: 0.4;
     margin: 0.2em;
     border-radius: 6px;
@@ -635,6 +655,9 @@ html, body {
     width: 100%;
     background-color: #f8f9fa;
     border: 1.5px solid rgb(222,226,230);
+    /*box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;*/
+
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     padding: 1em;
     overflow-y: auto;
     overflow-x: hidden;
