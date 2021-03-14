@@ -1257,7 +1257,7 @@ function linearColor(data, dimension){
 
   var colorscale = d3.scaleQuantize()
       .domain(d3.extent(d3.map(parcoords.data(),d=>d[state.color])))
-      .range(["rgb(43, 131, 186,0.3)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
+      .range(["rgb(43, 131, 186,0.4)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
       //.range(d3.schemeSpectral[6])
     
 
@@ -1996,7 +1996,13 @@ function getBorderStyle(feature,clustVar){
     return border;
   }
   else if (state.parcoordsState === "funding"){
-    return ['darkslategray',0.5,0.6]
+    var district = feature.properties.AFFGEOID;
+    var border = ['darkslategray',1.25,0.6]
+    if (state.currentCd === district) {border[1] = 4; border[2] = 1}
+    //else if (state.lastCd === district && border[0] === 'darkslategray') {border[1] = 0.5; border[2] = 0.6}
+    else {border[1] = 1.25; border[2] = 0.6;}
+    return border;
+    
   }
   
 };
@@ -2869,7 +2875,7 @@ function showCdGraph(fundSummary,countSummary) {
 
         
 
-        var final_row = indicators.append("div").attr("class","row justify-content-center grants-detail-row")
+        var final_row = indicators.append("div").attr("class","row justify-content-md-center grants-detail-row")
 
             final_row.append("div").attr("class","col-sm-5 grants-detail-col")
               .append("div").attr("class","row indicator-main-row")
@@ -2878,6 +2884,14 @@ function showCdGraph(fundSummary,countSummary) {
               .append("div").attr("class","row indicator-sub-row")
               .append("p").attr("class","indicator-sub-stat")
               .html(d=>"Funding to companies in <strong>hub-zones</strong>")
+
+            final_row.append("div").attr("class","col-sm-5 grants-detail-col")
+              .append("div").attr("class","row indicator-main-row")
+              .append("p").attr("class","indicator-main-stat")
+              .text(d=> d3.median(d.employees))
+              .append("div").attr("class","row indicator-sub-row")
+              .append("p").attr("class","indicator-sub-stat")
+              .html(d=>"Median <strong>number of employees</strong> at grantee companies")
 
 
 
