@@ -55,7 +55,7 @@ let state = {
   defaultHiddenAxes: {econ:["id","GEOID","name","profile"],
                       funding: ["id","GEOID","year","name"]},
   hiddenAxes: {econ:["id","GEOID","name","profile"],funding: ["id","GEOID","year","name"]},
-  currentAxes: [],
+  currentAxes: {econ: [], funding: []},
   defaultColor: {econ:"AGRIC", funding:"total"},
   color: null,
   paletteInfoString: "",
@@ -413,10 +413,14 @@ function init() {
   .on("change",function(){
     if (d3.select(this).property('checked') == true) {
       state.selectedAgencies.push($(this).attr("id").replaceAll("-"," "));
+      //let axis = $(this).attr("id").replaceAll("-"," ")
+      //state.currentAxes["funding"].push(agencyNames[axis])
       //console.log("checked so selected agencies is",state.selectedAgencies,"selected is");
     }
     else {
       state.selectedAgencies = state.selectedAgencies.filter(d=>d !== $(this).attr("id").replaceAll("-"," "));
+      let axis = $(this).attr("id").replaceAll("-"," ")
+      state.hiddenAxes["funding"].push(agencyNames[axis])
       //console.log("unchecked so selected agencies is",state.selectedAgencies,"clicked on",$(this).attr("id"));
     }
   });
@@ -515,7 +519,7 @@ function draw() {
     }
     parcoords
       .data(state.procData)
-      //.dimensions(state.currentAxes) // using state variable to hide axes dynamically when needed
+      //.dimensions(state.currentAxes[state.parcoordsState]) // using state variable to hide axes dynamically when needed
       .hideAxis(state.defaultHiddenAxes["econ"])
       .render()
       // TO DO: let this parameter be user/customizable -- 
@@ -531,13 +535,17 @@ function draw() {
   }
   else if (state.parcoordsState === "funding"){
 
+    let curr_dims = {};
+    curr_dims["total"] = pc_dims["total"]
+    state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
     
+    console.log("CURR DIMS",state.currentAxes[state.parcoordsState],curr_dims)
     
     // doing these draws without reference to the state because we want NOT to add commonScale to this instance...
     parcoords
       .data(state.procData)
-      .hideAxis(state.defaultHiddenAxes["funding"]) 
-      .dimensions(pc_dims)
+      .hideAxis(state.hiddenAxes["funding"]) 
+      .dimensions(curr_dims)
       .render()
       .interactive()
       .reorderable() // if this is on, need to figure out how to make the state keep track of order, so that removal popover works right
@@ -593,13 +601,13 @@ function draw() {
     
   // DRAW - set up popovers on labels
   parcoords.svg.selectAll(".label")
-    .attr("axis-id",(d,i)=>state.currentAxes[i])
+    .attr("axis-id",(d,i)=>state.currentAxes[state.parcoordsState][i])
     .attr("data-bs-container",'body') // add the popover menu from bootstrap, to allow hiding
     .attr("data-bs-toggle","popover")
     .attr("data-bs-placement","top")
     .attr("data-bs-html","true")
     // add this function to all popover axis-remove text
-    .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}">&times;</div>`
+    .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[state.parcoordsState][i]}">&times;</div>`
     ) // this adds the content, on click of content, remove axis
     .attr("data-bs-trigger",'manual')
     .on("mouseenter", function() {
@@ -1079,46 +1087,50 @@ function updateHides(d){
   
   state.hiddenAxes[state.parcoordsState] = [... new Set(state.hiddenAxes[state.parcoordsState])]
 
-  var justHidden = state.currentAxes.indexOf(d);
-  console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes);
+  var justHidden = state.currentAxes[state.parcoordsState].indexOf(d);
+  console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes[state.parcoordsState]);
 
 
   // MARCH 12 - if updating parcoords plot, current Axes come from diff source than industryNames
 
   if (state.parcoordsState === "econ") {
-    state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes["econ"].includes( el ) );
+    state.currentAxes[state.parcoordsState] = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes["econ"].includes( el ) );
 
   }
   else if (state.parcoordsState === "funding"){
-    state.currentAxes = agency_dims.filter( ( el ) => !state.hiddenAxes["funding"].includes( el ))
+    state.currentAxes[state.parcoordsState] = agency_dims.filter( ( el ) => !state.hiddenAxes["funding"].includes( el ))
   }
-  console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
+  console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes[state.parcoordsState]);
 
   // then update the ids for the new label order, so popovers work
   parcoords.svg.selectAll(".label")
-  .attr("axis-id",(d,i)=>state.currentAxes[i])
-  .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[i]}">&times;</div>`
+  .attr("axis-id",(d,i)=>state.currentAxes[state.parcoordsState][i])
+  .attr("data-bs-content",  (d,i)=> `<div class="axis-remove" data-bs-dismiss="alert" id="${state.currentAxes[state.parcoordsState][i]}">&times;</div>`
   );
 
   parcoords.svg.selectAll(".dimension")
-  .attr("axis-id",(d,i)=>state.currentAxes[i]);
+  .attr("axis-id",(d,i)=>state.currentAxes[state.parcoordsState][i]);
 
 
   // if that item was the color palette, pass the selection onto the first axis still available
   // and update the palette string
   if (state.color === d) {
-    change_color(state.currentAxes[0]);
-    state.color = state.currentAxes[0];
+    change_color(state.currentAxes[state.parcoordsState][0]);
+    state.color = state.currentAxes[state.parcoordsState][0];
     parcoords.bundleDimension(state.color);
-    //console.log("so we switched the bolding and color choice to",state.currentAxes[0]," from the list where axes are",state.currentAxes);
+    //console.log("so we switched the bolding and color choice to",state.currentAxes[state.parcoordsState][0]," from the list where axes are",state.currentAxes[state.parcoordsState]);
 
 
   };
   //console.log("BEFORE RESETTING DIM",parcoords.state);
   if (state.parcoordsState === "funding"){
-    let new_dims = pc_dims;
-    delete new_dims[d]
-    parcoords.dimensions(new_dims).hideAxis(state.hiddenAxes[state.parcoordsState])
+    let curr_dims = {};
+    curr_dims["total"] = pc_dims["total"]
+    state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
+
+
+    delete curr_dims[d]
+    parcoords.dimensions(curr_dims).hideAxis(state.hiddenAxes[state.parcoordsState])
   }
   else {
     parcoords.hideAxis(state.hiddenAxes[state.parcoordsState])
@@ -1188,7 +1200,7 @@ function change_color(dimension) {
   //console.log("color Dim",state.color)
   parcoords.svg.selectAll(".dimension")
     .style("font-weight", "normal")
-    .filter(function(d,i) { return state.currentAxes[i] == dimension; })
+    .filter(function(d,i) { return state.currentAxes[state.parcoordsState][i] == dimension; })
     .style("font-weight", "bold")
 
   //MARCH 12 - want to change this with alternate color scale if it's not industries data
@@ -1407,7 +1419,7 @@ function initParcoords(){
     var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
     state.procData = state.acsData;
     // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
-    state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes["econ"].includes( el ) );
+    state.currentAxes[state.parcoordsState] = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes["econ"].includes( el ) );
     // INIT - set up the base of parcoords and its settings
     parcoords = ParCoords()("#parcoords")
       .rate(20)
@@ -1426,7 +1438,7 @@ function initParcoords(){
       .alpha(0.6) 
 
       // MARCH 12 -- these would change depending on data source for pc data
-      state.currentHiddenAxes = state.defaultHiddenAxes["econ"];
+      state.hiddenAxes[state.parcoordsState] = state.defaultHiddenAxes["econ"];
       state.color = state.defaultColor["econ"];
 
       // INIT - Corresponding Slick Grid columns
@@ -1448,7 +1460,12 @@ function initParcoords(){
     //console.log("STATE is now, on swithcing to funding",state)
       // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
     state.hiddenAxes["funding"] = state.defaultHiddenAxes["funding"]
-    state.currentAxes = agency_dims.filter( ( el ) => !state.defaultHiddenAxes["funding"].includes( el ) );
+    for (i = 0; i<Object.values(agencyNames).length; i++){
+      if (!state.selectedAgencies.includes(Object.keys(agencyNames)[i])){
+        state.hiddenAxes["funding"].push(Object.values(agencyNames)[i])
+      }
+    }
+    state.currentAxes[state.parcoordsState] = agency_dims.filter( ( el ) => !state.hiddenAxes["funding"].includes( el ) );
     // INIT - set up the base of parcoords and its settings
 
 
@@ -1471,10 +1488,6 @@ function initParcoords(){
 
 
 
-
-
-      // MARCH 12 -- these would change depending on data source for pc data
-      state.currentHiddenAxes = state.defaultHiddenAxes[state.parcoordsState];
       state.color = state.defaultColor[state.parcoordsState];
 
 
@@ -1679,6 +1692,7 @@ function switchParcoordsData(){
         
 
         if (state.yearRange.length > 1){
+          console.log("at start of summ loop",state.selectedAgencies)
           var aggCdFund = {};
           var result = filtCdFund.reduce(function(r, o) {
             var key = String(o.GEOID)
@@ -1689,11 +1703,17 @@ function switchParcoordsData(){
             } else {
               for (i = 0; i<Object.values(agencyNames).length; i++){
                 let agency = String(Object.values(agencyNames)[i]);
-                if(!aggCdFund[key][agency]){
-                  aggCdFund[key][agency] = 0
+                let agency_full = String(Object.keys(agencyNames)[i]);
+                if (state.selectedAgencies.includes(agency_full)){
+                    console.log("agency",agency)
+                  if(!aggCdFund[key][agency]){
+                    aggCdFund[key][agency] = 0
+                  }
+                  aggCdFund[key][agency] += parseInt(o[agency])
+                  aggCdFund[key]["total"] += parseInt(o[agency])
                 }
-                aggCdFund[key][agency] += parseInt(o[agency])
-                aggCdFund[key]["total"] += parseInt(o[agency])
+                
+                
                 //console.log("agency",parseFloat(o[agency]))
               }
               aggCdFund[key]["GEOID"] = key
@@ -1734,7 +1754,7 @@ function switchParcoordsData(){
         if (state.lastClusterGroup != null) {
           state.lastClusterGroup.clearLayers();
         }
-
+        
         initParcoords();
         draw();
             //console.log("DATA AT FIRST LOAD",data)
