@@ -1081,6 +1081,18 @@ function getCdStats(district){
 
 
 function updateHides(d){
+
+  if (state.parcoordsState === "funding"){
+    if (d !== "total"){
+      let agency = Object.keys(agencyNames)[Object.values(agencyNames).indexOf(d)]
+      agency = agency.replaceAll(" ","-")
+      console.log("this would be the checkbox id",agency)
+      d3.select("#"+agency).property("checked",false)
+   
+    }
+  }
+
+
   console.log("bac to state",state)
   state.hiddenAxes[state.parcoordsState].push(d)
 
@@ -1098,7 +1110,11 @@ function updateHides(d){
 
   }
   else if (state.parcoordsState === "funding"){
-    state.currentAxes[state.parcoordsState] = agency_dims.filter( ( el ) => !state.hiddenAxes["funding"].includes( el ))
+    let curr_dims = {};
+    curr_dims["total"] = pc_dims["total"]
+    state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
+
+    state.currentAxes[state.parcoordsState] = Object.keys(curr_dims).filter( ( el ) => !state.hiddenAxes["funding"].includes( el ))
   }
   console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes[state.parcoordsState]);
 
@@ -1465,7 +1481,11 @@ function initParcoords(){
         state.hiddenAxes["funding"].push(Object.values(agencyNames)[i])
       }
     }
-    state.currentAxes[state.parcoordsState] = agency_dims.filter( ( el ) => !state.hiddenAxes["funding"].includes( el ) );
+    let curr_dims = {};
+    curr_dims["total"] = pc_dims["total"]
+    state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
+
+    state.currentAxes[state.parcoordsState] = Object.keys(curr_dims).filter( ( el ) => !state.hiddenAxes["funding"].includes( el ) );
     // INIT - set up the base of parcoords and its settings
 
 
