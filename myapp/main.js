@@ -145,7 +145,7 @@ function fundedChloro(feature,normVar){
       if (state.fundedGEOIDS.includes(feature.properties.AFFGEOID)){
         return chloroScale(feature.properties[normVar]);
       }
-      else {return "rgb(161, 161, 161,0.7)";}
+      else {return "rgb(161, 161, 161,0.4)";}
     }
     // if the all_distr filter is on... just use chloroscale to show econ variables
     else {return chloroScale(feature.properties[normVar])}
@@ -163,7 +163,7 @@ function fundedChloro(feature,normVar){
         else {return chloroLinear(cdFundFilt[0][state.color])}
  
       }
-      else {return "rgb(161, 161, 161,0.7)";}
+      else {return "rgb(161, 161, 161,0.4)";}
     }
     else {
       // get that feature from the funding data and return the chloroscale for that value...
@@ -451,9 +451,15 @@ function init() {
     }  
   )
   // years update button
-  $("#year-update-btn").on("click",filterAwardsRecips)
+  $("#year-update-btn").on("click",function(){
+      filterAwardsRecips();
+      switchParcoordsData();
+      })
   // agency update button
-  $("#agency-update-btn").on("click",filterAwardsRecips)
+  $("#agency-update-btn").on("click",function(){
+    filterAwardsRecips();
+    switchParcoordsData();
+    })
 
 
   // setup the radio buttons
@@ -832,8 +838,13 @@ function changeYears(){
   var year_vals = toNumbers(state.selectedYears)
   year_vals.sort(function(a, b){return a-b});
 
-  var yearsRange = range(year_vals[0],year_vals[1]+1,1);
-  state.yearRange = yearsRange;
+  if (year_vals[0]===year_vals[1]){
+    state.yearRange = [year_vals[0]]
+  }
+  else {
+    var yearsRange = range(year_vals[0],year_vals[1]+1,1);
+    state.yearRange = yearsRange;
+  }  
   //console.log("YEARS RANGE",yearsRange,"state",state.selectedYears,state.yearRange)
   //return yearsRange;
 };
@@ -1204,11 +1215,12 @@ function chloroLinear(d){
   extent[0] = 1
   var colorscale = d3.scaleQuantize()
       .domain(extent)
-      .range(d3.schemeSpectral[6])
+      .range(["rgb(43, 131, 186,0.7)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
+      //.range(d3.schemeSpectral[6])
       
 
   if (d>0){return colorscale(d)}
-  else {return "rgb(161, 161, 161,0.7)";}
+  else {return "rgb(161, 161, 161,0.4)";}
 };
 
 
@@ -1217,10 +1229,11 @@ function linearColor(data, dimension){
 
   var colorscale = d3.scaleQuantize()
       .domain(d3.extent(d3.map(parcoords.data(),d=>d[state.color])))
-      .range(d3.schemeSpectral[6])
+      .range(["rgb(43, 131, 186,0.3)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
+      //.range(d3.schemeSpectral[6])
     
 
-  return function(d) { if (d[dimension] === 0) {return "rgb(161, 161, 161,0.7)";}
+  return function(d) { if (d[dimension] === 0) {return "rgb(161, 161, 161,0.8)";}
                       else {return colorscale(d[dimension])}
   }
                       
@@ -1410,7 +1423,7 @@ function initParcoords(){
       })*/
       .smoothness(0.13)
       .alphaOnBrushed(0.15)
-      .alpha(0.4) 
+      .alpha(0.6) 
 
       // MARCH 12 -- these would change depending on data source for pc data
       state.currentHiddenAxes = state.defaultHiddenAxes["econ"];
@@ -1454,7 +1467,7 @@ function initParcoords(){
       })
       .smoothness(0.13)
       .alphaOnBrushed(0.15)
-      .alpha(0.6)
+      .alpha(0.8)
 
 
 
@@ -1578,6 +1591,7 @@ function filterAwardsRecips(){
   //console.log("update button works");
   // filter awards by years and agencies
   console.log("stateyear range",state.yearRange,"sel years",state.selectedYears)
+  state.yearRange = [...new Set(state.yearRange)]
   state.filtAwards = state.awardsData.filter( d=> state.yearRange.includes(parseInt(d.Award_Year))) ;
   state.filtAwards = state.filtAwards.filter( d=> state.selectedAgencies.includes(d.Agency));
 
@@ -1659,38 +1673,67 @@ function switchParcoordsData(){
         data.forEach(function(d,i) { d.id = d.id || i; });
         // if we've read the data once before, then just set the current filters
         state.cdAggData = data;
+        console.log("year range",state.yearRange)
         let filtCdFund = state.cdAggData.filter(d=>state.yearRange.includes(parseInt(d.year)))
         console.log("AGG DATA",state.cdAggData,"FILT CD FUND",filtCdFund)
-        var aggCdFund = {};
-        var result = filtCdFund.reduce(function(r, o) {
-          var key = String(o.GEOID)
-          
-          if(!aggCdFund[key]) {
-            aggCdFund[key] = {"name": o["name"],"total":0}
-            r.push(aggCdFund[key]);
-          } else {
-            for (i = 0; i<Object.values(agencyNames).length; i++){
-              let agency = String(Object.values(agencyNames)[i]);
-              if(!aggCdFund[key][agency]){
-                aggCdFund[key][agency] = 0
+        
+
+        if (state.yearRange.length > 1){
+          var aggCdFund = {};
+          var result = filtCdFund.reduce(function(r, o) {
+            var key = String(o.GEOID)
+            
+            if(!aggCdFund[key]) {
+              aggCdFund[key] = {"name": o["name"],"total":0}
+              r.push(aggCdFund[key]);
+            } else {
+              for (i = 0; i<Object.values(agencyNames).length; i++){
+                let agency = String(Object.values(agencyNames)[i]);
+                if(!aggCdFund[key][agency]){
+                  aggCdFund[key][agency] = 0
+                }
+                aggCdFund[key][agency] += parseInt(o[agency])
+                aggCdFund[key]["total"] += parseInt(o[agency])
+                //console.log("agency",parseFloat(o[agency]))
               }
-              aggCdFund[key][agency] += parseInt(o[agency])
-              aggCdFund[key]["total"] += parseInt(o[agency])
-              //console.log("agency",parseFloat(o[agency]))
+              aggCdFund[key]["GEOID"] = key
+              aggCdFund[key]["id"] = key
+              
+            }
+            return r;
+          }, []);
+          // unpack it
+          aggCdFund = Object.values(aggCdFund)
+          state.filtCdAggData = aggCdFund;
+          state.procData = aggCdFund;
+        }
+        else if (state.yearRange.length === 1){
+          var aggCdFund = {};
+          for (i=0; i<filtCdFund.length; i++){
+           
+            let key = filtCdFund[i]["GEOID"];
+            aggCdFund[key] = {"name":filtCdFund[i]["name"],"total":0}
+
+            for (j=0; j<Object.values(agencyNames).length; j++){
+              aggCdFund[key][String(Object.values(agencyNames)[j])] = parseInt(filtCdFund[i][String(Object.values(agencyNames)[j])])
+              aggCdFund[key]["total"] += parseInt(filtCdFund[i][String(Object.values(agencyNames)[j])]);
             }
             aggCdFund[key]["GEOID"] = key
-            aggCdFund[key]["id"] = key
+            aggCdFund[key]["id"]= key
             
           }
-          return r;
-        }, []);
-      
-        // unpack it
-        aggCdFund = Object.values(aggCdFund)
-        state.filtCdAggData = aggCdFund;
-        state.procData = aggCdFund;
-        console.log("FILT CD FUND",filtCdFund,"Helper agg",aggCdFund,"STTE",state);
+          aggCdFund = Object.values(aggCdFund)
+          state.filtCdAggData = aggCdFund;
+          state.procData = aggCdFund;
 
+        }
+        
+        //console.log("result ob",result)
+        
+        console.log("FILT CD FUND",filtCdFund,"Helper agg",aggCdFund,"STTE",state);
+        if (state.lastClusterGroup != null) {
+          state.lastClusterGroup.clearLayers();
+        }
 
         initParcoords();
         draw();
@@ -2084,7 +2127,7 @@ function brushMap(){
   var brushedrows = parcoords.brushed();
 
   // as long as not every thing is brushed or no brushes are applied...
-  if (brushedrows != false && brushedrows.length != 437) {
+  if ((state.parcoordsState === "econ" && brushedrows != false && brushedrows.length != 437) || (state.parcoordsState === "funding" && brushedrows != false && brushedrows.length != 427)) {
     var brushed_ids = []
     brushedrows.forEach(d=>brushed_ids.push(d.GEOID))
     //console.log('brushed rows',brushedrows,"ids",brushed_ids);
