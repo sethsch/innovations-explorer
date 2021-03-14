@@ -35,6 +35,8 @@ var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight*/
 let state = {
   data: [],
   procData: [],
+  cdAggData: "99",
+  filtCdAggData: [],
   awardsData: [],
   filtAwards: [],
   filteredCdAwards: [],
@@ -45,13 +47,15 @@ let state = {
   currentChloroLayer: null,
   lastClusterGroup: null,
   currentClusterGroup: null,
+  parcoordsState: "econ",
   selectedYears: ["2008","2018"],
   yearRange: [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018],
   selectedAgencies: ["National Science Foundation","Environmental Protection Agency","Department of Commerce","Department of Transportation","Department of Energy"],
-  defaultHiddenAxes: ["id","GEOID","name","state","profile"],
-  hiddenAxes: ["id","GEOID","name","state","profile"],
+  defaultHiddenAxes: {econ:["id","GEOID","name","state","profile"],
+                      funding: ["id","GEOID","year","name","state"]},
+  hiddenAxes: {econ:["id","GEOID","name","state","profile"],funding: ["id","GEOID","year","name","state"]},
   currentAxes: [],
-  defaultColor: "AGRIC",
+  defaultColor: {econ:"AGRIC", funding:"total"},
   color: null,
   paletteInfoString: "",
   changedOpt: null,
@@ -90,19 +94,19 @@ let mymap;
 
 // these weren't loading through the state... so use the manual computations here
 let industStats_global = {
-'pct_agro': {'mean': 0.01910747, 'stdev': 0.0249269},
-'pct_arts_ent_food_rec': {'mean': 0.0970931, 'stdev': 0.0247866},
-'pct_construct': {'mean': 0.0649388, 'stdev': 0.01674160},
-'pct_edu_health': {'mean': 0.2320128, 'stdev': 0.03328312},
-'pct_finance_realest': {'mean': 0.06422619, 'stdev': 0.0207670},
-'pct_information': {'mean': 0.0201546, 'stdev': 0.01030682},
-'pct_manufact': {'mean': 0.10252189, 'stdev': 0.0472774},
-'pct_otherserv': {'mean': 0.04890645, 'stdev': 0.00640384},
-'pct_prof_sci_mgmt_adm': {'mean': 0.1116744, 'stdev': 0.0364627},
-'pct_public_admin': {'mean': 0.0468815, 'stdev': 0.02111663},
-'pct_retail': {'mean': 0.113593, 'stdev': 0.013279286},
-'pct_transport_util': {'mean': 0.05265870, 'stdev': 0.01497621},
-'pct_wholesale': {'mean': 0.02623058, 'stdev': 0.00633994}
+  'pct_agro': {'mean': 0.01910747, 'stdev': 0.0249269},
+  'pct_arts_ent_food_rec': {'mean': 0.0970931, 'stdev': 0.0247866},
+  'pct_construct': {'mean': 0.0649388, 'stdev': 0.01674160},
+  'pct_edu_health': {'mean': 0.2320128, 'stdev': 0.03328312},
+  'pct_finance_realest': {'mean': 0.06422619, 'stdev': 0.0207670},
+  'pct_information': {'mean': 0.0201546, 'stdev': 0.01030682},
+  'pct_manufact': {'mean': 0.10252189, 'stdev': 0.0472774},
+  'pct_otherserv': {'mean': 0.04890645, 'stdev': 0.00640384},
+  'pct_prof_sci_mgmt_adm': {'mean': 0.1116744, 'stdev': 0.0364627},
+  'pct_public_admin': {'mean': 0.0468815, 'stdev': 0.02111663},
+  'pct_retail': {'mean': 0.113593, 'stdev': 0.013279286},
+  'pct_transport_util': {'mean': 0.05265870, 'stdev': 0.01497621},
+  'pct_wholesale': {'mean': 0.02623058, 'stdev': 0.00633994}
 }
 
 
@@ -121,6 +125,7 @@ var zcolorscale = d3.scaleLinear()
   .range(colorRange.reverse())
   .interpolate(d3.interpolateLab);
 
+
 //console.log(d3.schemeSpectral[5])
 
 //["#d7191c", "#fdae61", "#ffffbf", "#abdda4", "#2b83ba"]
@@ -131,13 +136,49 @@ var chloroScale = d3.scaleQuantize()
 
 
 function fundedChloro(feature,normVar){
-  if (state.scope !== "all_distr"){
-    if (state.fundedGEOIDS.includes(feature.properties.AFFGEOID)){
-      return chloroScale(feature.properties[normVar]);
+
+
+
+  if (state.parcoordsState === "econ"){
+    // if the all_distr filter is off... get chloroscale for funded dist and gray for non-funded
+    if (state.scope !== "all_distr"){
+      if (state.fundedGEOIDS.includes(feature.properties.AFFGEOID)){
+        return chloroScale(feature.properties[normVar]);
+      }
+      else {return "whitesmoke";}
     }
-    else {return "lightslategray";}
+    // if the all_distr filter is on... just use chloroscale to show econ variables
+    else {return chloroScale(feature.properties[normVar])}
+    
   }
-  else {return chloroScale(feature.properties[normVar])}
+  // if we're on funding parcoords
+  else if (state.parcoordsState === "funding") {
+
+    if (state.scope !== "all_distr"){
+      if (state.fundedGEOIDS.includes(feature.properties.AFFGEOID)){
+        let cdFundFilt = state.procData.filter(d=>d.GEOID === feature.properties.AFFGEOID)
+   
+        // get that feature from the funding data and return the chloroscale for that value...
+        if (cdFundFilt.length == 0) {return chloroLinear(0);}
+        else {return chloroLinear(cdFundFilt[0][state.color])}
+ 
+      }
+      else {return "whitesmoke";}
+    }
+    else {
+      // get that feature from the funding data and return the chloroscale for that value...
+      let cdFundFilt = state.procData.filter(d=>d.GEOID === feature.properties.AFFGEOID)
+
+       // get that feature from the funding data and return the chloroscale for that value...
+      if (cdFundFilt.length == 0) {return chloroLinear(0);}
+      else {return chloroLinear(cdFundFilt[0][state.color])}
+      
+
+    }
+    //console.log("CDFUNDFIL",cdFundFilt);
+    
+    
+  }
   
   
 }
@@ -236,6 +277,26 @@ let agencyNames = {
 
 
 
+let pc_dims = {
+  //"year": {title:"Year", type: 'string',orient: 'left'},
+  "total":  { type: 'number',orient: 'right', ticks: 3},
+  "DoD":  { type: 'number',orient: 'right', ticks: 3},
+  "HHS":       { type: 'number',orient: 'right', ticks: 3},
+  "DoEnrg": { type: 'number',orient: 'right', ticks: 3},
+  "NASA": { type: 'number',orient: 'right', ticks: 3},
+  "DoHS": { type: 'number',orient: 'right', ticks: 3},
+  "NSF":  {type: 'number',orient: 'right', ticks: 3},
+  "DoT": { type: 'number',orient: 'right', ticks: 3},
+  "DoA": { type: 'number',orient: 'right', ticks: 3},
+  "DoEd": { type: 'number',orient: 'right', ticks: 3},
+  "DoC": { type: 'number',orient: 'right', ticks: 3},
+  "EPA": { type: 'number',orient: 'right', ticks: 3},
+  
+}
+//let agency_dims = Object.values(agencyNames)
+//agency_dims.unshift("total");
+let agency_dims = Object.keys(pc_dims)
+
 
 // INIT - DATA LOAD
 // TODO: load version with amount sums, or wire up lookups to grants data with GEOID
@@ -318,8 +379,8 @@ function init() {
   initAwardsData();
   initIndustData();
   
-  // setup infobar
-  state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.defaultColor]}</br>${get_infobar_stats(state.defaultColor)}`
+  // setup the default infobar
+  state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.defaultColor[state.parcoordsState]]}</br>${get_infobar_stats(state.defaultColor[state.parcoordsState])}`
   // set the initial info-bar text
   infobar = d3.select("#info-bar")
                       .html(state.paletteInfoString);
@@ -329,34 +390,7 @@ function init() {
 
 
 
-  // setting up grid
-  /// TO DO: have the grid feature other data about the GEOID, like ranks
-  // INIT - Slick Grid columns
-  var column_keys = state.procData.columns;
-  var columns = column_keys.map(function(key,i) {
-    return {
-      id: key,
-      name: key,
-      field: key,
-      sortable: true,
-    }
-  });
-  // INIT - slick grid opts
-  var options = {
-    enableCellNavigation: true,
-    enableColumnReorder: false,
-    //multiColumnSort: true,
-    asyncEditorLoading: true,
-
-  };
-  // INIT - slick grid and pager
-  dataView = new Slick.Data.DataView({inlineFilters: true });
-  grid = new Slick.Grid("#districts-table", dataView, columns, options);
-  grid.setSelectionModel(new Slick.RowSelectionModel());
-  //var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
-
-  pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
-
+  
 
   // INIT Dropdown functionality for vocab selector
   d3.selectAll('.vocabsel')
@@ -435,6 +469,14 @@ function init() {
     draw();
   });
 
+
+  // select the profiler parcoords options
+  d3.selectAll(".parcoords-state").on("click",function(){
+    console.log("changed parcoords state val",$(this).attr("id"))
+    state.parcoordsState = $(this).attr("id");
+    switchParcoordsData();
+  })
+
   // Now call the draw function(s) to get going...
   draw();
 
@@ -448,33 +490,61 @@ function init() {
 function draw() {
 
 
-  if (state.scope === "all_distr") {
-    state.procData = state.acsData
-    //console.log("all geos",state)
-  }
-  else if (state.scope === "funded_distr") {
-    //var fundedGEOIDS = state.filtAwards
-    var acsFilt = state.acsData.filter(d=>state.fundedGEOIDS.includes(d.AFFGEOID));
-    
-    //console.log("funded geos only", acsFilt)
-  }
+  
 
   // MARCH 12 -- this should get the proc data for the selected dataset
   // Initial draw of parcoords
-  parcoords
-    .data(state.procData)
-    //.dimensions(state.currentAxes) // using state variable to hide axes dynamically when needed
-    .hideAxis(state.defaultHiddenAxes)
-    .render()
-    // TO DO: let this parameter be user/customizable -- 
-    .commonScale() // sometimes it's useful to put it in common, but othertimes its nicer to have more space on the axis
-    .interactive()
-    .reorderable() // if this is on, need to figure out how to make the state keep track of order, so that removal popover works right
-    //.brushable()
-    .bundleDimension(state.color) // bundle the parcoords on the color dimension
-    .bundlingStrength(0.6)
-    .brushMode("1D-axes")
-    .shadows()
+
+  if (state.parcoordsState === "econ") {
+    // if and when all districts, get the fresh, full ACS data...
+    if (state.scope === "all_distr") {
+      state.procData = state.acsData
+      //console.log("all geos",state)
+    }
+    else if (state.scope === "funded_distr") {
+      //var fundedGEOIDS = state.filtAwards
+      // MARCH 13 -- I dont htink this is necessary anymore given the updates to the chloroStyle..confirm
+      var acsFilt = state.acsData.filter(d=>state.fundedGEOIDS.includes(d.AFFGEOID));
+      
+      //console.log("funded geos only", acsFilt)
+    }
+    parcoords
+      .data(state.procData)
+      //.dimensions(state.currentAxes) // using state variable to hide axes dynamically when needed
+      .hideAxis(state.defaultHiddenAxes["econ"])
+      .render()
+      // TO DO: let this parameter be user/customizable -- 
+      .commonScale() // sometimes it's useful to put it in common, but othertimes its nicer to have more space on the axis
+      .interactive()
+      .reorderable() // if this is on, need to figure out how to make the state keep track of order, so that removal popover works right
+      //.brushable()
+      .bundleDimension(state.color) // bundle the parcoords on the color dimension
+      .bundlingStrength(0.6)
+      .brushMode("1D-axes")
+      .shadows()
+
+  }
+  else if (state.parcoordsState === "funding"){
+
+    
+    
+    // doing these draws without reference to the state because we want NOT to add commonScale to this instance...
+    parcoords
+      .data(state.procData)
+      .hideAxis(state.defaultHiddenAxes["funding"]) 
+      .dimensions(pc_dims)
+      .render()
+      .interactive()
+      .reorderable() // if this is on, need to figure out how to make the state keep track of order, so that removal popover works right
+      //.brushable()
+      .bundleDimension(state.color) // bundle the parcoords on the color dimension
+      .bundlingStrength(0.6)
+      .brushMode("1D-axes")
+      .shadows()
+    
+
+  }
+  
  
 
  
@@ -494,8 +564,16 @@ function draw() {
 
   // change the tick format
   parcoords.svg.selectAll(".axis .tick text").each(function(d, i) {
+    // MARCH 13 -- change format tick depend on parcoordsState
+    if (state.parcoordsState === "econ"){
       d3.select(this).text(d3.format(".0%")(d));
-  })
+
+    }
+    else if (state.parcoordsState == "funding"){
+      d3.select(this).text("$"+d3.format(".1s")(d).replace("G","B")    );
+
+    } 
+  });
 
   // DRAW - establish popovers
   var popover = new bootstrap.Popover(document.querySelector('.label'), {
@@ -544,8 +622,8 @@ function draw() {
   $(document).ready(function(){
     $(document).on("click", ".popover .axis-remove" , function(){
         $(this).parents(".popover").popover('hide');
-        console.log("ooh you clicked the popup for",this);
-        updateHides(this.id);
+        console.log("ooh you clicked the popup for",this,$(this).attr("id"));
+        updateHides($(this).attr("id"));
 
     });
   });
@@ -563,7 +641,15 @@ function draw() {
     .on("mouseout", function () {
         infobar
         .style("opacity",0)
-        .html(state.paletteInfoString)
+        // MARCH 13 -- palette Info changes dep on parcoordsState
+        .html(function(){
+          if (state.parcoordsState === "econ"){
+            return state.paletteInfoString;
+          }
+          else if (state.parcoordsState === "funding"){
+            return "placeholder for current funding agency palette info"
+          }
+        })
         .style('pointer-events', 'none')
         .transition()
         .style("opacity",1)
@@ -573,7 +659,15 @@ function draw() {
     .on("mouseover", function(d) {
       infobar
         .style("opacity",0)
-        .html(`<strong>${industryNames[d]}</strong></br>${get_infobar_stats(d)}`) // this should be a call to a dictionary, the abbrev returns the full
+          // MARCH 13 -- palette Info changes dep on parcoordsState
+        .html(function(){
+          if (state.parcoordsState === "econ"){
+            return `<strong>${industryNames[d]}</strong></br>${get_infobar_stats(d)}`; // this should be a call to a dictionary, the abbrev returns the full
+          }
+          else if (state.parcoordsState === "funding"){
+            return "placeholder for hover agency palette"
+          }
+        })
         .transition()
         .style("opacity",1)
         .delay(300)
@@ -586,10 +680,8 @@ function draw() {
   // set up listener for the axis hides
   // parcoords.hideAxis(state.hiddenAxes).updateAxes();
   // Initial coloration of parcoords
-  change_color("AGRIC");    
+  change_color(state.defaultColor[state.parcoordsState]);    
   //console.log("DATA",state.procData.columns);
-
-
 
 
   // DRAW - add sort beheaviors to grid
@@ -966,18 +1058,26 @@ function getCdStats(district){
 
 
 function updateHides(d){
-  state.hiddenAxes.push(d);
-  state.hiddenAxes = [... new Set(state.hiddenAxes)]
+  console.log("bac to state",state)
+  state.hiddenAxes[state.parcoordsState].push(d)
+
+  
+  state.hiddenAxes[state.parcoordsState] = [... new Set(state.hiddenAxes[state.parcoordsState])]
 
   var justHidden = state.currentAxes.indexOf(d);
-  //console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes);
+  console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes);
 
 
   // MARCH 12 - if updating parcoords plot, current Axes come from diff source than industryNames
 
+  if (state.parcoordsState === "econ") {
+    state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes["econ"].includes( el ) );
 
-  state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes.includes( el ) );
-  //console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
+  }
+  else if (state.parcoordsState === "funding"){
+    state.currentAxes = agency_dims.filter( ( el ) => !state.hiddenAxes["funding"].includes( el ))
+  }
+  console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes);
 
   // then update the ids for the new label order, so popovers work
   parcoords.svg.selectAll(".label")
@@ -1000,11 +1100,26 @@ function updateHides(d){
 
   };
   //console.log("BEFORE RESETTING DIM",parcoords.state);
-  parcoords.dimensions(state.currentAxes);
+  if (state.parcoordsState === "funding"){
+    let new_dims = pc_dims;
+    delete new_dims[d]
+    parcoords.dimensions(new_dims).hideAxis(state.hiddenAxes[state.parcoordsState])
+  }
+  else {
+    parcoords.hideAxis(state.hiddenAxes[state.parcoordsState])
+
+  }
 
   // change the tick format
   parcoords.svg.selectAll(".axis .tick text").each(function(d, i) {
-    d3.select(this).text(d3.format(".0%")(d));
+    if (state.parcoordsState === "econ"){
+      d3.select(this).text(d3.format(".0%")(d));
+    }
+    else if (state.parcoordsState == "funding"){
+      d3.select(this).text("$"+d3.format(".1s")(d).replace("G","B")    );
+
+    } 
+    
   })
   //console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
   infobar.html(state.paletteInfoString);
@@ -1045,8 +1160,13 @@ function change_color(dimension) {
 
   // MARCH 12 - palette info String would change for switched parcoords data,
   // Likely we'd also want an alternate, unidimensional color scale for funding data
-  state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.color]}</br>${get_infobar_stats(state.color)}`
+  if (state.parcoordsState === "econ") {
+    state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.color]}</br>${get_infobar_stats(state.color)}`
 
+  }
+  else if (state.parcoordsState === "funding"){
+    state.paletteInfoString == "placeholder in changecoolor"
+  }
 
 
 
@@ -1056,9 +1176,15 @@ function change_color(dimension) {
     .filter(function(d,i) { return state.currentAxes[i] == dimension; })
     .style("font-weight", "bold")
 
-  // MARCH 12 - want to change this with alternate color scale if it's not industries data
-  parcoords.color(zcolor(parcoords.data(),dimension)).render();
-
+  //MARCH 12 - want to change this with alternate color scale if it's not industries data
+  if (state.parcoordsState === "econ"){
+    parcoords.color(zcolor(parcoords.data(),dimension)).render();
+  }
+  else if (state.parcoordsState === "funding"){
+    parcoords.color(linearColor(parcoords.data(),dimension)).render();
+  }
+  
+  //parcoords.color(zcolor(parcoords.data(),dimension)).render()
   
   change_map_color();
 
@@ -1067,6 +1193,38 @@ function change_color(dimension) {
   //console.log("NOW I RESET THE CHLOROLAYLER",state.currentChloroLayer)
 
 };
+
+function chloroLinear(d){
+  var extent = d3.extent(d3.map(parcoords.data(),d=>d[state.color]))
+  // show must have received some funding to get colored
+  extent[0] = 1
+  var colorscale = d3.scaleQuantize()
+      .domain(extent)
+      .range(d3.schemeSpectral[6])
+      
+
+  if (d>0){return colorscale(d)}
+  else {return "whitesmoke";}
+};
+
+
+// a linear color scale for when we're doing funding parcoords
+function linearColor(data, dimension){
+
+  var colorscale = d3.scaleQuantize()
+      .domain(d3.extent(d3.map(parcoords.data(),d=>d[state.color])))
+      .range(d3.schemeSpectral[6])
+    
+
+  return function(d) { if (d[dimension] === 0) {return "whitesmoke";}
+                      else {return colorscale(d[dimension])}
+  }
+                      
+  
+  
+
+};
+
 
 // return color function based on plot and dimension
 function zcolor(col, dimension) {
@@ -1225,27 +1383,117 @@ function type(d) {
 // setup the parcoords plot
 function initParcoords(){
 
-  var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
   // PC INIT - set the state equal to the industryName keys minus the default hidden
 
-  // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
-  state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes.includes( el ) );
-  // INIT - set up the base of parcoords and its settings
-  parcoords = ParCoords()("#parcoords")
-    .rate(20)
-    .composite("darker-over")
-    //.brushedColor("#000")
-    .mode("queue") // progressive rendering
-    //.width(d3.max([800, 220]))
-    /*.margin({
-      top: 10,
-      left: 10,
-      right: 50,
-      bottom: 20,
-    })*/
-    .smoothness(0.13)
-    .alphaOnBrushed(0.15)
-    .alpha(0.4) 
+  if (state.parcoordsState === "econ"){
+    $("#parcoords").remove();
+    var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
+    state.procData = state.acsData;
+    // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
+    state.currentAxes = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes["econ"].includes( el ) );
+    // INIT - set up the base of parcoords and its settings
+    parcoords = ParCoords()("#parcoords")
+      .rate(20)
+      .composite("darker-over")
+      //.brushedColor("#000")
+      .mode("queue") // progressive rendering
+      //.width(d3.max([800, 220]))
+      /*.margin({
+        top: 10,
+        left: 10,
+        right: 50,
+        bottom: 20,
+      })*/
+      .smoothness(0.13)
+      .alphaOnBrushed(0.15)
+      .alpha(0.4) 
+
+      // MARCH 12 -- these would change depending on data source for pc data
+      state.currentHiddenAxes = state.defaultHiddenAxes["econ"];
+      state.color = state.defaultColor["econ"];
+
+      // INIT - Corresponding Slick Grid columns
+      var column_keys = state.procData.columns;
+      var columns = column_keys.map(function(key,i) {
+        return {
+          id: key,
+          name: key,
+          field: key,
+          sortable: true,
+        }
+      });
+  }
+  else if (state.parcoordsState === "funding"){
+    $("#parcoords").remove();
+    var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
+
+    state.procData = state.filtCdAggData;
+    //console.log("STATE is now, on swithcing to funding",state)
+      // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
+    state.hiddenAxes["funding"] = state.defaultHiddenAxes["funding"]
+    state.currentAxes = agency_dims.filter( ( el ) => !state.defaultHiddenAxes["funding"].includes( el ) );
+    // INIT - set up the base of parcoords and its settings
+
+
+  
+    parcoords = ParCoords()("#parcoords")
+      .rate(20)
+      .composite("source-over")
+      //.brushedColor("#000")
+      .mode("queue") // progressive rendering
+      //.width(d3.max([800, 220]))
+      .margin({
+        top: 30,
+        left: 15,
+        right: 30,
+        bottom: 10,
+      })
+      .smoothness(0.13)
+      .alphaOnBrushed(0.15)
+      .alpha(0.6)
+
+
+
+
+
+      // MARCH 12 -- these would change depending on data source for pc data
+      state.currentHiddenAxes = state.defaultHiddenAxes[state.parcoordsState];
+      state.color = state.defaultColor[state.parcoordsState];
+
+
+      // INIT - Corresponding Slick Grid columns
+      // *MAR
+      console.log("STATE BFOE GRID",state)
+      var column_keys = Object.keys(state.procData[0])
+      var columns = column_keys.map(function(key,i) {
+        return {
+          id: key,
+          name: key,
+          field: key,
+          sortable: true,
+        }
+      });
+  }
+ 
+
+
+ 
+  // INIT - slick grid opts
+  var options = {
+    enableCellNavigation: true,
+    enableColumnReorder: false,
+    //multiColumnSort: true,
+    asyncEditorLoading: true,
+
+  };
+  // INIT - slick grid and pager
+  dataView = new Slick.Data.DataView({inlineFilters: true });
+  grid = new Slick.Grid("#districts-table", dataView, columns, options);
+  grid.setSelectionModel(new Slick.RowSelectionModel());
+  //var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
+
+  pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
+
 
 
       // INIT - wire up the search textbox to apply the filter to the model
@@ -1263,13 +1511,11 @@ function initParcoords(){
     updateFilter();
   });
 
-  // MARCH 12 -- these would change depending on data source for pc data
-  state.currentHiddenAxes = state.defaultHiddenAxes;
-  state.color = state.defaultColor;
+  
 // Parcoords Reload Button
   $("#reload-parcoords-icon").on("click",function(){
     $("#parcoords").remove();
-    state.hiddenAxes = state.defaultHiddenAxes;
+    state.hiddenAxes[state.parcoordsState] = state.defaultHiddenAxes[state.parcoordsState];
     initParcoords();
     draw();
   });
@@ -1389,7 +1635,67 @@ function filterAwardsRecips(){
 
 
 // MARCH 12 - compute aggregate stats depending on the filter, for parcoords switch
-function getFundingParcoordsData(){
+function switchParcoordsData(){
+
+ 
+
+  if (state.parcoordsState === "econ"){
+    state.procData = state.acsData;
+    initParcoords();
+    draw();
+  }
+  else if (state.parcoordsState === "funding"){
+     // reset the brush on any existing parcoords
+       parcoords.brushReset();
+      brushMap();
+
+      d3.csv('data/cd116_agency_year_fund_aggs.csv').then(function(data) {
+
+        // slickgrid needs each data element to have an id
+        data.forEach(function(d,i) { d.id = d.id || i; });
+        // if we've read the data once before, then just set the current filters
+        state.cdAggData = data;
+        let filtCdFund = state.cdAggData.filter(d=>state.yearRange.includes(parseInt(d.year)))
+        console.log("AGG DATA",state.cdAggData,"FILT CD FUND",filtCdFund)
+        var aggCdFund = {};
+        var result = filtCdFund.reduce(function(r, o) {
+          var key = String(o.GEOID)
+          
+          if(!aggCdFund[key]) {
+            aggCdFund[key] = {"GEOID":key,"id":key,"state": o["state"],"name": o["name"],"total":0}
+            r.push(aggCdFund[key]);
+          } else {
+            for (i = 0; i<Object.values(agencyNames).length; i++){
+              let agency = String(Object.values(agencyNames)[i]);
+              if(!aggCdFund[key][agency]){
+                aggCdFund[key][agency] = 0
+              }
+              aggCdFund[key][agency] += parseInt(o[agency])
+              aggCdFund[key]["total"] += parseInt(o[agency])
+              //console.log("agency",parseFloat(o[agency]))
+            }
+            
+          }
+          return r;
+        }, []);
+      
+        // unpack it
+        aggCdFund = Object.values(aggCdFund)
+        state.filtCdAggData = aggCdFund;
+        state.procData = aggCdFund;
+        console.log("FILT CD FUND",filtCdFund,"Helper agg",aggCdFund,"STTE",state);
+
+
+        initParcoords();
+        draw();
+            //console.log("DATA AT FIRST LOAD",data)
+        
+      });
+    
+    
+
+    
+  }
 
 };
 
@@ -1555,11 +1861,18 @@ function initIndustData(){
 // chloropleth style mapping
 function style(feature) {
 
-  var industries =  [ ...shortAttributeNames.values() ];
-  var selectedVar = industries.indexOf(state.color);
-  selectedVar = [...shortAttributeNames.keys()][selectedVar]
-  var normVar = "norm_"+selectedVar;
-  var clustVar = "LSAcl_."+selectedVar;
+  if (state.parcoordsState === "econ"){
+    var industries =  [ ...shortAttributeNames.values() ];
+    var selectedVar = industries.indexOf(state.color);
+    selectedVar = [...shortAttributeNames.keys()][selectedVar]
+    var normVar = "norm_"+selectedVar;
+    var clustVar = "LSAcl_."+selectedVar;
+  }
+  else if (state.parcoordsState === "funding"){
+    var normVar = "";
+    var clustVar = "";
+  }
+  
 
   //console.log("SELECTED VAR",selectedVar,"NORM VAR",normVar);
 // do what you want to do with `data` here...
@@ -1574,41 +1887,29 @@ function style(feature) {
   };
 };
 
-/* function to convert RGB values
-function RGBToHex(rgb) {
-  // Choose correct separator
-  let sep = rgb.indexOf(",") > -1 ? "," : " ";
-  // Turn "rgb(r,g,b)" into [r,g,b]
-  rgb = rgb.substr(4).split(")")[0].split(sep);
 
-  let r = (+rgb[0]).toString(16),
-      g = (+rgb[1]).toString(16),
-      b = (+rgb[2]).toString(16);
-
-  if (r.length == 1)
-    r = "0" + r;
-  if (g.length == 1)
-    g = "0" + g;
-  if (b.length == 1)
-    b = "0" + b;
-
-  return "#" + r + g + b;
-}; */
 
 // function to set map polygons border styling
 
 // MARCH 12 - update to switch for nonfunded districts
 function getBorderStyle(feature,clustVar){
-  var val = parseInt(feature.properties[clustVar])
-  var district = feature.properties.AFFGEOID;
-  var border =  val === 5 ?  ['darkslategray',0.5,0.6] :
-                val === 2 ? ['blue',1.25,0.6] :
-                  ['red',1.25,0.6];
-  if (state.currentCd === district) {border[1] = 4; border[2] = 1}
-  else if (state.lastCd === district && border[0] === 'darkslategray') {border[1] = 0.5; border[2] = 0.6}
-  else {border[1] = 1.25; border[2] = 0.6;}
 
-  return border;
+  if (state.parcoordsState === "econ") {
+    var val = parseInt(feature.properties[clustVar])
+    var district = feature.properties.AFFGEOID;
+    var border =  val === 5 ?  ['darkslategray',0.5,0.6] :
+                  val === 2 ? ['blue',1.25,0.6] :
+                    ['red',1.25,0.6];
+    if (state.currentCd === district) {border[1] = 4; border[2] = 1}
+    else if (state.lastCd === district && border[0] === 'darkslategray') {border[1] = 0.5; border[2] = 0.6}
+    else {border[1] = 1.25; border[2] = 0.6;}
+  
+    return border;
+  }
+  else if (state.parcoordsState === "funding"){
+    return ['darkslategray',0.5,0.6]
+  }
+  
 };
 // MARCH 12 - update to switch for nonfunded districts
 // function to set map polygons fill opacity, depending on selection
@@ -1621,16 +1922,23 @@ function getFillOpacity(feature){
 
 // MARCH 12 -- update to flip for parcoords data
 function get_infobar_stats(dimension){
-  var industries =  [ ...shortAttributeNames.values() ];
-  var selectedVar = industries.indexOf(dimension);
-  selectedVar = [...shortAttributeNames.keys()][selectedVar];
-  //console.log("inputdimen",dimension,"infobarstatsset", selectedVar);
-  
-  // get stats from state
-  var avg = industStats_global[selectedVar]['mean'];
-  var dev =  industStats_global[selectedVar]['stdev'];
-  var outString = `<strong>Sector Employment Avg.:</strong> ${Math.round(avg*100)}% </br><strong>Std. Deviation:</strong> ${Math.round(dev*100)}%`
-  return outString;
+
+  if (state.parcoordsState === "econ"){
+    var industries =  [ ...shortAttributeNames.values() ];
+    var selectedVar = industries.indexOf(dimension);
+    selectedVar = [...shortAttributeNames.keys()][selectedVar];
+    //console.log("inputdimen",dimension,"infobarstatsset", selectedVar);
+    
+    // get stats from state
+    var avg = industStats_global[selectedVar]['mean'];
+    var dev =  industStats_global[selectedVar]['stdev'];
+    var outString = `<strong>Sector Employment Avg.:</strong> ${Math.round(avg*100)}% </br><strong>Std. Deviation:</strong> ${Math.round(dev*100)}%`
+    return outString;
+  }
+  else if (state.parcoordsState === "funding"){
+    return "placeholder for later";
+  }
+
 };
 
 
@@ -1909,7 +2217,7 @@ function showCdVocab(data){
     d3.select('.no-data-vocab').remove();
 
 
-    var vocabArea = d3.select("#vocab-pills").append("p").attr("class","no-data-vocab").text("There are no keywords from the selected vocabularies, or this district did not receive funding in the selected years from the selected agencies. Select another vocabulary, or expand the criteria to learn more about this district.")
+    var vocabArea = d3.select("#vocab-pills").append("p").attr("class","no-data-vocab").text("There are no keywords from the selected vocabularies, or this district did not receive Federal SBIR/STTR grants in the selected years from the selected agencies. Select another vocabulary, or expand the criteria to learn more about this district.")
   }
   else  {
       //console.log("SHOW CD VOCAB",data)
@@ -2493,7 +2801,7 @@ function showCdGraph(fundSummary,countSummary) {
   }
   // else show the no data message... 
   else {
-    var graphArea = d3.select("#bargraph").append("p").attr("class","no-data-graph").text("This district does not appear to have received funding in the selected years from the selected agencies. Select another district or expand the criteria to learn more about this district.")
+    var graphArea = d3.select("#bargraph").append("p").attr("class","no-data-graph").text("This district does not appear to have received Federal SBIR/STTR grants in the selected years from the selected agencies. Select another district or expand the criteria to learn more about this district.")
 
   };
  
@@ -2546,16 +2854,12 @@ window.onresize = function() {
   var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight
 
 
-  //var tableElement = document.getElementById('districts-table')
-  //$("#parcoords").remove();
-  //var newElement = document.createElement('div');
-  //newElement.class = "parcoords"
-  //newElement.id = "parcoords"
-  //parentElement.insertBefore(newElement, tableElement);
-  //initParcoords();
-
   parcoords.width(pcWidth).height(pcHeight).render();
-  parcoords.resize().autoscale().commonScale();
+  parcoords.resize().autoscale()
+  if(state.parcoordsState === "econ"){
+    parcoords.commonScale();
+  }
+
   draw();
   
 
