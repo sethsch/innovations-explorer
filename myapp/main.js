@@ -1,5 +1,3 @@
-
-
 //var svg = d3.select("#example").style("width","800px").style("height","320px");
 
 //const { filter } = require("topojson-simplify");
@@ -15,15 +13,12 @@
 //const { initial } = require("underscore");
 
 /*var parentElement = document.getElementById('map-par-panel');
-
 var panelWidth = parseInt($('#map-par-panel').css("width"));
 var panelHeight = parseInt($('#map-par-panel').css("height"));
 var panelPaddingTop = parseInt($('#map-par-panel').css("padding-top"));
 var panelPaddingBottom = parseInt($('#map-par-panel').css("padding-bottom"));
 var panelPaddingLeft = parseInt($('#map-par-panel').css("padding-left"));
 var panelPaddingRight = parseInt($('#map-par-panel').css("padding-right"));
-
-
 var pcHeight = panelHeight*0.16 - panelPaddingTop - panelPaddingBottom
 var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight*/
 
@@ -344,7 +339,6 @@ function init() {
     .append("svg")
     //.style("font-size","9px");
     
-
   // add the correct legend
   var legend = d3.legendColor()
     //.labelFormat(d3.format(".1f"))
@@ -355,10 +349,8 @@ function init() {
     .useClass(false)
     //.titleWidth(140)
     .scale(zcolorscale);
-
   legArea.append("g")
     .call(legend);
-
   //console.log("ZCOLORSCALE",legend)*/
 
 
@@ -538,7 +530,7 @@ function draw() {
     let curr_dims = {};
     curr_dims["total"] = pc_dims["total"]
     state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
-    
+    state.currentAxes["funding"] = Object.keys(curr_dims)
     console.log("CURR DIMS",state.currentAxes[state.parcoordsState],curr_dims)
     
     // doing these draws without reference to the state because we want NOT to add commonScale to this instance...
@@ -1113,8 +1105,9 @@ function updateHides(d){
     let curr_dims = {};
     curr_dims["total"] = pc_dims["total"]
     state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
+    state.currentAxes["funding"] = Object.keys(curr_dims)
 
-    state.currentAxes[state.parcoordsState] = Object.keys(curr_dims).filter( ( el ) => !state.hiddenAxes["funding"].includes( el ))
+    //state.currentAxes[state.parcoordsState] = Object.keys(curr_dims).filter( ( el ) => !state.hiddenAxes["funding"].includes( el ))
   }
   console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes[state.parcoordsState]);
 
@@ -1146,6 +1139,8 @@ function updateHides(d){
 
 
     delete curr_dims[d]
+    state.currentAxes["funding"] = Object.keys(curr_dims)
+
     parcoords.dimensions(curr_dims).hideAxis(state.hiddenAxes[state.parcoordsState])
   }
   else {
@@ -1661,7 +1656,6 @@ function filterAwardsRecips(){
       }
     }
     fundingStats.push(res)
-
   }
   console.log("FUNDING STATS SUM",fundingStats)*/
 
@@ -1821,8 +1815,6 @@ function addRecipsToMap(d){
     /*var awards = state.awardsData.filter(x=>x.Company === company)
     //console.log("AWARDS FOR",d[i].Company,awards)
     var pop_content = `<strong>${d[i].Company}</strong>`
-
-
     for (var j = 0; j < awards.length; j++) {
       pop_content = pop_content + awards[j].Award_Title
     }*/
@@ -2992,8 +2984,5 @@ if (document.exitFullscreen) {
   document.msExitFullscreen();
 }
 };
-
-
-
 
 

@@ -29,6 +29,7 @@ html, body {
 
 #navbar-top{
     margin-bottom: 3%;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 4px 8px -1px, rgba(0, 0, 0, 0.3) 0px 2px 6px -2px;
 }
 
 #main-panel{
@@ -244,6 +245,7 @@ html, body {
     
 }
 .info-bar {
+    display: block;
     font-size: 0.72em;
     text-anchor: left;
     padding-left: 2em;
