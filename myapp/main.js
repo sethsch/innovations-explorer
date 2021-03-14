@@ -33,8 +33,9 @@ var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight*/
  * APPLICATION STATE
  * */
 let state = {
-  data: [],
+
   procData: [],
+  gridData: [],
   cdAggData: "99",
   filtCdAggData: [],
   awardsData: [],
@@ -51,14 +52,13 @@ let state = {
   selectedYears: ["2008","2018"],
   yearRange: [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018],
   selectedAgencies: ["National Science Foundation","Environmental Protection Agency","Department of Commerce","Department of Transportation","Department of Energy"],
-  defaultHiddenAxes: {econ:["id","GEOID","name","state","profile"],
-                      funding: ["id","GEOID","year","name","state"]},
-  hiddenAxes: {econ:["id","GEOID","name","state","profile"],funding: ["id","GEOID","year","name","state"]},
+  defaultHiddenAxes: {econ:["id","GEOID","name","profile"],
+                      funding: ["id","GEOID","year","name"]},
+  hiddenAxes: {econ:["id","GEOID","name","profile"],funding: ["id","GEOID","year","name"]},
   currentAxes: [],
   defaultColor: {econ:"AGRIC", funding:"total"},
   color: null,
   paletteInfoString: "",
-  changedOpt: null,
   selectedRows: [],
   unselRows: [],
   currentCd: "99",
@@ -145,7 +145,7 @@ function fundedChloro(feature,normVar){
       if (state.fundedGEOIDS.includes(feature.properties.AFFGEOID)){
         return chloroScale(feature.properties[normVar]);
       }
-      else {return "whitesmoke";}
+      else {return "rgb(161, 161, 161,0.7)";}
     }
     // if the all_distr filter is on... just use chloroscale to show econ variables
     else {return chloroScale(feature.properties[normVar])}
@@ -163,7 +163,7 @@ function fundedChloro(feature,normVar){
         else {return chloroLinear(cdFundFilt[0][state.color])}
  
       }
-      else {return "whitesmoke";}
+      else {return "rgb(161, 161, 161,0.7)";}
     }
     else {
       // get that feature from the funding data and return the chloroscale for that value...
@@ -215,7 +215,7 @@ const mergeVocabs = data => {
 
 // MARCH 12 -- attribute names should go in state for multiple datasets
 // For parcoords, we need lists of variable names; as in the data abbrevs and spelled out for the UI
-var attributes = ["GEOID","distr_name","us_state","ind_profile","pct_agro",	"pct_construct",	"pct_manufact",
+var attributes = ["GEOID","distr_name","ind_profile","pct_agro",	"pct_construct",	"pct_manufact",
       "pct_wholesale",	"pct_retail",	"pct_transport_util",
       "pct_information",	"pct_finance_realest",	"pct_prof_sci_mgmt_adm",
       "pct_edu_health",	"pct_arts_ent_food_rec",	"pct_otherserv",
@@ -225,7 +225,6 @@ var shortAttributeNames = new Map(
       Object.entries({
         GEOID: "GEOID",
         distr_name: "name",
-        us_state: "state",
         ind_profile: "profile",
         pct_agro:                   "AGRIC"	,
         pct_construct:               "CNSTR",	
@@ -317,7 +316,7 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
                   distData[shortAttributeNames.get('ind_profile')] = district["ind_profile"]
                   //console.log(typeof district[industry])
                   distData['GEOID'] = district["GEOID"]
-                  distData[shortAttributeNames.get("us_state")] = district["us_state"]
+                  //distData[shortAttributeNames.get("us_state")] = district["us_state"]
 
             });
            // console.log(distData);
@@ -575,6 +574,8 @@ function draw() {
     } 
   });
 
+ 
+
   // DRAW - establish popovers
   var popover = new bootstrap.Popover(document.querySelector('.label'), {
       container: 'body',
@@ -799,7 +800,10 @@ function draw() {
     
   });
 
-  // DRAW - fill grid with data
+ 
+  
+ // DRAW GRID
+  console.log("the data for grid") 
   gridUpdate(state.procData);
 
   // DRAW - update grid on brush
@@ -1204,7 +1208,7 @@ function chloroLinear(d){
       
 
   if (d>0){return colorscale(d)}
-  else {return "whitesmoke";}
+  else {return "rgb(161, 161, 161,0.7)";}
 };
 
 
@@ -1216,7 +1220,7 @@ function linearColor(data, dimension){
       .range(d3.schemeSpectral[6])
     
 
-  return function(d) { if (d[dimension] === 0) {return "whitesmoke";}
+  return function(d) { if (d[dimension] === 0) {return "rgb(161, 161, 161,0.7)";}
                       else {return colorscale(d[dimension])}
   }
                       
@@ -1438,7 +1442,7 @@ function initParcoords(){
   
     parcoords = ParCoords()("#parcoords")
       .rate(20)
-      .composite("source-over")
+      .composite("darker-over")
       //.brushedColor("#000")
       .mode("queue") // progressive rendering
       //.width(d3.max([800, 220]))
@@ -1662,7 +1666,7 @@ function switchParcoordsData(){
           var key = String(o.GEOID)
           
           if(!aggCdFund[key]) {
-            aggCdFund[key] = {"GEOID":key,"id":key,"state": o["state"],"name": o["name"],"total":0}
+            aggCdFund[key] = {"name": o["name"],"total":0}
             r.push(aggCdFund[key]);
           } else {
             for (i = 0; i<Object.values(agencyNames).length; i++){
@@ -1674,6 +1678,8 @@ function switchParcoordsData(){
               aggCdFund[key]["total"] += parseInt(o[agency])
               //console.log("agency",parseFloat(o[agency]))
             }
+            aggCdFund[key]["GEOID"] = key
+            aggCdFund[key]["id"] = key
             
           }
           return r;
