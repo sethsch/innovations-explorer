@@ -28,7 +28,6 @@ var pcWidth = panelWidth - panelPaddingLeft - panelPaddingRight*/
  * APPLICATION STATE
  * */
 let state = {
-
   procData: [],
   gridData: [],
   cdAggData: "99",
@@ -140,7 +139,7 @@ function fundedChloro(feature,normVar){
       if (state.fundedGEOIDS.includes(feature.properties.AFFGEOID)){
         return chloroScale(feature.properties[normVar]);
       }
-      else {return "rgb(161, 161, 161,0.4)";}
+      else {return "rgba(161, 161, 161,0.4)";}
     }
     // if the all_distr filter is on... just use chloroscale to show econ variables
     else {return chloroScale(feature.properties[normVar])}
@@ -158,7 +157,7 @@ function fundedChloro(feature,normVar){
         else {return chloroLinear(cdFundFilt[0][state.color])}
  
       }
-      else {return "rgb(161, 161, 161,0.4)";}
+      else {return "rgba(161, 161, 161,0.4)";}
     }
     else {
       // get that feature from the funding data and return the chloroscale for that value...
@@ -187,8 +186,8 @@ const maxZoomLevel = 10;
 
 // colors for the bar graph
 //const sbir_color = "#181818";
-const sttr_color = "rgb(33,38,41,0.9)";
-const sbir_color = "rgb(15,110,253,0.9)"
+const sttr_color = "rgba(33,38,41,0.9)";
+const sbir_color = "rgba(15,110,253,0.9)"
 //const sttr_color = "#808080";
 
 let vocabs = ["EIGE","AGROVOC","STW","EU-SCIVOC","EUVOC","GEMET","MeSH"];
@@ -305,15 +304,18 @@ d3.csv('data/acs2018_industry_congdist.csv').then(function(data) {
       data.forEach(function(district) {
             let distData = {};
             attributes.forEach(function(industry) {
-                  distData["id"] = +district["id"]
+                  
                   distData[shortAttributeNames.get(industry)] = +district[industry]
-                  distData[shortAttributeNames.get('distr_name')] = district["distr_name"]
-                  distData[shortAttributeNames.get('ind_profile')] = district["ind_profile"]
+                  
                   //console.log(typeof district[industry])
-                  distData['GEOID'] = district["GEOID"]
+                  
                   //distData[shortAttributeNames.get("us_state")] = district["us_state"]
 
             });
+            distData[shortAttributeNames.get('distr_name')] = district["distr_name"]
+            distData[shortAttributeNames.get('ind_profile')] = district["ind_profile"]
+            distData["id"] = +district["id"]
+            distData['GEOID'] = district["GEOID"]
            // console.log(distData);
            procData.push( distData );
       })
@@ -480,6 +482,19 @@ function init() {
     switchParcoordsData();
   })
 
+
+
+  // if the user clicks the title in the navbar, reset the welcome text
+  d3.select(".pub-inno-title").on("click",function(){
+    d3.selectAll(".district-autotexts").remove();
+    d3.select("#district-summary-title").text("Welcome to the Public Innovations Explorer")
+    d3.select("#district-summary-text").html(
+      '<p class="default-welcome-summary">Explore funding by Federal agencies to small businesses for innovative research activities and technology transfer through the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) grant making programs. </p>'+'<p class="default-welcome-summary"><strong>Select</strong> the Federal agencies and years of interest from the menus in the navigation bar above. You can <strong>explore</strong> the map to find companies, and details about grants they were awarded.  Use the parallel coordinates plot to <strong>filter</strong> the congressional districts on the map, and identify hot spots and cold spots for different kinds of underlying economic activities. <strong>Click</strong> on a congressional district to see a summary of its funded research activities, labor profile and topics extracted from the funded research taking place there.</p>'
+    )
+  })
+
+
+
   // Now call the draw function(s) to get going...
   draw();
 
@@ -534,7 +549,7 @@ function draw() {
     curr_dims["total"] = pc_dims["total"]
     state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
     state.currentAxes["funding"] = Object.keys(curr_dims)
-    console.log("CURR DIMS",state.currentAxes[state.parcoordsState],curr_dims)
+	//console.log("CURR DIMS",state.currentAxes[state.parcoordsState],curr_dims)
     
     // doing these draws without reference to the state because we want NOT to add commonScale to this instance...
     parcoords
@@ -631,7 +646,7 @@ function draw() {
   $(document).ready(function(){
     $(document).on("click", ".popover .axis-remove" , function(){
         $(this).parents(".popover").popover('hide');
-        console.log("ooh you clicked the popup for",this,$(this).attr("id"));
+	//console.log("ooh you clicked the popup for",this,$(this).attr("id"));
         updateHides($(this).attr("id"));
 
     });
@@ -665,7 +680,7 @@ function draw() {
         .duration(450); 
     })
     .on("mouseover", function(d) {
-      console.log("mouseover d",d)
+	//console.log("mouseover d",d)
       infobar
         .style("opacity",0)
           // MARCH 13 -- palette Info changes dep on parcoordsState
@@ -847,9 +862,11 @@ function draw() {
   });
 
  
+
+ 
   
  // DRAW GRID
-  console.log("the data for grid") 
+  //console.log("the data for grid") 
   gridUpdate(state.procData);
 
   // DRAW - update grid on brush
@@ -940,6 +957,7 @@ function changeVocab(e){
 
 // change the graph shown
 
+// this function gets the stats for the filtered Cd Awards, and then calls to the function to generate the textual summary for the same district
 function getCdStats(district){
 
   if (district === "99"){
@@ -950,6 +968,7 @@ function getCdStats(district){
         // MARCH 11: update this to take awards from filtered Awards for agency/year
       state.filteredCdAwards = state.filtAwards.filter(d=>d.AFFGEOID_CD116 === district)
 
+      getCdTextSummary(district,state.filteredCdAwards)
       var data = state.filteredCdAwards;
       //console.log("GOT THE STATS for",district,data)
 
@@ -1103,7 +1122,6 @@ function getCdStats(district){
       }
   
   };
-  
 
 
 };
@@ -1118,21 +1136,21 @@ function updateHides(d){
     if (d !== "total"){
       let agency = Object.keys(agencyNames)[Object.values(agencyNames).indexOf(d)]
       agency = agency.replaceAll(" ","-")
-      console.log("this would be the checkbox id",agency)
+      //console.log("this would be the checkbox id",agency)
       d3.select("#"+agency).property("checked",false)
    
     }
   }
 
 
-  console.log("bac to state",state)
+  //console.log("bac to state",state)
   state.hiddenAxes[state.parcoordsState].push(d)
 
   
   state.hiddenAxes[state.parcoordsState] = [... new Set(state.hiddenAxes[state.parcoordsState])]
 
   var justHidden = state.currentAxes[state.parcoordsState].indexOf(d);
-  console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes[state.parcoordsState]);
+  //console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes[state.parcoordsState]);
 
 
   // MARCH 12 - if updating parcoords plot, current Axes come from diff source than industryNames
@@ -1149,7 +1167,7 @@ function updateHides(d){
 
     //state.currentAxes[state.parcoordsState] = Object.keys(curr_dims).filter( ( el ) => !state.hiddenAxes["funding"].includes( el ))
   }
-  console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes[state.parcoordsState]);
+  //console.log("HIDDEN ARE",state.hiddenAxes, "CURRENT ARE",state.currentAxes[state.parcoordsState]);
 
   // then update the ids for the new label order, so popovers work
   parcoords.svg.selectAll(".label")
@@ -1243,7 +1261,7 @@ function change_color(dimension) {
 
   }
   else if (state.parcoordsState === "funding"){
-    console.log("changing color and on funding setting...")
+	//console.log("changing color and on funding setting...")
     let sel_agency;
     if (dimension === "total"){
       sel_agency = "All funding agencies"
@@ -1304,7 +1322,7 @@ function chloroLinear(d){
   extent[0] = 1
   var colorscale = d3.scaleQuantize()
       .domain(extent)
-      .range(["rgb(43, 131, 186,0.7)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
+      .range(["rgba(43, 131, 186,0.7)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
       //.range(d3.schemeSpectral[6])
       
 
@@ -1318,11 +1336,11 @@ function linearColor(data, dimension){
 
   var colorscale = d3.scaleQuantize()
       .domain(d3.extent(d3.map(parcoords.data(),d=>d[state.color])))
-      .range(["rgb(43, 131, 186,0.4)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
+      .range(["rgba(43, 131, 186,0.4)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
       //.range(d3.schemeSpectral[6])
     
 
-  return function(d) { if (d[dimension] === 0) {return "rgb(161, 161, 161,0.8)";}
+  return function(d) { if (d[dimension] === 0) {return "rgba(161, 161, 161,0.8)";}
                       else {return colorscale(d[dimension])}
   }
                       
@@ -1521,7 +1539,8 @@ function initParcoords(){
       state.color = state.defaultColor["econ"];
 
       // INIT - Corresponding Slick Grid columns
-      var column_keys = state.procData.columns;
+      var column_keys = [ "name","AGRIC","CNSTR","MFCTR","WHOLE","RETAIL","TRNSP-UTIL",
+      "INFO","FNC-REAL","SCI-MGMT","ED-HLTH","ARTS-ENT","OTHER","PUBADMIN","profile","GEOID"    ]
       var columns = column_keys.map(function(key,i) {
         return {
           id: key,
@@ -1578,7 +1597,7 @@ function initParcoords(){
 
       // INIT - Corresponding Slick Grid columns
       // *MAR
-      console.log("STATE BFOE GRID",state)
+	//console.log("STATE BFOE GRID",state)
       var column_keys = Object.keys(state.procData[0])
       var columns = column_keys.map(function(key,i) {
         return {
@@ -1633,6 +1652,10 @@ function initParcoords(){
     draw();
   });
 
+  var gridcols = grid.getColumns();
+    gridcols[0].width = 180;
+    grid.setColumns(gridcols);
+
   
 };
 
@@ -1686,7 +1709,7 @@ function filterAwardsRecips(){
  
   //console.log("update button works");
   // filter awards by years and agencies
-  console.log("stateyear range",state.yearRange,"sel years",state.selectedYears)
+	//console.log("stateyear range",state.yearRange,"sel years",state.selectedYears)
   state.yearRange = [...new Set(state.yearRange)]
   state.filtAwards = state.awardsData.filter( d=> state.yearRange.includes(parseInt(d.Award_Year))) ;
   state.filtAwards = state.filtAwards.filter( d=> state.selectedAgencies.includes(d.Agency));
@@ -1725,7 +1748,7 @@ function filterAwardsRecips(){
     }
     fundingStats.push(res)
   }
-  console.log("FUNDING STATS SUM",fundingStats)*/
+	//console.log("FUNDING STATS SUM",fundingStats)*/
 
 
   // filter recipients based on the awards in the current selection
@@ -1743,6 +1766,7 @@ function filterAwardsRecips(){
   addRecipsToMap(state.filtRecipsData);
   getCdStats(state.currentCd);
   getCdVocab(state.currentCd);
+
 
 };
 
@@ -1768,13 +1792,13 @@ function switchParcoordsData(){
         data.forEach(function(d,i) { d.id = d.id || i; });
         // if we've read the data once before, then just set the current filters
         state.cdAggData = data;
-        console.log("year range",state.yearRange)
+	//console.log("year range",state.yearRange)
         let filtCdFund = state.cdAggData.filter(d=>state.yearRange.includes(parseInt(d.year)))
-        console.log("AGG DATA",state.cdAggData,"FILT CD FUND",filtCdFund)
+	//console.log("AGG DATA",state.cdAggData,"FILT CD FUND",filtCdFund)
         
 
         if (state.yearRange.length > 1){
-          console.log("at start of summ loop",state.selectedAgencies)
+	//console.log("at start of summ loop",state.selectedAgencies)
           var aggCdFund = {};
           var result = filtCdFund.reduce(function(r, o) {
             var key = String(o.GEOID)
@@ -1832,7 +1856,7 @@ function switchParcoordsData(){
         
         //console.log("result ob",result)
         
-        console.log("FILT CD FUND",filtCdFund,"Helper agg",aggCdFund,"STTE",state);
+	//console.log("FILT CD FUND",filtCdFund,"Helper agg",aggCdFund,"STTE",state);
         if (state.lastClusterGroup != null) {
           state.lastClusterGroup.clearLayers();
         }
@@ -2160,8 +2184,9 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
 
+  
 
-
+	//console.log("natural click e",e)
 
   // fit bounds
   mymap.fitBounds(e.target.getBounds());
@@ -2206,8 +2231,9 @@ function zoomToFeature(e) {
   getCdStats(state.currentCd);
   // get the vocab for that district -- state gets reset here too
   getCdVocab(state.currentCd);
-  // reset style of last Cd
 
+  // reset style of last Cd
+  
   // TO DO: update state for selected district, 
   // use selected district to override style palette
   // use brushed districts to zoom, too
@@ -2241,6 +2267,7 @@ function brushMap(){
     var brushed_ids = []
     brushedrows.forEach(d=>brushed_ids.push(d.GEOID))
     //console.log('brushed rows',brushedrows,"ids",brushed_ids);
+    
     var brushed_layers = []
     var brushed_layers = Object.filter(map_layers, d => brushed_ids.includes(d.feature.properties.AFFGEOID)); 
     brushed_layers = Object.keys(brushed_layers);
@@ -2279,6 +2306,130 @@ function brushMap(){
   
 };
 
+// use this for getting grammatical number suffixes in getCdTextSummary
+function ordinal_suffix_of(i) {
+  var j = i % 10,
+      k = i % 100;
+  if (j == 1 && k != 11) {
+      return i + "st";
+  }
+  if (j == 2 && k != 12) {
+      return i + "nd";
+  }
+  if (j == 3 && k != 13) {
+      return i + "rd";
+  }
+  return i + "th";
+}
+
+
+
+
+function getCdTextSummary(district,awards){
+	//console.log("filteredCdAwards",state,"district/awards",district,awards)
+
+  var acs_data = state.acsData.filter(d=>d.GEOID === district)
+  
+
+
+  // intro
+  let intro;
+  let years = [... new Set(state.selectedYears)]
+  if (years.length == 1){
+    intro = `In ${years[0]}`
+  }
+  else { intro = `Between ${years[0]} and ${years[1]}, `}
+  
+  // district grammar
+  var name = acs_data[0]['name']
+  var us_state = name.split(",")[1].trim().replace("District of Columbia","Washington D.C.")
+  var district_no = name.split(",")[0].replace("District","")
+
+
+  let districtString = ""
+  if (district_no.includes("Large")){
+    districtString = us_state+"'s sole Congressional District in the 116th Congress (2018)"
+  }
+  else {districtString = us_state+"'s "+ordinal_suffix_of(parseInt(district_no))+" Congressional District in the 116th Congress (2018)"}
+
+  let district_titleString = districtString.replace(" in the 116th Congress (2018)","").replace("Congressional","").replace("sole","At Large")
+
+
+  // num awards
+  let awardsDescription = ""
+  let awards_number = awards.length;
+  // if there are awards to the district...
+  if (awards_number !== 0) {
+    let awards_total = 0;
+    for (i = 0; i<awards_number; i++){
+      awards_total += parseInt(awards[i]["Award_Amount"])
+    }
+    awards_total = "$"+d3.format(".4s")(awards_total).replace("G","B")  
+    let awards_numString = ` received <strong>${awards_number} awards</strong>, totaling <strong>${awards_total}</strong>. `
+  
+    // top recipients
+    let aw_recips = []
+    awards.reduce(function(res, value) {
+      if (!res[value.Company]) {
+        res[value.Company] = { Company: value.Company,'total': 0, 'count':0};
+        aw_recips.push(res[value.Company])
+  
+      }
+        res[value.Company]['total'] += value.Award_Amount;
+        res[value.Company]['count'] += 1;
+  
+      return res;
+    }, {});
+  
+    aw_recips.sort((a, b) => b.total - a.total)
+    let topRecip = aw_recips[0]
+    let topCompany = toTitleCase(topRecip.Company.replaceAll("&amp;","&")).replaceAll(" Llc"," LLC").replaceAll(" llc"," LLC").replaceAll(" INC"," Inc.")
+    let topRecip_funds = "$"+d3.format(".2s")(topRecip.total).replace("G","B") 
+    let topRecipStr = `<strong>${topCompany}</strong> was the company receiving the most funds from the selected Federal agencies, receiving <strong>${topRecip.count} award(s)</strong> totaling <strong>${topRecip_funds}</strong>. `
+
+    awardsDescription = awards_numString+topRecipStr;
+
+  }
+  // if the district received no awards...
+  else {
+    awardsDescription = " <u><em>does not appear to have received any funds through the SBIR and/or STTR programs from the selected Federal agencies and departments</u></em>.  Change the selected years and agencies to identify any additional funding this district may have received between 2008 and 2018, or go to SBIR.gov to find more data."
+  }
+  // Industry ranks
+  let profile = acs_data[0]['profile'].split("),")
+  let acsRanks = []
+  let acsString = "According to the American Community Survey's 2018 estimates <em><strong>regarding this district's labor force</strong></em>, by proportion of civilian workers across the 437 districts nationwide, <u>this district had:</u> "
+  for (i = 0; i<3; i++){
+    let ind_rank = profile[i].split("(")
+    let ind = ind_rank[0].trim()
+    let rank = parseInt(ind_rank[1].trim())
+
+    if (i !== 2){
+      acsString = acsString + `the <strong>${ordinal_suffix_of(rank)}</strong> ranking labor force in the ${ind} sector(s),`
+    }
+    else {
+      acsString = acsString + ` and the <strong>${ordinal_suffix_of(rank)}</strong> ranking labor force in the ${ind} sector(s).`
+    }
+    
+  }
+  d3.select("#district-summary-title").text(district_titleString);
+  d3.select("#district-summary-text").selectAll(".default-welcome-summary").remove();
+
+	d3.selectAll(".district-autotexts").remove();
+
+  d3.select("#district-summary-text").append("p")
+    .attr("class","district-autotexts")
+    .html(intro+districtString+awardsDescription);
+  
+  d3.select("#district-summary-text").append("p")
+  .attr("class","district-autotexts")
+  .html(acsString);
+  
+	//console.log("cd text summarY:",intro,districtString,awardsDescription,acsString)
+
+
+}
+
+
 function getCdVocab(district){
   // change state
   //state.lastCd = state.currentCd
@@ -2296,7 +2447,7 @@ function getCdVocab(district){
       }
       return response.json();
     }).then(data => {
-      console.log("LOADED FILE","data/cd116_vocab_aggs/"+district+".json")
+	//console.log("LOADED FILE","data/cd116_vocab_aggs/"+district+".json")
       state.currentCdVocab = data;
       showCdVocab(state.currentCdVocab)
 
@@ -2316,7 +2467,7 @@ function getCdVocab(district){
       */
   }
   else {
-    console.log("we got to the false condition for no rasno?")
+	//console.log("we got to the false condition for no rasno?")
   }
 
 };
@@ -2327,7 +2478,7 @@ function showCdVocab(data){
 
 
 
-  console.log("I got this data",data);
+	//console.log("I got this data",data);
 
   // FILTER THE DATA BY YEARS AND AGENCIES....
   var ag = Object.keys(data).filter( d => state.selectedAgencies.includes(d))
@@ -2369,7 +2520,7 @@ function showCdVocab(data){
 
   state.filteredCdVocab = sortedVocab;
 
-  console.log("the filtered vocab returns",state.filteredCdVocab)
+	//console.log("the filtered vocab returns",state.filteredCdVocab)
 
   if (state.filteredCdVocab.length === 0){
     d3.selectAll('.pill-container').remove();
@@ -2869,7 +3020,7 @@ function showCdGraph(fundSummary,countSummary) {
           .attr("id","grants-graph-container")
           .data(fundSummary)
 
-        console.log("grants graph fund summ",fundSummary)
+	//console.log("grants graph fund summ",fundSummary)
 
         function formatFund(d) {
           if (parseInt(d) > 1e6){
