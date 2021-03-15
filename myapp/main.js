@@ -1450,18 +1450,28 @@ function showQueryPaths () {
   parcoords.unhighlight(state.unselRows);
   parcoords.highlight(state.selectedRows);
 
-  // MARCH 12 -- zoom to the highlighted features bounds
-  //var layers_ix = Object.keys(state.currentChloroLayer._layers)
-  var layers = getDistricts(mymap)
-  var selGEOID = state.selectedRows.map(d=>d.GEOID)
+  // alaska is an exception to the zoomfunction, handle this as an exception
+  if (searchString.toLowerCase().includes("alas")){
+    mymap.setView([ 65.017086,-151.083984],3.5);
+  }
+  else{
+    // MARCH 12 -- zoom to the highlighted features bounds
+    //var layers_ix = Object.keys(state.currentChloroLayer._layers)
+    var layers = getDistricts(mymap)
+    var selGEOID = state.selectedRows.map(d=>d.GEOID)
 
-  var filtLayers = layers.filter(d=>Object.keys(d).includes("feature"))
-  filtLayers = filtLayers.filter(d=>selGEOID.includes(d.feature.properties.AFFGEOID))
-  //var filt_ix = d3.map(filtLayers,d=>layers_ix.indexOf(d))
-  filtLayers = new L.featureGroup(filtLayers);
-  //console.log("layers on query mpaths",layers,selGEOID,filtLayers)
-  mymap.fitBounds(filtLayers.getBounds().pad(0.5));
-  //console.log( "Sel Size",state.selectedRows);
+    var filtLayers = layers.filter(d=>Object.keys(d).includes("feature"))
+    filtLayers = filtLayers.filter(d=>selGEOID.includes(d.feature.properties.AFFGEOID))
+    //var filt_ix = d3.map(filtLayers,d=>layers_ix.indexOf(d))
+    filtLayers = new L.featureGroup(filtLayers);
+    //console.log("layers on query mpaths",layers,selGEOID,filtLayers)
+    mymap.fitBounds(filtLayers.getBounds().pad(0.5));
+    //console.log( "Sel Size",state.selectedRows);
+
+
+  }
+  
+
  
 };
 // text casing function 
@@ -2189,7 +2199,14 @@ function zoomToFeature(e) {
 	//console.log("natural click e",e)
 
   // fit bounds
-  mymap.fitBounds(e.target.getBounds());
+  // alaska is causing issues, so we handle that case manually
+  if (e.target.feature.properties.AFFGEOID === "5001600US0200"){
+    mymap.setView([ 65.017086,-151.083984],3.5);
+  }
+  else {
+    mymap.fitBounds(e.target.getBounds());
+
+  }
 
 
   // get id in parcoords and highlight/unhighlight as needed
@@ -2365,7 +2382,7 @@ function getCdTextSummary(district,awards){
       awards_total += parseInt(awards[i]["Award_Amount"])
     }
     awards_total = "$"+d3.format(".4s")(awards_total).replace("G","B")  
-    let awards_numString = ` received <strong>${awards_number} awards</strong>, totaling <strong>${awards_total}</strong>. `
+    let awards_numString = ` received <strong>${awards_number} awards</strong>, totaling <strong>${awards_total}</strong> from the selected Federal departments and agencies. `
   
     // top recipients
     let aw_recips = []
@@ -2385,7 +2402,7 @@ function getCdTextSummary(district,awards){
     let topRecip = aw_recips[0]
     let topCompany = toTitleCase(topRecip.Company.replaceAll("&amp;","&")).replaceAll(" Llc"," LLC").replaceAll(" llc"," LLC").replaceAll(" INC"," Inc.")
     let topRecip_funds = "$"+d3.format(".2s")(topRecip.total).replace("G","B") 
-    let topRecipStr = `<strong>${topCompany}</strong> was the company receiving the most funds from the selected Federal agencies, receiving <strong>${topRecip.count} award(s)</strong> totaling <strong>${topRecip_funds}</strong>. `
+    let topRecipStr = `<strong>${topCompany}</strong> was the company receiving the most funds from the selected agencies, receiving <strong>${topRecip.count} award(s)</strong> totaling <strong>${topRecip_funds}</strong>. `
 
     awardsDescription = awards_numString+topRecipStr;
 
