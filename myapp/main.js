@@ -53,7 +53,7 @@ let state = {
   currentAxes: {econ: [], funding: []},
   defaultColor: {econ:"AGRIC", funding:"total"},
   color: null,
-  paletteInfoString: "",
+  paletteInfoString: {econ: "", funding: ""},
   selectedRows: [],
   unselRows: [],
   currentCd: "99",
@@ -371,10 +371,12 @@ function init() {
   initIndustData();
   
   // setup the default infobar
-  state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.defaultColor[state.parcoordsState]]}</br>${get_infobar_stats(state.defaultColor[state.parcoordsState])}`
+  state.paletteInfoString['econ'] = `<strong>Current sector(s):</strong> ${industryNames[state.defaultColor[state.parcoordsState]]}</br>${get_infobar_stats(state.defaultColor[state.parcoordsState])}`
+
   // set the initial info-bar text
   infobar = d3.select("#info-bar")
-                      .html(state.paletteInfoString);
+                      .html(state.paletteInfoString[state.parcoordsState]);
+
 
   /// INIT FOR PARCOORDS
   initParcoords();
@@ -523,6 +525,7 @@ function draw() {
       .bundlingStrength(0.6)
       .brushMode("1D-axes")
       .shadows()
+   
 
   }
   else if (state.parcoordsState === "funding"){
@@ -546,7 +549,6 @@ function draw() {
       .bundlingStrength(0.6)
       .brushMode("1D-axes")
       .shadows()
-    
 
   }
   
@@ -643,20 +645,19 @@ function draw() {
   // the tooltip centered and statically positioned rather than floating,
   // this way the wrapping isn't an issue
 
+    // set up listener for the axis hides
+  // parcoords.hideAxis(state.hiddenAxes).updateAxes();
+  // Initial coloration of parcoords
+   // set the initial info-bar text
+   
+
   // DRAW - on label hover, change the info bar to display full axis info, revert to current palette on mouseleave
   parcoords.svg.selectAll(".dimension .label")
     .on("mouseout", function () {
         infobar
         .style("opacity",0)
         // MARCH 13 -- palette Info changes dep on parcoordsState
-        .html(function(){
-          if (state.parcoordsState === "econ"){
-            return state.paletteInfoString;
-          }
-          else if (state.parcoordsState === "funding"){
-            return "placeholder for current funding agency palette info"
-          }
-        })
+        .html(state.paletteInfoString[state.parcoordsState])
         .style('pointer-events', 'none')
         .transition()
         .style("opacity",1)
@@ -664,6 +665,7 @@ function draw() {
         .duration(450); 
     })
     .on("mouseover", function(d) {
+      console.log("mouseover d",d)
       infobar
         .style("opacity",0)
           // MARCH 13 -- palette Info changes dep on parcoordsState
@@ -672,7 +674,26 @@ function draw() {
             return `<strong>${industryNames[d]}</strong></br>${get_infobar_stats(d)}`; // this should be a call to a dictionary, the abbrev returns the full
           }
           else if (state.parcoordsState === "funding"){
-            return "placeholder for hover agency palette"
+            let sel_agency;
+            if (d == "total"){
+              sel_agency = "All funding agencies"
+            }
+            else {
+              let agency_abbrev = d;
+              sel_agency = Object.keys(agencyNames)[Object.values(agencyNames).indexOf(d)]  
+            }
+            let years = []
+            if (state.selectedYears[0] === state.selectedYears[1]){
+              years.push(state.selectedYears[0])
+            }
+            else {years = state.selectedYears}
+            let yearString = ""
+            if (years.length === 1) {
+              yearString = String(years[0])
+            }
+            else {yearString = String(years[0])+" - "+String(years[1])+" Funding: "}
+
+            return `<p class="funding-current-paletteInfoString"><strong>${sel_agency}</strong></br><strong>${yearString}</strong>${get_infobar_stats(d)}</p>`
           }
         })
         .transition()
@@ -684,11 +705,30 @@ function draw() {
     });
     
   
-  // set up listener for the axis hides
-  // parcoords.hideAxis(state.hiddenAxes).updateAxes();
-  // Initial coloration of parcoords
+
+  let sel_agency = "All funding agencies"
+
+  let years = []
+  if (state.selectedYears[0] === state.selectedYears[1]){
+    years.push(state.selectedYears[0])
+  }
+  else {years = state.selectedYears}
+  let yearString = ""
+  if (years.length === 1) {
+    yearString = String(years[0])
+  }
+  else {yearString = String(years[0])+" - "+String(years[1])+" Funding: "}
+
+  state.paletteInfoString["funding"]= `<p class="funding-current-paletteInfoString"><strong>${sel_agency}</strong></br><strong>${yearString}</strong>${get_infobar_stats(state.color)}</p>`;
+
+
+
+
+
   change_color(state.defaultColor[state.parcoordsState]);    
   //console.log("DATA",state.procData.columns);
+  infobar = d3.select("#info-bar")
+     .html(state.paletteInfoString[state.parcoordsState]);
 
 
   // DRAW - add sort beheaviors to grid
@@ -1160,7 +1200,7 @@ function updateHides(d){
     
   })
   //console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
-  infobar.html(state.paletteInfoString);
+  infobar.html(state.paletteInfoString[state.parcoordsState]);
   //console.log("brush state",parcoords.state)
 
 };
@@ -1199,11 +1239,32 @@ function change_color(dimension) {
   // MARCH 12 - palette info String would change for switched parcoords data,
   // Likely we'd also want an alternate, unidimensional color scale for funding data
   if (state.parcoordsState === "econ") {
-    state.paletteInfoString = `<strong>Current sector(s):</strong> ${industryNames[state.color]}</br>${get_infobar_stats(state.color)}`
+    state.paletteInfoString['econ'] = `<strong>Current sector(s):</strong> ${industryNames[state.color]}</br>${get_infobar_stats(state.color)}`
 
   }
   else if (state.parcoordsState === "funding"){
-    state.paletteInfoString == "placeholder in changecoolor"
+    console.log("changing color and on funding setting...")
+    let sel_agency;
+    if (dimension === "total"){
+      sel_agency = "All funding agencies"
+    }
+    else {
+      let agency_abbrev = dimension;
+      sel_agency = Object.keys(agencyNames)[Object.values(agencyNames).indexOf(dimension)]  
+    }
+  
+    let years = []
+    if (state.selectedYears[0] === state.selectedYears[1]){
+      years.push(state.selectedYears[0])
+    }
+    else {years = state.selectedYears}
+    let yearString = ""
+    if (years.length === 1) {
+      yearString = String(years[0])
+    }
+    else {yearString = String(years[0])+" - "+String(years[1])+" Funding: "}
+
+    state.paletteInfoString['funding'] = `<p class="funding-current-paletteInfoString"><strong>Current agency: </strong>${sel_agency}</br><strong>${yearString}</strong>${get_infobar_stats(state.color)}</p>`
   }
 
 
@@ -1223,11 +1284,16 @@ function change_color(dimension) {
   }
   
   //parcoords.color(zcolor(parcoords.data(),dimension)).render()
-  
+  infobar.html(state.paletteInfoString[state.parcoordsState])
+
   change_map_color();
 
-
+  
  
+
+
+
+
   //console.log("NOW I RESET THE CHLOROLAYLER",state.currentChloroLayer)
 
 };
@@ -1428,6 +1494,8 @@ function initParcoords(){
   if (state.parcoordsState === "econ"){
     $("#parcoords").remove();
     var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
+
+
     state.procData = state.acsData;
     // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
     state.currentAxes[state.parcoordsState] = Object.keys(industryNames).filter( ( el ) => !state.defaultHiddenAxes["econ"].includes( el ) );
@@ -1446,7 +1514,7 @@ function initParcoords(){
       })*/
       .smoothness(0.13)
       .alphaOnBrushed(0.15)
-      .alpha(0.6) 
+      .alpha(0.8) 
 
       // MARCH 12 -- these would change depending on data source for pc data
       state.hiddenAxes[state.parcoordsState] = state.defaultHiddenAxes["econ"];
@@ -1467,6 +1535,7 @@ function initParcoords(){
     $("#parcoords").remove();
     var pc_container = d3.select("#parcoords-container").append("div").attr("class","parcoords").attr("id","parcoords");
 
+  
     state.procData = state.filtCdAggData;
     //console.log("STATE is now, on swithcing to funding",state)
       // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
@@ -1504,6 +1573,7 @@ function initParcoords(){
 
 
       state.color = state.defaultColor[state.parcoordsState];
+      infobar.html(state.paletteInfoString[state.parcoordsState])
 
 
       // INIT - Corresponding Slick Grid columns
@@ -1519,10 +1589,8 @@ function initParcoords(){
         }
       });
   }
- 
-
-
- 
+  
+  
   // INIT - slick grid opts
   var options = {
     enableCellNavigation: true,
@@ -1719,7 +1787,7 @@ function switchParcoordsData(){
                 let agency = String(Object.values(agencyNames)[i]);
                 let agency_full = String(Object.keys(agencyNames)[i]);
                 if (state.selectedAgencies.includes(agency_full)){
-                    console.log("agency",agency)
+                    //console.log("agency",agency)
                   if(!aggCdFund[key][agency]){
                     aggCdFund[key][agency] = 0
                   }
@@ -2023,7 +2091,11 @@ function get_infobar_stats(dimension){
     return outString;
   }
   else if (state.parcoordsState === "funding"){
-    return "placeholder for later";
+    //let agency_abbrev = dimension;
+    //let agency_full = Object.keys(agencyNames)[Object.values(agencyNames).indexOf(agency_abbrev)]
+    let total = 0;
+    state.filtCdAggData.forEach(d=> total+= d[dimension])
+    return "$"+d3.format(".4s")(total).replace("G","B");
   }
 
 };

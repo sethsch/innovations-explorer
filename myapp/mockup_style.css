@@ -253,6 +253,13 @@ html, body {
     height: auto;
     
 }
+
+.funding-current-paletteInfoString{
+    margin-top: 0.25em;
+    font-size: 1.08em;
+
+}
+
 #bar-icons {
     padding-left: 30%;
     padding-right: 0%;
