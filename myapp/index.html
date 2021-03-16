@@ -368,14 +368,125 @@
 						<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"">
 						<div class="modal-content">
 							<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLabel">User Tips: Parallel Coordinates Chart</h5>
-							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								<h6 class="modal-title" id="exampleModalLabel">User Tips</h6>
+								<button type="button" class="btn-sm btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">
-							...
+
+								<ul class="nav nav-tabs" id="userTipsTabs" role="tablist">
+									<li class="nav-item user-tip-nav" role="presentation">
+										<button class="nav-link active" id="profiler-user-tip-tab" data-bs-toggle="tab" data-bs-target="#profiler-user-tip" type="button" role="tab" aria-controls="profiler-user-tip" aria-selected="true">Districts Profiler</button>
+									</li>
+									<li class="nav-item user-tip-nav" role="presentation">
+										<button class="nav-link" id="map-user-tip-tab" data-bs-toggle="tab" data-bs-target="#map-user-tip" type="button" role="tab" aria-controls="map-user-tip" aria-selected="false">Districts Map</button>
+									</li>
+									<li class="nav-item user-tip-nav" role="presentation">
+										<button class="nav-link" id="funding-details-user-tip-tab" data-bs-toggle="tab" data-bs-target="#funding-details-user-tip" type="button" role="tab" aria-controls="funding-details-user-tip" aria-selected="false">Funding Details</button>
+									</li>
+								</ul>
+									<div class="tab-content" id="userTipsTabsContent">
+										<!-- PROFILER USER TIPS -->
+										<div class="tab-pane fade show active" id="profiler-user-tip" role="tabpanel" aria-labelledby="profiler-user-tip-tab">
+											<div class="container">
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Filtering districts</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Brush to select districts falling within particular ranges. These districts will become highlighted on the map.</p>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Removing axes</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p> Picture of icon</p>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Reorder axes</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Brush to select districts falling within particular ranges. These districts will become highlighted on the map.</p>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Reset axes</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Brush to select districts falling within particular ranges. These districts will become highlighted on the map.</p>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Switch data</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Brush to select districts falling within particular ranges. These districts will become highlighted on the map.</p>
+													</div>
+												</div>
+												
+											</div>
+										</div>
+										<!-- MAP USER TIPS -->
+										<div class="tab-pane fade" id="map-user-tip" role="tabpanel" aria-labelledby="map-user-tip-tab">
+											<div class="container">
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Switching the Profiler</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Select a dataset to populate the chloropleth.</p>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Hot spots & cold spots</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Border stroke property, Moran's I</p>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Search for districts</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Search bar, clear it to restart</p>
+													</div>
+												</div>
+											</div>
+										</div>
+										<!-- FUNDING DETAILS TIPS -->
+										<div class="tab-pane fade" id="funding-details-user-tip" role="tabpanel" aria-labelledby="funding-details-user-tip-tab">
+											<div class="container">
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Selecting agencies and years</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Select and udpate to add to the bargraph, modify the summary.</p>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-3 tip-point">
+														<p>Locate recipients</p>
+													</div>
+													<div class="col-9 tip-description">
+														<p>Double click recipient names in the table to locate the recipient in the map. Scroll through the popup to see individual grants awarded to the company. Note that some grantees may have received grants at multiple locations.
+														</p>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
 							</div>
 							<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
 							</div>
 						</div>
 						</div>
@@ -481,7 +592,7 @@
 							</div>
 						</div>
 						<!-- <h5>Topics</h5> -->
-						<ul class="nav nav-tabs">
+						<ul class="nav nav-tabs" id="vocabTabs" role="tablist">
 							<li class="nav-item">
 								<a class="nav-link active vocabsel" id="All">All</a>
 							</li>
@@ -504,12 +615,13 @@
 								</ul>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="#">Info</a>
+								<a class="nav-link vocabsel" id="vocabsInfo">Info</a>
 							</li>
 						</ul>
 						<!-- D3 would add pills here, right now many are pasted to show scrolling functionality
 						to add the title text with d3, see: https://chartio.com/resources/tutorials/how-to-show-data-on-mouseover-in-d3js/-->
 						<div class="container-fluid" id="vocab-pills"></div>
+						
 		
 					</div>
 					<!-- END VOCAB PILLS-->

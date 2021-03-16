@@ -130,6 +130,36 @@ html, body {
 }
 
 
+
+.user-tip-nav{
+    font-size: 0.9em;
+}
+.modal-footer, .modal-header{
+    background-color: #F8F9FA;
+    
+   
+}
+
+
+.modal-body{
+
+}
+#userTipsTabs{
+    margin-bottom: 1em;
+}
+.tip-point{
+    font-size: 0.8em;
+    font-weight: bold;
+}
+.tip-description{
+    font-size: 0.75em;
+    font-weight: 300;
+}
+
+
+
+
+
 /* ---- LEFT PANEL: MAP, PARCOORDS, SLICKGRID ---- */
 #map-par-panel{
     padding-top: 1%;
@@ -545,7 +575,7 @@ html, body {
 #summary-panel{
     border-left: 1px solid lightgray;
     margin-top: 1%;
-    height: 65vw;
+    height: 68vw;
 
 }
 
@@ -720,6 +750,32 @@ html, body {
     visibility:visible !important;
 }
 
+.vocab-info-intro {
+    font-size: 0.9em;
+    font-weight:600;
+
+
+}
+.vocab-info-row {
+    border-top: 0.25px solid lightslategray;
+}
+.vocab-top-entry {
+    border-top: none !important;
+}
+.vocab-name p{
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-top: 0.25em;
+
+}
+.vocab-source a{
+    font-weight:500;
+    font-size: 0.9em;
+}
+.vocab-source p{
+    font-weight: 400;
+    font-size: 0.8em;
+}
 
 
 #right-panel-spacer{
@@ -733,6 +789,8 @@ html, body {
 
 #footer-row{
     padding-top: 3em;
+    margin-left: 4%;
+    margin-right: 4%;
 }
 
 

@@ -919,7 +919,19 @@ function changeVocab(e){
   if (state.selectedVocab === "All" && state.lastVocab === "All"){
 
   }
-  else if (e.target.id !== "All") {
+  else if (e.target.id === "vocabsInfo"){
+    $("#All").attr("class","nav-link vocabsel")
+    $('#vocabs-dropdown')
+    .attr("class","nav-link dropdown-toggle")
+    .text("From vocabulary")
+
+    if (state.lastVocab !== "All"){
+      $('#'+state.lastVocab).attr("class","dropdown-item") 
+    }
+    $("#vocabsInfo").attr("class","nav-link active vocabsel")
+
+  }
+  else if (e.target.id !== "All" && e.target.id !== "vocabsInfo") {
         // unselect the All tab
    
     $('#All').attr("class","nav-link vocabsel");
@@ -929,11 +941,11 @@ function changeVocab(e){
       .text(e.target.id.replace("textrank-tfidf_keywords","Extracted")+" Vocabulary")
 
     // show it as the selected item in the dropdown
-    if (state.lastVocab != "All"){
+    if (state.lastVocab !== "All" && state.lastVocab !== "vocabsInfo"){
       $('#'+state.lastVocab).attr("class","dropdown-item") // reset all selections
     };
     $('#'+e.target.id).attr("class","dropdown-item active") // update active sel
-
+    $("#vocabsInfo").attr("class","nav-link vocabsel")
   }
   // if the user selects the All tab
   else {
@@ -947,6 +959,8 @@ function changeVocab(e){
 
     // reset dropdown selection
     $('#'+state.lastVocab).attr("class","dropdown-item") 
+    $("#vocabsInfo").attr("class","nav-link vocabsel")
+
     
   }
   showCdVocab(state.currentCdVocab);
@@ -2494,90 +2508,124 @@ function showCdVocab(data){
 
 
 
+  // if we're not on the info tab...
+  if (state.selectedVocab !== "vocabsInfo"){
+      // FILTER THE DATA BY YEARS AND AGENCIES....
+    var ag = Object.keys(data).filter( d => state.selectedAgencies.includes(d))
+    //console.log("filt ag",ag)
+    var allvocab = []
+    // MARCH 11: update this to reflect state.selectedagencies
+    for (i=0; i<ag.length; i++){
+      // MARCH 11: update this to reflect state.selectedyears
+      var yr = Object.keys(data[ag[i]]).filter( d => state.yearRange.includes(parseInt(d)) )
 
-	//console.log("I got this data",data);
-
-  // FILTER THE DATA BY YEARS AND AGENCIES....
-  var ag = Object.keys(data).filter( d => state.selectedAgencies.includes(d))
-  //console.log("filt ag",ag)
-  var allvocab = []
-  // MARCH 11: update this to reflect state.selectedagencies
-  for (i=0; i<ag.length; i++){
-    // MARCH 11: update this to reflect state.selectedyears
-    var yr = Object.keys(data[ag[i]]).filter( d => state.yearRange.includes(parseInt(d)) )
-
-    //console.log('FILT YEAR',yr)
-    for (j=0; j<yr.length; j++){
-      if (state.selectedVocab === "All"){
-        for (k=0; k<vocabs.length; k++){
-          allvocab.push(data[ag[i]][yr[j]][vocabs[k]])
+      //console.log('FILT YEAR',yr)
+      for (j=0; j<yr.length; j++){
+        if (state.selectedVocab === "All"){
+          for (k=0; k<vocabs.length; k++){
+            allvocab.push(data[ag[i]][yr[j]][vocabs[k]])
+          }
         }
+        else if (state.selectedVocab == "textrank-tfidf_keywords"){
+          allvocab.push(data[ag[i]][yr[j]]['textrank'])
+          allvocab.push(data[ag[i]][yr[j]]['tfidf_keywords'])
+        }
+        else { allvocab.push( data[ag[i]][yr[j]][state.selectedVocab]   )}
+        //allvocab.push(data[ag[i]][yr[j]])
       }
-      else if (state.selectedVocab == "textrank-tfidf_keywords"){
-        allvocab.push(data[ag[i]][yr[j]]['textrank'])
-        allvocab.push(data[ag[i]][yr[j]]['tfidf_keywords'])
-      }
-      else { allvocab.push( data[ag[i]][yr[j]][state.selectedVocab]   )}
-      //allvocab.push(data[ag[i]][yr[j]])
     }
-  }
-  allvocab = allvocab.filter(x => x !== undefined && String(Object.keys(x)[0]) !== "" && String(Object.keys(x)[0]).length > 2);
-  
-  allvocab = mergeVocabs(allvocab)
-
-  //console.log("ALL VOCAB AG YEAR FILT",allvocab)
-  var sortedVocab = [];
-  for (var term in allvocab) {
-    sortedVocab.push([term, allvocab[term]]);
-  }
-
-  sortedVocab.sort(function(a, b) {
-      return b[1] - a[1];
-  });
-
-  state.filteredCdVocab = sortedVocab;
-
-	//console.log("the filtered vocab returns",state.filteredCdVocab)
-
-  if (state.filteredCdVocab.length === 0){
-    d3.selectAll('.pill-container').remove();
-    d3.select('.no-data-vocab').remove();
-
-
-    var vocabArea = d3.select("#vocab-pills").append("p").attr("class","no-data-vocab").text("There are no keywords from the selected vocabularies, or this district did not receive Federal SBIR/STTR grants in the selected years from the selected agencies. Select another vocabulary, or expand the criteria to learn more about this district.")
-  }
-  else  {
-      //console.log("SHOW CD VOCAB",data)
-    // remove any existing pills
-    d3.selectAll('.pill-container').remove();
-    d3.select('.no-data-vocab').remove();
-
-    // close any open popovers
-    $(document).ready(function(){
-      $(".vocab-popover").popover();
+    allvocab = allvocab.filter(x => x !== undefined && String(Object.keys(x)[0]) !== "" && String(Object.keys(x)[0]).length > 2);
     
-      $(document).on('click', function(){
-          $(".vocab-popover").popover('hide');
-      });
-    
-      $('.vocab-popover').click(function(){
-          return false;
-      });
+    allvocab = mergeVocabs(allvocab)
+
+    //console.log("ALL VOCAB AG YEAR FILT",allvocab)
+    var sortedVocab = [];
+    for (var term in allvocab) {
+      sortedVocab.push([term, allvocab[term]]);
+    }
+
+    sortedVocab.sort(function(a, b) {
+        return b[1] - a[1];
     });
 
+    state.filteredCdVocab = sortedVocab;
+
+    // if there's no vocab for the Cd...
+    if (state.filteredCdVocab.length === 0){
+      d3.select(".vocab-info-text").remove();
+      d3.selectAll('.pill-container').remove();
+      d3.select('.no-data-vocab').remove();
 
 
+      var vocabArea = d3.select("#vocab-pills").append("p").attr("class","no-data-vocab").text("There are no keywords from the selected vocabularies, or this district did not receive Federal SBIR/STTR grants in the selected years from the selected agencies. Select another vocabulary, or expand the criteria to learn more about this district.")
+    }
+    // otherwise, show the selected vocab
+    else  {
+        //console.log("SHOW CD VOCAB",data)
+      // remove any existing pills
+      d3.select(".vocab-info-text").remove();
+      d3.selectAll('.pill-container').remove();
+      d3.select('.no-data-vocab').remove();
 
-    //console.log("CD VOCAB",state.currentCdVocab)
+      // close any open popovers
+      $(document).ready(function(){
+        $(".vocab-popover").popover();
+      
+        $(document).on('click', function(){
+            $(".vocab-popover").popover('hide');
+        });
+      
+        $('.vocab-popover').click(function(){
+            return false;
+        });
+      });
+      //console.log("CD VOCAB",state.currentCdVocab)
 
-    // draw the term badges
-    var vocabArea = d3.select("#vocab-pills")
-      .selectAll("pill-container")
-      .data(state.filteredCdVocab)
-      .join(
-        enter => enter.append("div")
+      // draw the term badges
+      var vocabArea = d3.select("#vocab-pills")
+        .selectAll("pill-container")
+        .data(state.filteredCdVocab)
+        .join(
+          enter => enter.append("div")
+            .attr("class","pill-container")
+            .attr("id",state.currentCd+"_vocab")
+            .attr("data-bs-toggle","popover")
+            .attr("data-bs-placement","top")
+            .attr("data-bs-html","true")
+            .attr("data-bs-custom-class","vocab-popover")
+            .attr("data-bs-container","#vocab-pills")
+            // add this function to all popover axis-remove text
+            .attr("data-bs-content",  (d,i)=> "In X grants in district,</br>Y nationally")
+            // this adds the content, on click of content, remove axis
+            .attr("data-bs-trigger","click")
+            /*.on("mouseenter", function() {
+              var _this = this;
+              setTimeout(function() {
+                $(_this).popover('show');
+                }, 150);
+                $('.pill-container').not(this).popover('hide');
+              })
+              .on("mouseleave", function() {
+              var _this = this;
+              setTimeout(function() {
+                if (!$(".vocab-popover:hover").length) {
+                  $(_this).popover("hide");
+                  }
+                }, 0);
+              })*/
+              .html(function(d){
+                var pillButton = `<button type="button" class="btn rounded-pill btn-primary btn-sm"`+
+                ` id="term-badge">`+
+                // add one to the term freq count, as some of the underly counts were extracted but then not re- counted quite right...
+                `${d[0].replaceAll("_"," ").replaceAll(" abbr","")} <span class="badge bg-secondary">${d[1]+1}</span></button>`
+                return pillButton;
+              })
+            .call(enter => enter.transition()
+                  ),
+          update => update
           .attr("class","pill-container")
           .attr("id",state.currentCd+"_vocab")
+          // add this function to all popover axis-remove text
           .attr("data-bs-toggle","popover")
           .attr("data-bs-placement","top")
           .attr("data-bs-html","true")
@@ -2602,62 +2650,40 @@ function showCdVocab(data){
                 }
               }, 0);
             })*/
+            // this adds the content, on click of content, remove axis
             .html(function(d){
-              var pillButton = `<button type="button" class="btn rounded-pill btn-primary btn-sm"`+
-              ` id="term-badge">`+
-              // add one to the term freq count, as some of the underly counts were extracted but then not re- counted quite right...
-              `${d[0].replaceAll("_"," ").replaceAll(" abbr","")} <span class="badge bg-secondary">${d[1]+1}</span></button>`
+              var pillButton = '<button type="button" class="btn rounded-pill btn-primary btn-sm"'+
+              ' id="term-badge">'+
+              `${d[0].replaceAll("_"," ")} <span class="badge bg-secondary">${d[1]}</span></button>`
               return pillButton;
             })
-          .call(enter => enter.transition()
-                ),
-        update => update
-        .attr("class","pill-container")
-        .attr("id",state.currentCd+"_vocab")
-        // add this function to all popover axis-remove text
-        .attr("data-bs-toggle","popover")
-        .attr("data-bs-placement","top")
-        .attr("data-bs-html","true")
-        .attr("data-bs-custom-class","vocab-popover")
-        .attr("data-bs-container","#vocab-pills")
-        // add this function to all popover axis-remove text
-        .attr("data-bs-content",  (d,i)=> "In X grants in district,</br>Y nationally")
-        // this adds the content, on click of content, remove axis
-        .attr("data-bs-trigger","click")
-        /*.on("mouseenter", function() {
-          var _this = this;
-          setTimeout(function() {
-            $(_this).popover('show');
-            }, 150);
-            $('.pill-container').not(this).popover('hide');
-          })
-          .on("mouseleave", function() {
-          var _this = this;
-          setTimeout(function() {
-            if (!$(".vocab-popover:hover").length) {
-              $(_this).popover("hide");
-              }
-            }, 0);
-          })*/
-          // this adds the content, on click of content, remove axis
-          .html(function(d){
-            var pillButton = '<button type="button" class="btn rounded-pill btn-primary btn-sm"'+
-            ' id="term-badge">'+
-            `${d[0].replaceAll("_"," ")} <span class="badge bg-secondary">${d[1]}</span></button>`
-            return pillButton;
-          })
-          .call(update => update.transition()
-          )
-      );
+            .call(update => update.transition()
+            )
+        );
 
-    /*var popover = new bootstrap.Popover(document.querySelector(".pill-container"),{
-      container: '#vocab-pills',
-    });*/
+      /*var popover = new bootstrap.Popover(document.querySelector(".pill-container"),{
+        container: '#vocab-pills',
+      });*/
+    }
+    
+   
+
+
 
 
   }
-  
-   
+  // if we ARE on the info tab...
+  else {
+      d3.selectAll('.pill-container').remove();
+      d3.select('.no-data-vocab').remove();
+      d3.select(".vocab-info-text").remove();
+
+
+      var vocabInfoText = d3.select("#vocab-pills")
+        .append("div")
+        .attr("class","container vocab-info-text")
+        .html('<div class="row"><div class="col-12"><p class="vocab-info-intro">Research topics and keywords were extracted using the following external controlled vocabularies and extraction methods:</p></div></div><div class="row vocab-info-row vocab-top-entry"><div class="col-3 vocab-name"><p>GEMET</p></div><div class="col-9 vocab-source"><a href="https://www.eionet.europa.eu/gemet/en/themes/">European Environment Agency General Multilingual Environmental Thesaurus</a><p>Environmental issue classifications from the European Commission.</p></div></div><div class="row vocab-info-row"><div class="col-3 vocab-name"><p>EIGE</p></div><div class="col-9 vocab-source"><a href="https://eige.europa.eu/thesaurus/overview">European Institute for Gender Equality (EIGE) Glossary & Thesaurus</a><p>Gender equality thesaurus from the European Commission.</p></div></div><div class="row vocab-info-row"><div class="col-3 vocab-name"><p>AGROVOC</p></div><div class="col-9 vocab-source"><a href="http://www.fao.org/agrovoc/">Food and Agriculture Organization of the United Nations - AGROVOC Thesaurus</a><p>Food systems and agricutltural classifications from the United Nations.</p></div></div><div class="row vocab-info-row"><div class="col-3 vocab-name"><p>STW</p></div><div class="col-9 vocab-source"><a href="http://zbw.eu/stw">STW Thesaurus of Economics</a><p>Standardized subject headings and individual keywords in various areas of economics, geography, society and politics from the Leibniz Information Centre for Economics.</p></div></div><div class="row vocab-info-row"><div class="col-3 vocab-name"><p>EU-SCIVOC</p></div><div class="col-9 vocab-source"><a href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/euroscivoc">European Science Vocabulary (EuroSciVoc)</a><p>Science related classifications from the European Commission.</p></div></div><div class="row vocab-info-row"><div class="col-3 vocab-name"><p>EUVOC</p></div><div class="col-9 vocab-source"><a href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/eurovoc">EUROVOC Thesaurus of Activities related to the EU</a><p>Governmental, social, political, legal and economic classifications from the European Commission.</p></div></div><div class="row vocab-info-row"><div class="col-3 vocab-name"><p>MeSH</p></div><div class="col-9 vocab-source"><a href="https://www.nlm.nih.gov/mesh/meshhome.html">National Library of Medicine Medical Subject Headings</a><p>The Medical Subject Headings (MeSH) thesaurus is a controlled and hierarchically-organized vocabulary produced by the National Library of Medicine. It is used for indexing, cataloging, and searching of biomedical and health-related information.</p></div></div><div class="row vocab-info-row"><div class="col-3 vocab-name"><p>Extracted Keywords</p></div><div class="col-9 vocab-source"><p>Emergent vocabulary extracted from grant abstracts and titles using TF-IDF and Textrank methods.</p></div></div>')
+  }
     
    
 
