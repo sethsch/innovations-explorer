@@ -1,6 +1,6 @@
 
 html, body {
-    height: 100vw;
+    height: 150vh;
   
 }
 
@@ -194,11 +194,11 @@ html, body {
 /* ---- LEFT PANEL: MAP, PARCOORDS, SLICKGRID ---- */
 #map-par-panel{
     padding-top: 1%;
-    height: 80vw;   
+    height: 100vh;   
 }
 
 #map{
-    height:32%;
+    height:45%;
     width: 100%;
 }
 
@@ -295,9 +295,9 @@ html, body {
     box-shadow: 0 2px 1px -1px  rgba(60, 64, 67, 0.15);
     width: 100%;
     position: relative;
-    height: 5vw;
-    padding-top: 0.5vw;
-    padding-bottom: 0.5vw;
+    height: 8%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
     margin-bottom: 0.75%;
 }
 
@@ -424,7 +424,7 @@ html, body {
     margin-top: 0;
     position: relative;
     width: 100%;
-    height: 18%;
+    height: 25%;
 }
 
 #parcoords{
@@ -471,7 +471,7 @@ html, body {
 }
 
 .parcoords .axis .label {
-    font-size: 0.8vw;
+    font-size: 1em;
     color: black;
 }
   
@@ -527,7 +527,7 @@ html, body {
 #districts-table {
     margin-top: 0.5rem;
     padding-top: 0.5rem;
-    height: 24%;
+    height: 30%;
     overflow: auto;
     font-size: 0.8em;
 }
@@ -605,7 +605,7 @@ html, body {
 #summary-panel{
     border-left: 1px solid lightgray;
     margin-top: 1%;
-    height: 68vw;
+    height: 120vh;
 
 }
 
@@ -807,7 +807,7 @@ html, body {
 
 
 #right-panel-spacer{
-    height: 28vw;
+    height: 25vh;
 }
 
 
