@@ -1,7 +1,17 @@
 
 html, body {
     height: 150vh;
+    width: 100vw;
   
+}
+body::-webkit-scrollbar:horizontal {
+    height: 0;
+    width: 0;
+    display: none;
+}
+  
+body::-webkit-scrollbar-thumb:horizontal {
+display: none;
 }
 
 
@@ -68,8 +78,8 @@ html, body {
 }
 
 #main-panel{
-    padding-left: 4%;
-    padding-right: 4%;
+    padding-left: 3%;
+    padding-right: 3%;
 
 }
 
@@ -295,8 +305,8 @@ html, body {
     box-shadow: 0 2px 1px -1px  rgba(60, 64, 67, 0.15);
     width: 100%;
     position: relative;
-    height: 8%;
-    padding-top: 0.5%;
+    height: 10%;
+    padding-top: 1.5%;
     padding-bottom: 0.5%;
     margin-bottom: 0.75%;
 }
@@ -605,6 +615,7 @@ html, body {
 #summary-panel{
     border-left: 1px solid lightgray;
     margin-top: 1%;
+    padding-right: 2%;
     height: 120vh;
 
 }
