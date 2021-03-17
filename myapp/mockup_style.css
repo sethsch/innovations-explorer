@@ -3,28 +3,38 @@ html, body {
     height: 100vw;
   
 }
-html{
-    overflow-y: auto;
-    overflow-x: hidden;
-}
+
 
 /* Force a macOS style scrollbar for windows users */
 
-body::-webkit-scrollbar       {background-color: transparent; width:14px}
-body::-webkit-scrollbar-track {background-color: transparent}
-body::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;border:4px solid #fff}
-.scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0);
-    border-radius:14px;
-    border:5px solid #fff;
-}
+
 
 #map-par-panel::-webkit-scrollbar       {background-color: transparent; width:14px}
 #map-par-panel::-webkit-scrollbar-track {background-color: transparent}
 #map-par-panel::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;border:4px solid #fff}
+
 #summary-panel::-webkit-scrollbar       {background-color: transparent; width:14px}
 #summary-panel::-webkit-scrollbar-track {background-color: transparent}
 #summary-panel::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;border:4px solid #fff}
+
+.awards-pop-container::-webkit-scrollbar       {background-color: transparent; width:14px}
+.awards-pop-container::-webkit-scrollbar-track {background-color: transparent}
+.awards-pop-container::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;border:4px solid #fff}
+
+#districts-table::-webkit-scrollbar       {background-color: transparent; width:14px}
+#districts-table::-webkit-scrollbar-track {background-color: transparent}
+#districts-table::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;border:4px solid #fff}
+
+#bargraph::-webkit-scrollbar       {background-color: transparent; width:14px}
+#bargraph::-webkit-scrollbar-track {background-color: transparent}
+#bargraph::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;border:4px solid #fff}
+
+#vocab-pills::-webkit-scrollbar       {background-color: transparent; width:14px}
+#vocab-pills::-webkit-scrollbar-track {background-color: transparent}
+#vocab-pills::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;border:4px solid #fff}
+
+
+
 
 
 
@@ -231,7 +241,7 @@ body::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;borde
 }
 .awards-pop-container{
     max-height: 150px;
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
     color: white !important;
 }
@@ -517,7 +527,6 @@ body::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;borde
 
 /*SlickGrid */
 
-
 #districts-table {
     margin-top: 0.5rem;
     padding-top: 0.5rem;
@@ -640,7 +649,6 @@ body::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;borde
     padding: 1em;
 }
 
-
 #bargraph {
     height: 98%;
     width: 100%;
@@ -649,7 +657,7 @@ body::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;borde
 
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     border: 1.5px solid rgb(222,226,230);
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
     
     
@@ -719,7 +727,6 @@ body::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;borde
 
 
 
-
 #vocab-pills{
     height: 98%;
     width: 100%;
@@ -729,7 +736,7 @@ body::-webkit-scrollbar-thumb {background-color:#808080;border-radius:14px;borde
 
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     padding: 1em;
-    overflow-y: auto;
+    overflow-y: scroll;
     overflow-x: hidden;
     display: inline-block;
 
