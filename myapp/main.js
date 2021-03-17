@@ -383,7 +383,13 @@ function init() {
   /// INIT FOR PARCOORDS
   initParcoords();
 
-
+  // Parcoords Reload Button
+  $("#reload-parcoords-icon").on("click",function(){
+    $("#parcoords").remove();
+    console.log("state",state)
+    initParcoords();
+    draw();
+  });
 
   
 
@@ -528,7 +534,7 @@ function draw() {
     }
     parcoords
       .data(state.procData)
-      //.dimensions(state.currentAxes[state.parcoordsState]) // using state variable to hide axes dynamically when needed
+      //.dimensions({state.currentAxes[state.parcoordsState]}) // using state variable to hide axes dynamically when needed
       .hideAxis(state.defaultHiddenAxes["econ"])
       .render()
       // TO DO: let this parameter be user/customizable -- 
@@ -554,7 +560,7 @@ function draw() {
     // doing these draws without reference to the state because we want NOT to add commonScale to this instance...
     parcoords
       .data(state.procData)
-      .hideAxis(state.hiddenAxes["funding"]) 
+      .hideAxis(state.defaultHiddenAxes["funding"]) 
       .dimensions(curr_dims)
       .render()
       .interactive()
@@ -1145,13 +1151,13 @@ function getCdStats(district){
 
 
 function updateHides(d){
-
+  console.log("update hides getting",d)
   if (state.parcoordsState === "funding"){
     if (d !== "total"){
-      let agency = Object.keys(agencyNames)[Object.values(agencyNames).indexOf(d)]
-      agency = agency.replaceAll(" ","-")
+      //let agency = Object.keys(agencyNames)[Object.values(agencyNames).indexOf(d)]
+      //agency = agency.replaceAll(" ","-")
       //console.log("this would be the checkbox id",agency)
-      d3.select("#"+agency).property("checked",false)
+      //d3.select("#"+agency).property("checked",false)
    
     }
   }
@@ -1163,6 +1169,7 @@ function updateHides(d){
   
   state.hiddenAxes[state.parcoordsState] = [... new Set(state.hiddenAxes[state.parcoordsState])]
 
+  console.log("state update after adding d",state)
   var justHidden = state.currentAxes[state.parcoordsState].indexOf(d);
   //console.log("just hidden index for",d," is ",justHidden," while the current axis list was",state.currentAxes[state.parcoordsState]);
 
@@ -1170,7 +1177,7 @@ function updateHides(d){
   // MARCH 12 - if updating parcoords plot, current Axes come from diff source than industryNames
 
   if (state.parcoordsState === "econ") {
-    state.currentAxes[state.parcoordsState] = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes["econ"].includes( el ) );
+    state.currentAxes["econ"] = Object.keys(industryNames).filter( ( el ) => !state.hiddenAxes["econ"].includes( el ) );
 
   }
   else if (state.parcoordsState === "funding"){
@@ -1216,7 +1223,7 @@ function updateHides(d){
     parcoords.dimensions(curr_dims).hideAxis(state.hiddenAxes[state.parcoordsState])
   }
   else {
-    parcoords.hideAxis(state.hiddenAxes[state.parcoordsState])
+    parcoords.hideAxis(state.hiddenAxes["econ"])
 
   }
 
@@ -1234,7 +1241,6 @@ function updateHides(d){
   //console.log("AFTER TRYING DIMENSIONS UPDATE",parcoords.state);
   infobar.html(state.paletteInfoString[state.parcoordsState]);
   //console.log("brush state",parcoords.state)
-
 };
 
 
@@ -1559,7 +1565,7 @@ function initParcoords(){
       .alpha(0.8) 
 
       // MARCH 12 -- these would change depending on data source for pc data
-      state.hiddenAxes[state.parcoordsState] = state.defaultHiddenAxes["econ"];
+      state.hiddenAxes[state.parcoordsState] = d3.map(state.defaultHiddenAxes["econ"], d=>d)
       state.color = state.defaultColor["econ"];
 
       // INIT - Corresponding Slick Grid columns
@@ -1582,7 +1588,8 @@ function initParcoords(){
     state.procData = state.filtCdAggData;
     //console.log("STATE is now, on swithcing to funding",state)
       // MARCH 12 - this could stay the same and get switched out later in the draw funct, if we switch pc data
-    state.hiddenAxes["funding"] = state.defaultHiddenAxes["funding"]
+    state.hiddenAxes["funding"] = d3.map(state.defaultHiddenAxes["funding"],d=>d)
+
     for (i = 0; i<Object.values(agencyNames).length; i++){
       if (!state.selectedAgencies.includes(Object.keys(agencyNames)[i])){
         state.hiddenAxes["funding"].push(Object.values(agencyNames)[i])
@@ -1668,14 +1675,6 @@ function initParcoords(){
   });
 
   
-// Parcoords Reload Button
-  $("#reload-parcoords-icon").on("click",function(){
-    $("#parcoords").remove();
-    state.hiddenAxes[state.parcoordsState] = state.defaultHiddenAxes[state.parcoordsState];
-    initParcoords();
-    draw();
-  });
-
   var gridcols = grid.getColumns();
     gridcols[0].width = 180;
     grid.setColumns(gridcols);
