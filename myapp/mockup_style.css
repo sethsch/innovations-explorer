@@ -4,6 +4,9 @@ html, body {
     width: 100vw;
   
 }
+body{
+    overflow-x: hidden;
+}
 body::-webkit-scrollbar:horizontal {
     height: 0;
     width: 0;
@@ -827,9 +830,9 @@ display: none;
 
 
 #footer-row{
-    padding-top: 3em;
-    margin-left: 4%;
-    margin-right: 4%;
+    padding-top: 5%;
+    margin-left: 3%;
+    margin-right: 3%;
 }
 
 
