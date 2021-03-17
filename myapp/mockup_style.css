@@ -1,7 +1,6 @@
 
 html, body {
     height: 100vw;
-    overflow-x: hidden;
   
 }
 
@@ -11,25 +10,25 @@ html, body {
 
 
 
-#summary-panel::-webkit-scrollbar       {background-color: transparent; width:12px}
+#summary-panel::-webkit-scrollbar       {background-color: transparent; width:9px}
 #summary-panel::-webkit-scrollbar-track {background-color: transparent}
-#summary-panel::-webkit-scrollbar-thumb {background-color:#808080;border-radius:12px;border:none;}
+#summary-panel::-webkit-scrollbar-thumb {background-color:#808080;border-radius:9px;border:none;}
 
-.awards-pop-container::-webkit-scrollbar       {background-color: transparent; width:10px}
+.awards-pop-container::-webkit-scrollbar       {background-color: transparent; width:7px}
 .awards-pop-container::-webkit-scrollbar-track {background-color: transparent}
-.awards-pop-container::-webkit-scrollbar-thumb {background-color:#808080;border-radius:10px;border:none;}
+.awards-pop-container::-webkit-scrollbar-thumb {background-color:#808080;border-radius:7px;border:none;}
 
-#districts-table::-webkit-scrollbar       {background-color: transparent; width:12px}
+#districts-table::-webkit-scrollbar       {background-color: transparent; width:9px}
 #districts-table::-webkit-scrollbar-track {background-color: transparent}
-#districts-table::-webkit-scrollbar-thumb {background-color:#808080;border-radius:12px;border:1px solid #fff}
+#districts-table::-webkit-scrollbar-thumb {background-color:#808080;border-radius:9px;border:1px solid #fff}
 
-#bargraph::-webkit-scrollbar       {background-color: transparent; width:12px}
+#bargraph::-webkit-scrollbar       {background-color: transparent; width:9px}
 #bargraph::-webkit-scrollbar-track {background-color: transparent}
-#bargraph::-webkit-scrollbar-thumb {background-color:#808080;border-radius:12px;border:1px solid #fff}
+#bargraph::-webkit-scrollbar-thumb {background-color:#808080;border-radius:9px;border:1px solid #fff}
 
-#vocab-pills::-webkit-scrollbar       {background-color: transparent; width:12px}
+#vocab-pills::-webkit-scrollbar       {background-color: transparent; width:9px}
 #vocab-pills::-webkit-scrollbar-track {background-color: transparent}
-#vocab-pills::-webkit-scrollbar-thumb {background-color:#808080;border-radius:12px;border:1px solid #fff}
+#vocab-pills::-webkit-scrollbar-thumb {background-color:#808080;border-radius:9px;border:1px solid #fff}
 
 
 
