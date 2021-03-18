@@ -375,18 +375,50 @@
 
 								<ul class="nav nav-tabs" id="userTipsTabs" role="tablist">
 									<li class="nav-item user-tip-nav" role="presentation">
-										<button class="nav-link active" id="profiler-user-tip-tab" data-bs-toggle="tab" data-bs-target="#profiler-user-tip" type="button" role="tab" aria-controls="profiler-user-tip" aria-selected="true">Districts Profiler</button>
+										<button class="nav-link active" id="map-user-tip-tab" data-bs-toggle="tab" data-bs-target="#map-user-tip" type="button" role="tab" aria-controls="map-user-tip" aria-selected="true">Districts Map</button>
 									</li>
 									<li class="nav-item user-tip-nav" role="presentation">
-										<button class="nav-link" id="map-user-tip-tab" data-bs-toggle="tab" data-bs-target="#map-user-tip" type="button" role="tab" aria-controls="map-user-tip" aria-selected="false">Districts Map</button>
+										<button class="nav-link" id="profiler-user-tip-tab" data-bs-toggle="tab" data-bs-target="#profiler-user-tip" type="button" role="tab" aria-controls="profiler-user-tip" aria-selected="false">Districts Profiler</button>
 									</li>
 									<li class="nav-item user-tip-nav" role="presentation">
 										<button class="nav-link" id="funding-details-user-tip-tab" data-bs-toggle="tab" data-bs-target="#funding-details-user-tip" type="button" role="tab" aria-controls="funding-details-user-tip" aria-selected="false">Funding Details</button>
 									</li>
 								</ul>
 									<div class="tab-content" id="userTipsTabsContent">
+												<!-- MAP USER TIPS -->
+												<div class="tab-pane fade show active" id="map-user-tip" role="tabpanel" aria-labelledby="map-user-tip-tab">
+													<div class="container">
+														<div class="row">
+															<div class="col-3 tip-point">
+																<p>Switch data</p>
+															</div>
+															<div class="col-9 tip-description">
+																<p>Data feeding the Districts Profiler also feeds the Districts Map. Choose whether you want to color districts by funding details or economic characteristics using the Profiler dropdown menu.</p>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-3 tip-point">
+																<p>Hot spots & cold spots</p>
+															</div>
+															<div class="col-9 tip-description">
+																<p><span style="color:red"><strong>Red-outlined districts</strong></span> belong to <span style="color:red"><strong>hot-spots</strong></span> for a given labor sector, 
+																	meaning they and their neighboring districts have higher-than average employment 
+																	in the selected sector.</p>  
+																<p><span style="color:blue"><strong>Blue-outlined districts</strong></span> belong to <span style="color:blue"><strong>cold-spots</strong></span>, clusters of districts where employment in the selected sector is lower than average.</p>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-3 tip-point">
+																<p>Search for districts</p>
+															</div>
+															<div class="col-9 tip-description">
+																<p>Use the search bar to identify particular states, zooming in to the relevant area on the Districts Map and marking the corresponding paths in the Districts Profiler.</p>
+															</div>
+														</div>
+													</div>
+												</div>
 										<!-- PROFILER USER TIPS -->
-										<div class="tab-pane fade show active" id="profiler-user-tip" role="tabpanel" aria-labelledby="profiler-user-tip-tab">
+										<div class="tab-pane fade" id="profiler-user-tip" role="tabpanel" aria-labelledby="profiler-user-tip-tab">
 											<div class="container">
 												<div class="row">
 													<div class="col-3 tip-point">
@@ -463,38 +495,6 @@
 												</div>
 									
 												
-											</div>
-										</div>
-										<!-- MAP USER TIPS -->
-										<div class="tab-pane fade" id="map-user-tip" role="tabpanel" aria-labelledby="map-user-tip-tab">
-											<div class="container">
-												<div class="row">
-													<div class="col-3 tip-point">
-														<p>Switch data</p>
-													</div>
-													<div class="col-9 tip-description">
-														<p>Data feeding the Districts Profiler also feeds the Districts Map. Choose whether you want to color districts by funding details or economic characteristics using the Profiler dropdown menu.</p>
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-3 tip-point">
-														<p>Hot spots & cold spots</p>
-													</div>
-													<div class="col-9 tip-description">
-														<p><span style="color:red"><strong>Red-outlined districts</strong></span> belong to <span style="color:red"><strong>hot-spots</strong></span> for a given labor sector, 
-															meaning they and their neighboring districts have higher-than average employment 
-															in the selected sector.</p>  
-														<p><span style="color:blue"><strong>Blue-outlined districts</strong></span> belong to <span style="color:blue"><strong>cold-spots</strong></span>, clusters of districts where employment in the selected sector is lower than average.</p>
-													</div>
-												</div>
-												<div class="row">
-													<div class="col-3 tip-point">
-														<p>Search for districts</p>
-													</div>
-													<div class="col-9 tip-description">
-														<p>Use the search bar to identify particular states, zooming in to the relevant area on the Districts Map and marking the corresponding paths in the Districts Profiler.</p>
-													</div>
-												</div>
 											</div>
 										</div>
 										<!-- FUNDING DETAILS TIPS -->
