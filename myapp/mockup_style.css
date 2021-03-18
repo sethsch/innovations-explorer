@@ -340,6 +340,10 @@ display: none;
     height: auto;
     
 }
+
+.leg-swatch-manual{
+    opacity: 0.8;
+}
 .info-bar {
     display: block;
     font-size: 0.72em;

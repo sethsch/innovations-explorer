@@ -373,7 +373,8 @@ function init() {
   initIndustData();
   
   // setup the default infobar
-  state.paletteInfoString['econ'] = `<strong>Current sector(s):</strong> ${industryNames[state.defaultColor[state.parcoordsState]]}</br>${get_infobar_stats(state.defaultColor[state.parcoordsState])}`
+  // alt text "Current sector(s):"
+  state.paletteInfoString['econ'] = `<strong>% District Employed In:</strong> ${industryNames[state.defaultColor[state.parcoordsState]]}</br>${get_infobar_stats(state.defaultColor[state.parcoordsState])}`
 
   // set the initial info-bar text
   infobar = d3.select("#info-bar")
@@ -712,7 +713,7 @@ function draw() {
             if (years.length === 1) {
               yearString = String(years[0])
             }
-            else {yearString = String(years[0])+" - "+String(years[1])+" Funding: "}
+            else {yearString = "SBIR/STTR Funding ("+String(years[0])+"-"+ String(years[1])+"): " }
 
             return `<p class="funding-current-paletteInfoString"><strong>${sel_agency}</strong></br><strong>${yearString}</strong>${get_infobar_stats(d)}</p>`
           }
@@ -738,7 +739,7 @@ function draw() {
   if (years.length === 1) {
     yearString = String(years[0])
   }
-  else {yearString = String(years[0])+" - "+String(years[1])+" Funding: "}
+  else {yearString = "SBIR/STTR Funding ("+String(years[0])+"-"+ String(years[1])+"): "}
 
   state.paletteInfoString["funding"]= `<p class="funding-current-paletteInfoString"><strong>${sel_agency}</strong></br><strong>${yearString}</strong>${get_infobar_stats(state.color)}</p>`;
 
@@ -1282,7 +1283,7 @@ function change_color(dimension) {
   // MARCH 12 - palette info String would change for switched parcoords data,
   // Likely we'd also want an alternate, unidimensional color scale for funding data
   if (state.parcoordsState === "econ") {
-    state.paletteInfoString['econ'] = `<strong>Current sector(s):</strong> ${industryNames[state.color]}</br>${get_infobar_stats(state.color)}`
+    state.paletteInfoString['econ'] = `<strong>% District Employed In:</strong> ${industryNames[state.color]}</br>${get_infobar_stats(state.color)}`
 
   }
   else if (state.parcoordsState === "funding"){
@@ -1305,9 +1306,9 @@ function change_color(dimension) {
     if (years.length === 1) {
       yearString = String(years[0])
     }
-    else {yearString = String(years[0])+" - "+String(years[1])+" Funding: "}
-
-    state.paletteInfoString['funding'] = `<p class="funding-current-paletteInfoString"><strong>Current agency: </strong>${sel_agency}</br><strong>${yearString}</strong>${get_infobar_stats(state.color)}</p>`
+    else {yearString = "SBIR/STTR Funding ("+String(years[0])+"-"+ String(years[1])+"): "}
+    // alt label = Current agency:
+    state.paletteInfoString['funding'] = `<p class="funding-current-paletteInfoString"><strong>Funding from: </strong>${sel_agency}</br><strong>${yearString}</strong>${get_infobar_stats(state.color)}</p>`
   }
 
 
@@ -1321,9 +1322,59 @@ function change_color(dimension) {
   //MARCH 12 - want to change this with alternate color scale if it's not industries data
   if (state.parcoordsState === "econ"){
     parcoords.color(zcolor(parcoords.data(),dimension)).render();
+    // tailor the legend labels depending on the % interpretation of the zscore
+    var industries =  [ ...shortAttributeNames.values() ];
+    var selectedVar = industries.indexOf(state.color);
+    selectedVar = [...shortAttributeNames.keys()][selectedVar]
+    let stat = industStats_global[selectedVar]
+    console.log("STAT",stat,selectedVar)
+
+    let vals = [(-2*stat.stdev+stat.mean), -0.5*stat.stdev+stat.mean, stat.mean, 0.5*stat.stdev+stat.mean, 2*stat.stdev+stat.mean]
+
+    let labels = [];
+    for (i = 0; i<vals.length; i++){
+      if (i==0 && vals[i] < 0.001) {
+        labels.push("<0.1%")
+      }
+      else if (i==0){
+        labels.push("<"+d3.format(".1%")(vals[i])  )
+      }
+      else if (i===vals.length-1) {
+        labels.push(d3.format(".1%")(vals[i])+"+")
+      }
+      else  {labels.push(d3.format(".1%")(vals[i]))}
+
+    }
+    d3.selectAll(".leg-swatch").data(labels).text(d=>d)
   }
   else if (state.parcoordsState === "funding"){
     parcoords.color(linearColor(parcoords.data(),dimension)).render();
+
+    // these are the default colors we have for the legend
+    let defaultColors = ["rgb(43, 131, 186)","rgb(138, 190, 173)", "rgb(218, 199, 130)", "rgb(243, 134, 72)" ,"rgb(215, 25, 28)"]
+    // grab the color scale from the functions
+    var colorscale = d3.scaleQuantize()
+    .domain(d3.extent(d3.map(parcoords.data(),d=>d[dimension])))
+    .range(["rgba(43, 131, 186,0.4)", "rgb(138, 190, 173)", "rgb(218, 199, 130)","rgb(243, 134, 72)","rgb(215, 25, 28)"])
+    console.log('first color',colorscale.invertExtent(defaultColors[0]),colorscale.invertExtent(defaultColors[1]))
+    let labels = [];
+    for (i=0; i<defaultColors.length; i++){
+      if (i===0) {
+        let label = colorscale.invertExtent(defaultColors[i+1])[0]
+        labels.push("<$"+d3.format(".2s")(label).replace("G","B"))
+      }
+      else if (i===defaultColors.length-1) {
+        let label = colorscale.invertExtent(defaultColors[i])[1]
+        labels.push("$"+d3.format(".2s")(label).replace("G","B")+"+")
+      }
+      else  {
+        let label = colorscale.invertExtent(defaultColors[i])[1]
+        labels.push("$"+d3.format(".2s")(label).replace("G","B"))}
+    }
+    d3.selectAll(".leg-swatch").data(labels).text(d=>d)
+
+    //quantize.invertExtent(value)
+
   }
   
   //parcoords.color(zcolor(parcoords.data(),dimension)).render()
@@ -2140,7 +2191,7 @@ function get_infobar_stats(dimension){
     // get stats from state
     var avg = industStats_global[selectedVar]['mean'];
     var dev =  industStats_global[selectedVar]['stdev'];
-    var outString = `<strong>Sector Employment Avg.:</strong> ${Math.round(avg*100)}% </br><strong>Std. Deviation:</strong> ${Math.round(dev*100)}%`
+    var outString = `<strong>Sector Nat'l Employment Avg.:</strong> ${Math.round(avg*100)}% </br><strong>Std. Deviation:</strong> ${Math.round(dev*100)}%`
     return outString;
   }
   else if (state.parcoordsState === "funding"){
