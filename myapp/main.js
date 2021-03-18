@@ -50,7 +50,7 @@ let state = {
                       funding: ["id","GEOID","year","name"]},
   hiddenAxes: {econ:["id","GEOID","name","profile"],funding: ["id","GEOID","year","name"]},
   currentAxes: {econ: [], funding: []},
-  defaultColor: {econ:"AGRIC", funding:"total"},
+  defaultColor: {econ:"AGRIC", funding:"TOTAL"},
   color: null,
   paletteInfoString: {econ: "", funding: ""},
   selectedRows: [],
@@ -182,7 +182,7 @@ function fundedChloro(feature,normVar){
 let buffer = 2;
 
 // for the map, we specify a max zoom level
-const maxZoomLevel = 10;
+const maxZoomLevel = 12;
 
 // colors for the bar graph
 //const sbir_color = "#181818";
@@ -257,14 +257,14 @@ let industryNames = {
 let agencyNames = {
   "National Science Foundation":"NSF",
   "Department of Health and Human Services": "HHS",
-  "Department of Defense": "DoD",
-  "Department of Education": "DoEd",
-  "Department of Commerce": "DoC",
-  "Department of Agriculture": "DoA",	
+  "Department of Defense": "DOD",
+  "Department of Education": "ED",
+  "Department of Commerce": "DOC",
+  "Department of Agriculture": "USDA",	
   "National Aeronautics and Space Administration": "NASA",
-  "Department of Transportation": "DoT",
-  "Department of Homeland Security": "DoHS", 
-  "Department of Energy": "DoEnrg",
+  "Department of Transportation": "DOT",
+  "Department of Homeland Security": "DHS", 
+  "Department of Energy": "DOE",
   "Environmental Protection Agency": "EPA"
 }
 
@@ -272,17 +272,17 @@ let agencyNames = {
 
 let pc_dims = {
   //"year": {title:"Year", type: 'string',orient: 'left'},
-  "total":  { type: 'number',orient: 'right', ticks: 3},
-  "DoD":  { type: 'number',orient: 'right', ticks: 3},
+  "TOTAL":  { type: 'number',orient: 'right', ticks: 3},
+  "DOD":  { type: 'number',orient: 'right', ticks: 3},
   "HHS":       { type: 'number',orient: 'right', ticks: 3},
-  "DoEnrg": { type: 'number',orient: 'right', ticks: 3},
+  "DOE": { type: 'number',orient: 'right', ticks: 3},
   "NASA": { type: 'number',orient: 'right', ticks: 3},
-  "DoHS": { type: 'number',orient: 'right', ticks: 3},
+  "DHS": { type: 'number',orient: 'right', ticks: 3},
   "NSF":  {type: 'number',orient: 'right', ticks: 3},
-  "DoT": { type: 'number',orient: 'right', ticks: 3},
-  "DoA": { type: 'number',orient: 'right', ticks: 3},
-  "DoEd": { type: 'number',orient: 'right', ticks: 3},
-  "DoC": { type: 'number',orient: 'right', ticks: 3},
+  "DOT": { type: 'number',orient: 'right', ticks: 3},
+  "USDA": { type: 'number',orient: 'right', ticks: 3},
+  "ED": { type: 'number',orient: 'right', ticks: 3},
+  "DOC": { type: 'number',orient: 'right', ticks: 3},
   "EPA": { type: 'number',orient: 'right', ticks: 3},
   
 }
@@ -552,7 +552,7 @@ function draw() {
   else if (state.parcoordsState === "funding"){
 
     let curr_dims = {};
-    curr_dims["total"] = pc_dims["total"]
+    curr_dims["TOTAL"] = pc_dims["TOTAL"]
     state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
     state.currentAxes["funding"] = Object.keys(curr_dims)
 	//console.log("CURR DIMS",state.currentAxes[state.parcoordsState],curr_dims)
@@ -696,7 +696,7 @@ function draw() {
           }
           else if (state.parcoordsState === "funding"){
             let sel_agency;
-            if (d == "total"){
+            if (d == "TOTAL"){
               sel_agency = "All funding agencies"
             }
             else {
@@ -789,6 +789,7 @@ function draw() {
 
     // Get the id of the item referenced in grid_row
     var item_id = grid.getDataItem(grid_row).id;
+   
     var d = parcoords.brushed() || state.procData;
     //var unsel_ids = dataView.getItems().filter(d=>d.id !== item_id);
     //console.log("unsel ids",unsel_ids)
@@ -804,6 +805,9 @@ function draw() {
    
     parcoords.highlight([d[elementPos]]);
     //showQueryPaths();
+  
+   
+
 
   });
   grid.onMouseLeave.subscribe(function(e,args) {
@@ -812,6 +816,7 @@ function draw() {
     parcoords.unhighlight(state.selectedRows);
     parcoords.mark(marked_dist)
     //showQueryPaths();
+
   });
 
   grid.onCellChange.subscribe(function (e, args) {
@@ -1153,7 +1158,7 @@ function getCdStats(district){
 function updateHides(d){
   console.log("update hides getting",d)
   if (state.parcoordsState === "funding"){
-    if (d !== "total"){
+    if (d !== "TOTAL"){
       //let agency = Object.keys(agencyNames)[Object.values(agencyNames).indexOf(d)]
       //agency = agency.replaceAll(" ","-")
       //console.log("this would be the checkbox id",agency)
@@ -1182,7 +1187,7 @@ function updateHides(d){
   }
   else if (state.parcoordsState === "funding"){
     let curr_dims = {};
-    curr_dims["total"] = pc_dims["total"]
+    curr_dims["TOTAL"] = pc_dims["TOTAL"]
     state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
     state.currentAxes["funding"] = Object.keys(curr_dims)
 
@@ -1213,7 +1218,7 @@ function updateHides(d){
   //console.log("BEFORE RESETTING DIM",parcoords.state);
   if (state.parcoordsState === "funding"){
     let curr_dims = {};
-    curr_dims["total"] = pc_dims["total"]
+    curr_dims["TOTAL"] = pc_dims["TOTAL"]
     state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
 
 
@@ -1283,7 +1288,7 @@ function change_color(dimension) {
   else if (state.parcoordsState === "funding"){
 	//console.log("changing color and on funding setting...")
     let sel_agency;
-    if (dimension === "total"){
+    if (dimension === "TOTAL"){
       sel_agency = "All funding agencies"
     }
     else {
@@ -1596,7 +1601,7 @@ function initParcoords(){
       }
     }
     let curr_dims = {};
-    curr_dims["total"] = pc_dims["total"]
+    curr_dims["TOTAL"] = pc_dims["TOTAL"]
     state.selectedAgencies.forEach(function(a){curr_dims[agencyNames[a]] = pc_dims[agencyNames[a]]  })
 
     state.currentAxes[state.parcoordsState] = Object.keys(curr_dims).filter( ( el ) => !state.hiddenAxes["funding"].includes( el ) );
@@ -1797,7 +1802,7 @@ function filterAwardsRecips(){
 // MARCH 12 - compute aggregate stats depending on the filter, for parcoords switch
 function switchParcoordsData(){
 
- 
+  console.log("filt state before swithc",state.procData,state.filtCdAggData)
 
   if (state.parcoordsState === "econ"){
     state.procData = state.acsData;
@@ -1806,7 +1811,7 @@ function switchParcoordsData(){
   }
   else if (state.parcoordsState === "funding"){
      // reset the brush on any existing parcoords
-       parcoords.brushReset();
+      parcoords.brushReset();
       brushMap();
 
       d3.csv('data/cd116_agency_year_fund_aggs.csv').then(function(data) {
@@ -1827,7 +1832,7 @@ function switchParcoordsData(){
             var key = String(o.GEOID)
             
             if(!aggCdFund[key]) {
-              aggCdFund[key] = {"name": o["name"],"total":0}
+              aggCdFund[key] = {"name": o["name"],"TOTAL":0}
               r.push(aggCdFund[key]);
             } else {
               for (i = 0; i<Object.values(agencyNames).length; i++){
@@ -1839,7 +1844,7 @@ function switchParcoordsData(){
                     aggCdFund[key][agency] = 0
                   }
                   aggCdFund[key][agency] += parseInt(o[agency])
-                  aggCdFund[key]["total"] += parseInt(o[agency])
+                  aggCdFund[key]["TOTAL"] += parseInt(o[agency])
                 }
                 
                 
@@ -1855,17 +1860,18 @@ function switchParcoordsData(){
           aggCdFund = Object.values(aggCdFund)
           state.filtCdAggData = aggCdFund;
           state.procData = aggCdFund;
+          console.log("state after switch coords update",state.procData,state.filtCdAggData)
         }
         else if (state.yearRange.length === 1){
           var aggCdFund = {};
           for (i=0; i<filtCdFund.length; i++){
            
             let key = filtCdFund[i]["GEOID"];
-            aggCdFund[key] = {"name":filtCdFund[i]["name"],"total":0}
+            aggCdFund[key] = {"name":filtCdFund[i]["name"],"TOTAL":0}
 
             for (j=0; j<Object.values(agencyNames).length; j++){
               aggCdFund[key][String(Object.values(agencyNames)[j])] = parseInt(filtCdFund[i][String(Object.values(agencyNames)[j])])
-              aggCdFund[key]["total"] += parseInt(filtCdFund[i][String(Object.values(agencyNames)[j])]);
+              aggCdFund[key]["TOTAL"] += parseInt(filtCdFund[i][String(Object.values(agencyNames)[j])]);
             }
             aggCdFund[key]["GEOID"] = key
             aggCdFund[key]["id"]= key
@@ -1879,7 +1885,7 @@ function switchParcoordsData(){
         
         //console.log("result ob",result)
         
-	//console.log("FILT CD FUND",filtCdFund,"Helper agg",aggCdFund,"STTE",state);
+	  //console.log("FILT CD FUND",filtCdFund,"Helper agg",aggCdFund,"STTE",state);
         if (state.lastClusterGroup != null) {
           state.lastClusterGroup.clearLayers();
         }

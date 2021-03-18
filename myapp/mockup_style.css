@@ -194,11 +194,29 @@ display: none;
 .tip-point{
     font-size: 0.8em;
     font-weight: bold;
+    border-top: 1px solid gainsboro;
+    padding-top: 0.5em;
 }
 .tip-description{
     font-size: 0.75em;
     font-weight: 300;
+    justify-content: center;
+    text-align: left;
+    border-top: 1px solid gainsboro;
+    padding-top: 0.5em;
+
 }
+.parcoords-img{
+    width: 200px;
+    height: 135.6px;
+
+}
+.parcoords-img-lg{
+    width: 160px;
+    height: 212px;
+
+}
+
 
 
 
@@ -226,11 +244,11 @@ display: none;
 .leaflet-popup-content-wrapper{
     border-radius: 6px !important;
     background-color: rgb(33,38,41) !important;
-    opacity: 0.9;
+    opacity: 0.94;
 }
 .leaflet-popup-tip {
     background-color: rgb(33,38,41) !important;
-    opacity: 0.9;
+    opacity: 0.94;
 
 }
 
@@ -239,7 +257,7 @@ display: none;
 .awards-pop-header{
     position: sticky;
     background-color: rgb(33,38,41);
-    opacity: 0.9;
+    opacity: 0.94;
     color: white;
     line-height: 1.75em;
     font-size: 1.25em;
@@ -458,11 +476,12 @@ display: none;
     margin-right: 1.5em !important;
     margin-top: 0px !important;
     margin-left: 0px !important;
-    margin-bottom: -0.85em !important;
+    margin-bottom: -0.55em !important;
     border: none;
     color: rgb(78, 78, 78);
-    font-size: 0.85em;
+    font-size: 0.95em;
     background: none;
+    cursor: default;
     
 }
 .popover-body{
@@ -497,7 +516,6 @@ display: none;
     text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
     cursor: move;
 }
-
 
 
 
@@ -765,7 +783,7 @@ display: none;
     margin: 0.2em;
     font-size: 0.9em;
     /*box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;*/
-
+    cursor: default;
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 
