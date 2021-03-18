@@ -698,7 +698,7 @@ function draw() {
           else if (state.parcoordsState === "funding"){
             let sel_agency;
             if (d == "TOTAL"){
-              sel_agency = "All funding agencies"
+              sel_agency = "All <u>selected</u> funding agencies"
             }
             else {
               let agency_abbrev = d;
@@ -728,7 +728,7 @@ function draw() {
     
   
 
-  let sel_agency = "All funding agencies"
+  let sel_agency = "All <u>selected</u> funding agencies"
 
   let years = []
   if (state.selectedYears[0] === state.selectedYears[1]){
@@ -1290,7 +1290,7 @@ function change_color(dimension) {
 	//console.log("changing color and on funding setting...")
     let sel_agency;
     if (dimension === "TOTAL"){
-      sel_agency = "All funding agencies"
+      sel_agency = "All <u>selected</u> funding agencies"
     }
     else {
       let agency_abbrev = dimension;
