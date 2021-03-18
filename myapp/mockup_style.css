@@ -1,5 +1,6 @@
 
 html, body {
+   
     height: 150vh;
     width: 100vw;
   
@@ -50,25 +51,34 @@ display: none;
 
 
 #title-panel{
+    background-color: whitesmoke;
     width: 100vw;
-    padding: 2%;
+    height: 250vh;
 }
 #page-title{
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.336);
     text-align: center;
-    margin-top: 0.5em;
-    margin-bottom: 0.25em;
+    padding-top: 20%;
+    top:0;
 }
 
 #page-subtitle{
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.336);
+
     text-align: center;
     margin-top: 0.25em;
-    margin-bottom: 0.5em;
+    margin-bottom: 25%;
+
 }
 
 #intro-panel{
-    padding-left: 12%;
-    padding-right: 12%;
-    font-size: 18px;
+    padding-left: 18%;
+    padding-right: 18%;
+    font-size: 1.5em;
+    font-weight: 350;
+
+    text-align: justify;
+    margin-bottom: 20%;
 }
 
 #navbar-top{
@@ -89,8 +99,7 @@ display: none;
 
 /*--- SCROLL DOWN button ---*/
 #fullscreen {
-    margin-top: 12.5vw;
-    margin-bottom: 25vw;
+    margin-top: 25vh;
     margin-left: auto;
     margin-right: auto;
     width: 50%;
