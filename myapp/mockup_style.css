@@ -1,7 +1,7 @@
 
 html, body {
    
-    height: 150vh;
+    height: 180vh;
     width: 100vw;
   
 }
@@ -53,31 +53,32 @@ display: none;
 #title-panel{
     background-color: whitesmoke;
     width: 100vw;
-    height: 250vh;
+    height: auto;
 }
 #page-title{
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.336);
     text-align: center;
     padding-top: 20%;
     top:0;
 }
 
 #page-subtitle{
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.336);
 
     text-align: center;
     margin-top: 0.25em;
-    margin-bottom: 25%;
+    margin-bottom: 33%;
 
 }
 
 #intro-panel{
     padding-left: 18%;
     padding-right: 18%;
+    padding-bottom: 18%;
     font-size: 1.5em;
     font-weight: 350;
 
     text-align: justify;
+}
+#intro-text{
     margin-bottom: 20%;
 }
 
@@ -102,6 +103,7 @@ display: none;
     margin-top: 25vh;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 25vh;
     width: 50%;
     /*border: 3px solid green;*/
     text-align: center;
@@ -119,6 +121,7 @@ display: none;
     transition: background-color 0.25s ease-in-out;
 }
 #downbutton {
+
     height: 48px;
     width: 48px;
     color: lightgray;
@@ -298,7 +301,7 @@ display: none;
     margin-right: 0.33em;
 }
 .awards-pop-title {
-    font-size: 1em;
+    font-size: 1.1em;
     margin-top: 0.2em !important;
     margin-bottom: 0 !important;
 
@@ -308,7 +311,7 @@ display: none;
 }
 .awards-pop-agency{
     font-style: italic;
-    font-size: 0.95em;
+    font-size: 1em;
     margin-bottom: 0.35em !important;
     margin-top: 0 !important;
     display: block;
@@ -345,7 +348,7 @@ display: none;
     font-size: 0.6em;
     margin-right: 2em;
     margin-top: 0.75em;
-    max-width: 100%;
+    width: auto;
     height: auto;
     
 }
