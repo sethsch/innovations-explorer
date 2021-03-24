@@ -1,0 +1,38 @@
+/*----- EXAMPLES PAGE ------*/
+body{
+    position: relative;
+}
+#examples-main-panel{
+    padding-left: 6%;
+    padding-right: 6%;
+    text-align: justify;
+    position: relative;
+}
+
+.list-menu-col{
+    border-right: 1px solid darkslategray; 
+}
+#list-example{
+    position: fixed;
+    padding-top: 5%;
+}
+
+#examples-details-col{
+    overflow-y: scroll;
+    margin-right: 12%;
+    margin-left: 6%;
+    margin-top: 6%;
+    height: auto;
+}
+.examples-heading{
+    padding-bottom: 0.25em;
+    padding-top: 1em;
+}
+
+.example-img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+    box-shadow: dimgray;
+}
