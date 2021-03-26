@@ -14,15 +14,16 @@ body{
 }
 #list-example{
     position: fixed;
+    width:12%;
     padding-top: 5%;
 }
+
 
 #examples-details-col{
     overflow-y: scroll;
     margin-right: 12%;
-    margin-left: 6%;
+    margin-left: 12%;
     margin-top: 6%;
-    height: auto;
 }
 .examples-heading{
     padding-bottom: 0.25em;
