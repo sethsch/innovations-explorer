@@ -7,20 +7,12 @@
 	
 		<title>Examples - Public Innovations Explorer</title>
 
-		
 			<!--Bootstrap css-->
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
             <link rel='stylesheet' type='text/css' href="examples_style.css">
-            
-     
-		
-
-		
-		
 		
 	</head>
-	<body data-bs-spy="scroll" data-bs-offset="85" data-bs-target="#list-example">
-        
+	<body data-bs-spy="scroll" data-bs-offset="80" data-bs-target="#list-example">
 
 		<!--NAV BAR-->
 		<!-- examples: https://www.codeply.com/go/qhaBrcWp3v -->
@@ -45,18 +37,10 @@
 							<li><a class="dropdown-item" href="data_sources.html">Data sources</a></li>
 						</ul>
 					</li>
-
-					
 				</ul>
 			</div>
 		</nav>
        
-
-
-		
-			
-
-      
 		<div class="container-fluid h-100 d-flex flex-column" id="examples-main-panel">
            
 			<div class="row flex-fill" style="min-height:0">
@@ -66,12 +50,14 @@
 
                     <div id="list-example" class="list-group">
                         <h5>User Guide</h5>
-                        <a class="list-group-item list-group-item-action" href="#list-item-0">About</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-1">Filter the map</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-2">Select a district</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-3">Identify recipients</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-4">Identify topics</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-5">See grant details</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-about">About</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-selection">Agencies & Years</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-filter">Filter the map</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-district">Select a district</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-recips">Identify recipients</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-details">See grant details</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-topics">Identify topics</a>
+
 
                     </div>
                    
@@ -79,42 +65,14 @@
 				<div class="col-10 mh-100" > 
 
                     <div  id="examples-details-col"  class="scrollspy-example" tabindex="0">
-                        <h3 class="examples-heading" id="list-item-0">Using the Explorer</h3>
-                        <p>The explorer was built with a variety of analysts in mind: <strong>policy analysts</strong> exploring Federal funding for innovative research across the country, 
-                            <strong>economic geographers</strong> looking to view the landscape of innovation research across the country, and <strong>funders & portfolio analysts</strong> 
-                            looking to compare the funding profiles of the Federal agencies and departments participating in the SBIR/STTR programs. 
-                        </p>
 
-                        <p>Use the explorer to retrieve district-level summaries regarding the research and technology transfer activities of small businesses,
-                            or to identify different awardees and get a sense of their research agendas.  While you can always consult the central awards database at 
-                            SBIR.gov to obtain more detail regarding individual grantees, the Public Innovations Explorer is intended to generate more locally-grounded 
-                            portraits of specialized research activity. You might consider asking: 
-                            <ul>
-                                <li>Where particular Federal agencies and departments tended to committ funding?</li>
-                                <li>What are the characteristics of grantee companies in a particular district?</li>
-                                <li>How are the research activities happening in a particular district tied to its specialized labor profile?</li>
-                                <li>In what ways particular districts have or have not tended to specialize in certain areas of research?</li>
-                                <li>How might research activities impact future economic activities in the district?</li>
-                            </ul>
-            
-                        </p>            
-                        <h4 class="examples-heading" id="list-item-1">Filter the map</h4>
-                        <p>Use the explorer to retrieve district-level summaries regarding the research and technology transfer activities of small businesses,
-                            or to identify different awardees and get a sense of their research agendas.  While you can always consult the central awards database at 
-                            SBIR.gov to obtain more detail regarding individual grantees, the Public Innovations Explorer is intended to generate more locally-grounded 
-                            portraits of specialized research activity. You might consider asking: 
-                            <ul>
-                                <li>Where particular Federal agencies and departments tended to committ funding?</li>
-                                <li>What are the characteristics of grantee companies in a particular district?</li>
-                                <li>How are the research activities happening in a particular district tied to its specialized labor profile?</li>
-                                <li>In what ways particular districts have or have not tended to specialize in certain areas of research?</li>
-                                <li>How might research activities impact future economic activities in the district?</li>
-                            </ul>
-            
-                        </p>            
-                        
-                        <h4 class="examples-heading" id="list-item-2">Select a district</h4>
-                          
+                        <section id="list-item-about" class="examples-section">
+                            <h3 class="examples-heading">Using the Explorer</h3>
+                            <p>The explorer was built with a variety of analysts in mind: <strong>policy analysts</strong> exploring Federal funding for innovative research across the country, 
+                                <strong>economic geographers</strong> looking to view the landscape of innovation research across the country, and <strong>funders & portfolio analysts</strong> 
+                                looking to compare the funding profiles of the Federal agencies and departments participating in the SBIR/STTR programs. 
+                            </p>
+    
                             <p>Use the explorer to retrieve district-level summaries regarding the research and technology transfer activities of small businesses,
                                 or to identify different awardees and get a sense of their research agendas.  While you can always consult the central awards database at 
                                 SBIR.gov to obtain more detail regarding individual grantees, the Public Innovations Explorer is intended to generate more locally-grounded 
@@ -126,21 +84,139 @@
                                     <li>In what ways particular districts have or have not tended to specialize in certain areas of research?</li>
                                     <li>How might research activities impact future economic activities in the district?</li>
                                 </ul>
-                                Select the Federal agencies and years of interest from the menus in the navigation bar above. You can explore the map to find companies, and details about grants they were awarded. Use the parallel coordinates plot to filter the congressional districts on the map, and identify hot spots and cold spots for different kinds of underlying economic activities. Click on a congressional district to see a summary of its funded research activities, labor profile and topics extracted from the funded research taking place there.
+                
+                            </p> 
+                        </section>
+                        <section  id="list-item-selection" class="examples-section">
 
+                            <h4 class="examples-heading">Select Agencies and Years</h4>
+                            <p>
+                                By default, only a subset of all Federal agencies and departments participating in the SBIR/STTR programs are loaded.  To change the selection, use the Federal Funding Agencies dropdown menu in the navigation bar.
+                            </p>
+                            <p>
+                                The Explorer makes available data for awards made between 2008 to 2018.  You can change the selection by using the Award Years dropdown menu in the navigation bar.
+                            </p>
+                             
+                        </section>
+
+                        <section id="list-item-filter" class="examples-section">
+                            <h4 class="examples-heading">Filter the map</h4>
+                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
+                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
+                                <ul>
+
+                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
+                                    
+                                </ul>
+                            
                             </p>
 
-                        <h4 id="list-item-3" class="examples-heading">Identify Recipients</h4>
-                        <img src="./img/district_map_ex.png" class="example-img">
-                        <p>...</p>
-                        <h4 id="list-item-4" class="examples-heading">Identify topics</h4>
-                        <img src="./img/district_map_ex.png" class="example-img">
-                        <p>...</p>
-                        <h4 id="list-item-5" class="examples-heading">See grant details</h4>
-                        <img src="./img/district_map_ex.png" class="example-img">
-                        <p>...</p>
-           
-                      </div>
+                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
+                            </p>
+                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
+                            </p>
+                            <p>
+                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
+                                <ul>
+                                
+                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
+                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
+                                
+                                </ul>
+                            </p>
+
+
+                        </section>
+
+                        <section id="list-item-district" class="examples-section">
+
+                            <h4 class="examples-heading">Select a district</h4>
+                            
+                            <p>
+                                    Click on a district to explore details about the funding activity of the selected agencies across the selected years.  When a district is selected, both its border and area will become foregrounded.  
+                            </p>
+                            <p>
+                                You can find a summary of the SBIR/STTR funding activity in the district in the righthand column, including the total number of grants and dollars committed, the company that received the most funds, and some details about the districts employment profile.  If you change the selected Federal agencies and departments, or the selected funding years, the funding summary will automatically update accordingly.
+                            </p>
+                            <p>
+                                Below the written summary, in the Funding Details section, you can view a bar graph of total funding by agency, a table of grant-funded companies in the district, and additional details about the grants and grantees.  
+                            </p>
+                            <p>
+                                If a district received no funding from the selected agencies in the selected years, the summary will state this, as will the Funding Details and Topics browsers below. You can try expanding the selection criteria to see whether funds were provided to companies located in the district by other agencies or in other years than those selected.
+                            </p>
+                        </section>
+
+                        <section id="list-item-recips" class="examples-section">
+
+                            <h4 class="examples-heading">Identify Recipients</h4>
+                            <p>
+                                You can zoom in on clusters to see where companies receiving SBIR/STTR from the selected agencies in the selected years were located.  If you have selected a district, you can also locate recipients by opening up the Recipients tab of the Funding Details browser and double-clicking on the name of the company.
+                            </p>
+                            <p>
+                                When you click on the award icon, you will see the awards received by the company from the selected agencies in the selected years.  You can scroll through the popup on the map to see the awards.
+                            </p>
+                            <p>
+                                To obtain additional information about a specific company or award, a quick web search for the award title or company will usually yield the SBIR.gov award or company page within the first couple of results.  There, you can find more information about the company, or read the full award abstract to learn more about the research.
+                            </p>
+                        </section>
+
+                        <section id="list-item-details" class="examples-section">
+
+                            <h4 class="examples-heading">See grant details</h4>
+                            <p>
+                                Within the Funding Details section, you can select the Grant Details tab to see various details regarding the grants made by the selected agencies in the selected years in the selected district.  Details for the selected district include:
+                            </p>
+                            <ul>
+                                <li>
+                                    The total number of grants and total funding received by companies
+
+                                </li>
+                                <li>
+                                    The median award amount
+
+                                </li>
+                                <li>
+                                    The breakdown of Phase I and Phase II awards. Phase I reflects those awards (typically $150,000 or less, over a 6 month period) provided to establish technical merit of the research and the companies performance, while Phase II awards (typically $1,000,000 or less, over a 2 year period) are provided to previous Phase I grantees to provide additional support for commercialization of the research.
+
+                                </li>
+                                <li>
+                                    The breakdown of funds provided to companies owned by women, by socio-economically disadvantaged groups, and companies located in United States Small Business Administration designated hub-zones
+
+                                </li>
+                                <li>
+                                    The median company size, by number of employees
+
+                                </li>
+
+
+                            </ul>
+                        
+                        </section>
+
+                        <section id="list-item-topics" class="examples-section">
+
+                            <h4 class="examples-heading">Identify Topics</h4>
+                            <p>
+                                To examine the range of research topics addressed by companies in the selected district, you can scroll through the Topics browser to see keywords extracted from the abstracts of awards.
+                            </p>
+                            <p>
+                                Keywords are extracted using two approaches: 
+                                <ol>
+                                    <li>
+                                        Through mathematical keyword extraction algorithms (TFIDF and textrank),
+                                    </li>
+                                    <li>
+                                        By identification of keywords appearing in several controlled vocabularies and taxonomies.
+                                    </li>
+
+                                </ol>
+                                The number next to each keyword reflects the aggregate frequency of the keyword across the award abstracts of grants awarded in the selected district by the selected agencies across the selected years.  Use the dropdown menu available in the second tab to switch the selection of keywords and see the topics identified by different extraction methods.
+                            </p>
+                        </section>
+                       
+
+                    
+                    </div>
                         
 				</div>
 
@@ -174,6 +250,23 @@
         var scrollSpy = new bootstrap.ScrollSpy(document.body, {
         target: '#list-example'
         })
+        var navOffset = -80;
+
+        $('.list-group-item').click(function(event) {
+            var href = $(this).attr('href');
+
+            // Don't let the browser scroll, but still update the current address
+            // in the browser.
+            event.preventDefault();
+            window.location.hash = href;
+            console.log("href",href)
+
+            // Explicitly scroll to where the browser thinks the element
+            // is, but apply the offset.
+            $(href)[0].scrollIntoView({block: "start", inline: "nearest",behavior: "smooth"});
+            //console.log("hrefselect",$(href))
+            //window.scrollBy(0, navOffset);
+        });
         
     </script>
 
