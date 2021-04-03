@@ -18,14 +18,14 @@
 		<!-- examples: https://www.codeply.com/go/qhaBrcWp3v -->
 		<!-- example 3 - Navbar with brand left, links on center and right that collapse into the vert mobile menu-->
 		<nav class="navbar navbar-dark sticky-top py-1 navbar-expand bg-dark justify-content-center" id="navbar-top">
-			<h1 class="navbar-brand d-flex w-50 mr-auto pub-inno-title" style="padding-left: 4%;"><a href="https://sethsch.github.io/CUNY-Capstone/myapp/index.html#explorer-section" class="home-link">Public Innovations Explorer</a></h1>
+			<h1 class="navbar-brand d-flex w-50 mr-auto pub-inno-title" style="padding-left: 4%;"><a href="https://sethsch.github.io/CUNY-Capstone/myapp/index.html" class="home-link">Public Innovations Explorer</a></h1>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
 				<ul class="nav navbar-nav ml-auto w-100 justify-content-end" style="padding-right: 6%;">
 					<li class="nav-item">
-						<a class="nav-link" href="https://sethsch.github.io/CUNY-Capstone/myapp/index.html#explorer-section">Home</a>
+						<a class="nav-link" href="https://sethsch.github.io/CUNY-Capstone/myapp/index.html">Home</a>
 
 					</li>
 					<li class="nav-item dropdown">
@@ -96,31 +96,73 @@
                             <p>
                                 The Explorer makes available data for awards made between 2008 to 2018.  You can change the selection by using the Award Years dropdown menu in the navigation bar.
                             </p>
+                            <img src="img/select_agency_year.png" class="example-img">
                              
                         </section>
 
                         <section id="list-item-filter" class="examples-section">
                             <h4 class="examples-heading">Filter the map</h4>
                             <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
-                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
+                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  
+                                Use this data to navigate the map according to the economic landscape of the country.  
+                                Each line in the profiler chart reflects a district.  
+                                The level of employment in each sector is shown where the line passes through that sector’s axis.
+                                Lines are colored according to the selected axis, which is shown in bold and whose details will appear in the information bar.
+                            </p>
+                            <p>
+                                In the screenshot below, for example, Texas's 29th District is highlighted.
+                                The 29th District, part of the Houston metropolitan area, is among the most construction-heavy workforces in the country with nearly 20% of its workforce working in the Construction sector.
+                            </p>
+                                
+                            <img src="img/parcoords_indust_example.png" class="example-img">
+                            
+                             <br>
+                            <p> 
+                                By following the color of the paths, you can also identify relationships between sectors; notice how the districts with relatively lower construction sector workforces (blue and green lines) tend to have relatively higher workforces across the Finance and Real Estate, Science and Management, and Education and Health Services sectors.
+                                Let’s say you would like to start exploring the following question:
                                 <ul>
 
-                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
+                                    <li><strong>What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors?</strong></li>
                                     
                                 </ul>
                             
                             </p>
 
-                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
+                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  
+                                The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  
+                                You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  
+                                As you set a selection, the districts will highlight on the map.  
+                                You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
                             </p>
+
+                            <iframe src="https://player.vimeo.com/video/532689539?title=0&amp;byline=0&amp;portrait=0&amp;speed=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                                width="640" height="400" class="example-video" 
+                                marginwidth="0"
+                                marginheight="0"
+                                hspace="0"
+                                vspace="0"
+                                frameborder="0"
+                                frameborder="0" 
+                                allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Filtering the Map"></iframe>
+
+
                             <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
                             </p>
+                            <img src="img/nonfunded.gif" class="example-img">
+                            <br>
                             <p>
-                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
+                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  
+                                Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  
+                                The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  
+                                
+                            </p>
+                            <img src="img/agency_chart.png" class="example-img">
+                            <br>
+                            <p>Use the same techniques described above to explore questions like:
                                 <ul>
                                 
-                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
-                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
+                                <li><strong>What districts received the most SBIR/STTR funding across all agencies?</strong></li>
+                                <li><strong>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</strong></li>
                                 
                                 </ul>
                             </p>
@@ -133,16 +175,20 @@
                             <h4 class="examples-heading">Select a district</h4>
                             
                             <p>
-                                    Click on a district to explore details about the funding activity of the selected agencies across the selected years.  When a district is selected, both its border and area will become foregrounded.  
+                                Click on a district to explore details about the funding activity of the selected agencies across the selected years.  When a district is selected, both its border and area will become foregrounded.  
                             </p>
                             <p>
                                 You can find a summary of the SBIR/STTR funding activity in the district in the righthand column, including the total number of grants and dollars committed, the company that received the most funds, and some details about the districts employment profile.  If you change the selected Federal agencies and departments, or the selected funding years, the funding summary will automatically update accordingly.
                             </p>
+                            <img src="img/selected_dist_summary.png" class="example-img">
+                            <br>
                             <p>
                                 Below the written summary, in the Funding Details section, you can view a bar graph of total funding by agency, a table of grant-funded companies in the district, and additional details about the grants and grantees.  
                             </p>
+                            <img src="img/details_topics.png" class="example-img">
+                            <br>
                             <p>
-                                If a district received no funding from the selected agencies in the selected years, the summary will state this, as will the Funding Details and Topics browsers below. You can try expanding the selection criteria to see whether funds were provided to companies located in the district by other agencies or in other years than those selected.
+                                If a district received no funding from the selected agencies in the selected years, the summary will indicate this, as will the Funding Details and Topics browsers below. You can try expanding the selection criteria to see whether funds were provided to companies located in the district by other agencies or in other years than those selected.
                             </p>
                         </section>
 
@@ -155,6 +201,15 @@
                             <p>
                                 When you click on the award icon, you will see the awards received by the company from the selected agencies in the selected years.  You can scroll through the popup on the map to see the awards.
                             </p>
+                            <iframe src="https://player.vimeo.com/video/532701596?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                                width="720" height="230" class="example-video" 
+                                    marginwidth="0"
+                                    marginheight="0"
+                                    hspace="0"
+                                    vspace="0"
+                                    frameborder="0"
+                                allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Identify Recipients"></iframe>
+                            <br>
                             <p>
                                 To obtain additional information about a specific company or award, a quick web search for the award title or company will usually yield the SBIR.gov award or company page within the first couple of results.  There, you can find more information about the company, or read the full award abstract to learn more about the research.
                             </p>
@@ -166,6 +221,8 @@
                             <p>
                                 Within the Funding Details section, you can select the Grant Details tab to see various details regarding the grants made by the selected agencies in the selected years in the selected district.  Details for the selected district include:
                             </p>
+                            <img src="img/grant_details.gif" class="example-img-sm">
+                            <br>
                             <ul>
                                 <li>
                                     The total number of grants and total funding received by companies
@@ -203,15 +260,26 @@
                                 Keywords are extracted using two approaches: 
                                 <ol>
                                     <li>
-                                        Through mathematical keyword extraction algorithms (TFIDF and textrank),
+                                        Mathematical keyword extraction algorithms, <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf" target="_blank">TFIDF</a> and <a href="https://towardsdatascience.com/textrank-for-keyword-extraction-by-python-c0bae21bcec0" target="_blank">Textrank</a>
                                     </li>
                                     <li>
-                                        By identification of keywords appearing in several controlled vocabularies and taxonomies.
+                                        Identification of keywords appearing in several controlled vocabularies and taxonomies
                                     </li>
 
                                 </ol>
+                                
                                 The number next to each keyword reflects the aggregate frequency of the keyword across the award abstracts of grants awarded in the selected district by the selected agencies across the selected years.  Use the dropdown menu available in the second tab to switch the selection of keywords and see the topics identified by different extraction methods.
                             </p>
+                            <img src="img/topic_details.png" class="example-img-topic">
+                            <br>
+                            <p>
+                                You can use the <strong>Get data</strong> icon to get keyword data for the selected district from the underlying respository. 
+                                That data includes award counts, aggregate word counts, grant IDs, and keyword raw frequencies by year and funder.
+                                You can use this data in conjunction with the underlying <a href="https://github.com/sethsch/CUNY-Capstone/blob/main/myapp/data/sbir_2008to2018_noAbstract.csv">awards data here</a> to perform your own qualitative analyses.
+                                Identifiers included in the grant ID lists correspond the following from the awards data:
+                                <span style="font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;"">Agency_Tracking_Number + "_" + Contract</span>
+                            </p>
+
                         </section>
                        
 

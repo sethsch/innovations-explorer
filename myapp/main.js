@@ -1,5 +1,7 @@
 //var svg = d3.select("#example").style("width","800px").style("height","320px");
 
+//const { schemeSet3 } = require("d3");
+
 //const { filter } = require("topojson-simplify");
 
 //const { stat } = require("fs");
@@ -500,6 +502,13 @@ function init() {
     )
   })
 
+  // if the user clicks hte get data button in the topics menu, and there is a valid selection, take them to the file in the repo
+  d3.select(".download-group").on("click", function(){
+    if (d3.select(this).attr("filelink") != "") {
+      window.open(d3.select(this).attr("filelink"), '_blank');
+    }
+
+  })
 
 
   // Now call the draw function(s) to get going...
@@ -2529,6 +2538,9 @@ function getCdVocab(district){
         state.currentCdVocab = [];
         // remove any existing pills
         d3.selectAll('.pill-container').remove();
+        d3.selectAll(".download-button").attr("class","download-button-inactive")
+        d3.select(".download-group").attr("filelink","");
+    
         showCdVocab(state.currentCdVocab);
         throw new Error("unable to fetch");
       }
@@ -2536,6 +2548,11 @@ function getCdVocab(district){
     }).then(data => {
 	//console.log("LOADED FILE","data/cd116_vocab_aggs/"+district+".json")
       state.currentCdVocab = data;
+      let fileURL = "https://raw.githubusercontent.com/sethsch/CUNY-Capstone/main/myapp/data/cd116_vocab_aggs/"+district+".json"
+      d3.selectAll(".download-button-inactive").attr("class","download-button");
+      d3.selectAll(".download-button").attr("class","download-button");
+      d3.select(".download-group").attr("filelink",fileURL);
+
       showCdVocab(state.currentCdVocab)
 
     })

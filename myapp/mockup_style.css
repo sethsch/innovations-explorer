@@ -661,15 +661,21 @@ display: none;
 
 }
 
-.jump-button{
+.jump-button, .download-button, .download-button-inactive{
     margin:0;
     padding: 0;
     color: lightgray;
+    font-size: 0.75em;
 }
+
 
 .jump-button:hover{
     color:darkslategray;
+
 }
+.download-group:hover > .download-button{fill: darkslategray; color: darkslategray;}
+
+
 
 .recips-table-header{
     position:sticky;
@@ -867,6 +873,7 @@ display: none;
     padding-top: 5%;
     margin-left: 3%;
     margin-right: 3%;
+    font-size: 0.75em;
 }
 
 

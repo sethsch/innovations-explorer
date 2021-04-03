@@ -20,7 +20,7 @@ body{
 
 
 #examples-details-col{
-    margin-right: 12%;
+    margin-right: 18%;
     margin-left: 12%;
     margin-top: 6%;
 }
@@ -38,8 +38,30 @@ body{
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 75%;
+    width: 100%;
     box-shadow: dimgray;
+}
+.example-img-sm{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: dimgray;
+}
+.example-img-topic{
+    display: block;
+    width: 50%;
+    height: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: dimgray;
+}
+
+.example-video{
+    display: block;
+    margin: auto;
+    padding: 0;
+    line-height: 0;
+    
 }
 .home-link:hover {
     /*text-shadow:1px 1px 10px #fff, 1px 1px 10px #ccc;*/

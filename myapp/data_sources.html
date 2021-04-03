@@ -26,14 +26,14 @@
 		<!-- examples: https://www.codeply.com/go/qhaBrcWp3v -->
 		<!-- example 3 - Navbar with brand left, links on center and right that collapse into the vert mobile menu-->
 		<nav class="navbar navbar-dark sticky-top py-1 navbar-expand bg-dark justify-content-center" id="navbar-top">
-			<h1 class="navbar-brand d-flex w-50 mr-auto pub-inno-title" style="padding-left: 4%;"><a href="https://sethsch.github.io/CUNY-Capstone/myapp/index.html#explorer-section" class="home-link">Public Innovations Explorer</a></h1>
+			<h1 class="navbar-brand d-flex w-50 mr-auto pub-inno-title" style="padding-left: 4%;"><a href="https://sethsch.github.io/CUNY-Capstone/myapp/index.html" class="home-link">Public Innovations Explorer</a></h1>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
 				<ul class="nav navbar-nav ml-auto w-100 justify-content-end" style="padding-right: 6%;">
 					<li class="nav-item">
-						<a class="nav-link" href="https://sethsch.github.io/CUNY-Capstone/myapp/index.html#explorer-section">Home</a>
+						<a class="nav-link" href="https://sethsch.github.io/CUNY-Capstone/myapp/index.html">Home</a>
 
 					</li>
 					<li class="nav-item dropdown">
@@ -66,76 +66,173 @@
 
                     <div id="list-example" class="list-group">
                         <h5>Sources</h5>
-                        <a class="list-group-item list-group-item-action" href="#list-item-0">Awards Data</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-1">Labor Data</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-2">Vocabularies</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-3">NLP Pipelines</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-4">Visualization Libraries</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-awards">Awards Data</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-labor">Labor Data</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-vocabs">Vocabularies</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-pipeline">NLP Pipelines</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-vizlib">Visualization Libraries</a>
                     </div>
                    
                 </div>
 				<div class="col-10 mh-100" > 
 
                     <div  id="examples-details-col"  class="scrollspy-example" tabindex="0">
-                        <h3 class="examples-heading" id="list-item-0">Awards Data</h3>
-                        <p>The explorer was built with a variety of analysts in mind: <strong>policy analysts</strong> exploring Federal funding for innovative research across the country, 
-                            <strong>economic geographers</strong> looking to view the landscape of innovation research across the country, and <strong>funders & portfolio analysts</strong> 
-                            looking to compare the funding profiles of the Federal agencies and departments participating in the SBIR/STTR programs. 
-                        </p>
-
-                        <p>Use the explorer to retrieve district-level summaries regarding the research and technology transfer activities of small businesses,
-                            or to identify different awardees and get a sense of their research agendas.  While you can always consult the central awards database at 
-                            SBIR.gov to obtain more detail regarding individual grantees, the Public Innovations Explorer is intended to generate more locally-grounded 
-                            portraits of specialized research activity. You might consider asking: 
-                            <ul>
-                                <li>Where particular Federal agencies and departments tended to committ funding?</li>
-                                <li>What are the characteristics of grantee companies in a particular district?</li>
-                                <li>How are the research activities happening in a particular district tied to its specialized labor profile?</li>
-                                <li>In what ways particular districts have or have not tended to specialize in certain areas of research?</li>
-                                <li>How might research activities impact future economic activities in the district?</li>
-                            </ul>
-            
-                        </p>            
-                        <h4 class="examples-heading" id="list-item-1">Labor Data</h4>
-                        <p>Use the explorer to retrieve district-level summaries regarding the research and technology transfer activities of small businesses,
-                            or to identify different awardees and get a sense of their research agendas.  While you can always consult the central awards database at 
-                            SBIR.gov to obtain more detail regarding individual grantees, the Public Innovations Explorer is intended to generate more locally-grounded 
-                            portraits of specialized research activity. You might consider asking: 
-                            <ul>
-                                <li>Where particular Federal agencies and departments tended to committ funding?</li>
-                                <li>What are the characteristics of grantee companies in a particular district?</li>
-                                <li>How are the research activities happening in a particular district tied to its specialized labor profile?</li>
-                                <li>In what ways particular districts have or have not tended to specialize in certain areas of research?</li>
-                                <li>How might research activities impact future economic activities in the district?</li>
-                            </ul>
-            
-                        </p>            
-                        
-                        <h4 class="examples-heading" id="list-item-2">Vocabularies</h4>
-                          
-                            <p>Use the explorer to retrieve district-level summaries regarding the research and technology transfer activities of small businesses,
-                                or to identify different awardees and get a sense of their research agendas.  While you can always consult the central awards database at 
-                                SBIR.gov to obtain more detail regarding individual grantees, the Public Innovations Explorer is intended to generate more locally-grounded 
-                                portraits of specialized research activity. You might consider asking: 
+                        <section id="list-item-awards" class="examples-section">
+                            <h4 class="examples-heading">Awards Data</h4>
+                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
+                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
                                 <ul>
-                                    <li>Where particular Federal agencies and departments tended to committ funding?</li>
-                                    <li>What are the characteristics of grantee companies in a particular district?</li>
-                                    <li>How are the research activities happening in a particular district tied to its specialized labor profile?</li>
-                                    <li>In what ways particular districts have or have not tended to specialize in certain areas of research?</li>
-                                    <li>How might research activities impact future economic activities in the district?</li>
-                                </ul>
-                                Select the Federal agencies and years of interest from the menus in the navigation bar above. You can explore the map to find companies, and details about grants they were awarded. Use the parallel coordinates plot to filter the congressional districts on the map, and identify hot spots and cold spots for different kinds of underlying economic activities. Click on a congressional district to see a summary of its funded research activities, labor profile and topics extracted from the funded research taking place there.
 
+                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
+                                    
+                                </ul>
+                            
                             </p>
 
-                        <h4 id="list-item-3" class="examples-heading">NLP Pipelines</h4>
-                        <img src="./img/district_map_ex.png" class="example-img">
-                        <p>...</p>
+                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
+                            </p>
+                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
+                            </p>
+                            <p>
+                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
+                                <ul>
+                                
+                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
+                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
+                                
+                                </ul>
+                            </p>
+
+
+                        </section>     
+                        <section id="list-item-labor" class="examples-section">
+                            <h4 class="examples-heading">Labor Data</h4>
+                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
+                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
+                                <ul>
+
+                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
+                                    
+                                </ul>
+                            
+                            </p>
+
+                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
+                            </p>
+                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
+                            </p>
+                            <p>
+                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
+                                <ul>
+                                
+                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
+                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
+                                
+                                </ul>
+                            </p>
+
+
+                        </section>            
+                        
+                        <section id="list-item-vocabs" class="examples-section">
+                            <h4 class="examples-heading">Vocabularies</h4>
+                                  
+
+                                <p>
+                                    <a href="https://www.eionet.europa.eu/gemet/en/themes/" target="_blank" rel="noopener noreferrer">European Environment Agency General Multilingual Environmental Thesaurus (GEMET)</a>
+                                    Environmental issue classifications from the European Commission.
+                                </p>
+
+                                <p>
+                                    <a href="https://eige.europa.eu/thesaurus/overview" target="_blank" rel="noopener noreferrer">European Institute for Gender Equality (EIGE) Glossary & Thesaurus</a>
+                                    Gender equality thesaurus from the European Commission.
+                                </p>
+                                
+                                <p>
+                                    <a href="http://www.fao.org/agrovoc/" target="_blank" rel="noopener noreferrer">Food and Agriculture Organization of the United Nations - AGROVOC Thesaurus</a>
+                                    Food systems and agricutltural classifications from the United Nations.
+                                </p>
+                                
+                                <p>
+                                    <a href="http://zbw.eu/stw" target="_blank" rel="noopener noreferrer">STW Thesaurus of Economics</a>
+                                    Standardized subject headings and individual keywords in various areas of economics, geography, society and politics from the Leibniz Information Centre for Economics.
+                                </p>
+                          
+                                <p>
+                                    <a href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/euroscivoc" target="_blank" rel="noopener noreferrer">European Science Vocabulary (EuroSciVoc)</a>
+                                    Science related classifications from the European Commission.
+                                </p>
+                                       
+                                <p>
+                                    <a href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/eurovoc" target="_blank" rel="noopener noreferrer">EUROVOC Thesaurus of Activities related to the EU</a>
+                                    Governmental, social, political, legal and economic classifications from the European Commission.
+                                </p>
+                                       
+                                <p>
+                                    <a href="https://www.nlm.nih.gov/mesh/meshhome.html" target="_blank" rel="noopener noreferrer">National Library of Medicine Medical Subject Headings</a>
+                                    The Medical Subject Headings (MeSH) thesaurus is a controlled and hierarchically-organized vocabulary produced by the National Library of Medicine. It is used for indexing, cataloging, and searching of biomedical and health-related information.
+                                </p>
+                           
+
+                        </section>     
+
+                        <section id="list-item-pipeline" class="examples-section">
+                            <h4 class="examples-heading">NLP Pipelines</h4>
+                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
+                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
+                                <ul>
+
+                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
+                                    
+                                </ul>
+                            
+                            </p>
+
+                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
+                            </p>
+                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
+                            </p>
+                            <p>
+                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
+                                <ul>
+                                
+                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
+                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
+                                
+                                </ul>
+                            </p>
+
+
+                        </section>     
                 
-                        <h4 id="list-item-4" class="examples-heading">Visualization Libraries</h4>
-                        <img src="./img/district_map_ex.png" class="example-img">
-                        <p>...</p>
-           
+                        <section id="list-item-vizlib" class="examples-section">
+                            <h4 class="examples-heading">Visualization Libraries</h4>
+                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
+                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
+                                <ul>
+
+                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
+                                    
+                                </ul>
+                            
+                            </p>
+
+                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
+                            </p>
+                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
+                            </p>
+                            <p>
+                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
+                                <ul>
+                                
+                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
+                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
+                                
+                                </ul>
+                            </p>
+
+
+                        </section>     
                       </div>
                         
 				</div>
@@ -170,6 +267,22 @@
         var scrollSpy = new bootstrap.ScrollSpy(document.body, {
         target: '#list-example'
         })
+        var navOffset = -80;
+
+        $('.list-group-item').click(function(event) {
+            var href = $(this).attr('href');
+
+            // Don't let the browser scroll, but still update the current address
+            // in the browser.
+            event.preventDefault();
+            window.location.hash = href;
+            console.log("href",href)
+
+            // Explicitly scroll to where the browser thinks the element
+            // is, but apply the offset.
+            $(href)[0].scrollIntoView({block: "start", inline: "nearest",behavior: "smooth"});
+            //console.log("hrefselect",$(href))
+            //window.scrollBy(0, navOffset);
         
     </script>
 
