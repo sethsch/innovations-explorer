@@ -25,8 +25,8 @@ body{
     margin-top: 6%;
 }
 .examples-heading{
-    padding-bottom: 0.25em;
-    padding-top: 1em;
+    /*padding-bottom: 0.25em;
+    padding-top: 0.25em;*/
 }
 .examples-section{
     min-height: 25vh;

@@ -69,7 +69,7 @@
                         <a class="list-group-item list-group-item-action" href="#list-item-awards">Awards Data</a>
                         <a class="list-group-item list-group-item-action" href="#list-item-labor">Labor Data</a>
                         <a class="list-group-item list-group-item-action" href="#list-item-vocabs">Vocabularies</a>
-                        <a class="list-group-item list-group-item-action" href="#list-item-pipeline">NLP Pipelines</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-pipeline">NLP Pipeline</a>
                         <a class="list-group-item list-group-item-action" href="#list-item-vizlib">Visualization Libraries</a>
                     </div>
                    
@@ -79,127 +79,186 @@
                     <div  id="examples-details-col"  class="scrollspy-example" tabindex="0">
                         <section id="list-item-awards" class="examples-section">
                             <h4 class="examples-heading">Awards Data</h4>
-                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
-                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
-                                <ul>
-
-                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
-                                    
-                                </ul>
-                            
-                            </p>
-
-                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
-                            </p>
-                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
+                            <p>
+                                Awards data for the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) programs was obtained from the Awards Database at <a href="https://www.sbir.gov" target="_blank">SBIR.gov</a>. 
+                                For the period between 2008 and 2018 there were 65,749 grants made by the eleven Federal agencies particpiating in the SBIR and STTR programs.
+                                Information regarding the data models for the available awards data, solicitations data, firms data and local assistance programs datasets, including the data dictionaries, can be found <a href="https://www.sbir.gov/data-resources" target="_blank">here</a>.
+                                Awards were geocoded using <a href="https://geocod.io" target="_blank">Geocod.io</a>. 
                             </p>
                             <p>
-                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
-                                <ul>
-                                
-                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
-                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
-                                
-                                </ul>
+                                From the SBIR website:
                             </p>
+                            <div style="margin-left: 5%; font-size: 0.85em;">    
+                                <p>
+                                    The Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) programs are highly competitive programs that encourage domestic small businesses to engage in Federal Research/Research and Development (R/R&D) with the potential for commercialization. 
+                                    Through a competitive awards-based program, SBIR and STTR enable small businesses to explore their technological potential and provide the incentive to profit from its commercialization. 
+                                    By including qualified small businesses in the nation's R&D arena, high-tech innovation is stimulated, and the United States gains entrepreneurial spirit as it meets its specific research and development needs.
+    
+                                </p>
+                               <p>
+                                    Central to the STTR program is the partnership between small businesses and nonprofit research institutions. 
+                                    The STTR program requires the small business to formally collaborate with a research institution in Phase I and Phase II. 
+                                    STTR's most important role is to bridge the gap between performance of basic science and commercialization of resulting innovations.
+
+                               </p>
+                               <p>
+                                    Each year, Federal agencies with extramural research and development (R&D) budgets that exceed $100 million are required to allocate 3.2% (since FY2017) of this extramural R&D budget to fund small businesses through the SBIR program. 
+                                    Federal agencies with extramural R&D budgets that exceed $1 billion are required to reserve 0.45% (since FY2016) of this extramural R&D budget for the STTR program. 
+                                    Currently, eleven Federal agencies participate in the SBIR program and five of those agencies also participate in the STTR program.
+
+                               </p>
+                            
+                        
+                            </div>
 
 
                         </section>     
                         <section id="list-item-labor" class="examples-section">
                             <h4 class="examples-heading">Labor Data</h4>
-                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
-                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
-                                <ul>
-
-                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
-                                    
-                                </ul>
-                            
-                            </p>
-
-                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
-                            </p>
-                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
-                            </p>
                             <p>
-                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
-                                <ul>
-                                
-                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
-                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
-                                
-                                </ul>
-                            </p>
+                                Data on the workforce composition of congressional districts was obtained from the United States Census Bureau's 2014-2018 American Community Survey 5-year estimates, available <a href="https://data.census.gov/cedsci/table?q=INDUSTRY%20FOR%20THE%20CIVILIAN%20EMPLOYED%20POPULATION%2016%20YEARS%20AND%20OVER&tid=ACSST5Y2018.S2405&hidePreview=false" target="_blank">here</a>.
+                                Industries are based on the North American Industry Classification System (NAICS). 
+                                National hot-spots and cold-spots for each industry were identified with the Local Moran's I statistic, using RStudio and the sp, spdep, rgdal libraries.
 
+                            </p>
+                          
+                          
+
+                            
 
                         </section>            
                         
                         <section id="list-item-vocabs" class="examples-section">
                             <h4 class="examples-heading">Vocabularies</h4>
-                                  
-
                                 <p>
-                                    <a href="https://www.eionet.europa.eu/gemet/en/themes/" target="_blank" rel="noopener noreferrer">European Environment Agency General Multilingual Environmental Thesaurus (GEMET)</a>
-                                    Environmental issue classifications from the European Commission.
+                                    A number of controlled vocabularies and taxonomies were utilized for the keyword extraction pipeline.
+                                    These vocabularies were chosen based upon relevance, as well as based on the ease of using the data resources available.
+                                    Vocabularies were accessed from SPARQL endpoints and/or manually downloaded in various formats, and subsequently reformatted as needed using Python (rdflib) and Protegé open-source ontology editor.
                                 </p>
-
-                                <p>
-                                    <a href="https://eige.europa.eu/thesaurus/overview" target="_blank" rel="noopener noreferrer">European Institute for Gender Equality (EIGE) Glossary & Thesaurus</a>
-                                    Gender equality thesaurus from the European Commission.
-                                </p>
-                                
-                                <p>
-                                    <a href="http://www.fao.org/agrovoc/" target="_blank" rel="noopener noreferrer">Food and Agriculture Organization of the United Nations - AGROVOC Thesaurus</a>
-                                    Food systems and agricutltural classifications from the United Nations.
-                                </p>
-                                
-                                <p>
-                                    <a href="http://zbw.eu/stw" target="_blank" rel="noopener noreferrer">STW Thesaurus of Economics</a>
-                                    Standardized subject headings and individual keywords in various areas of economics, geography, society and politics from the Leibniz Information Centre for Economics.
-                                </p>
-                          
-                                <p>
-                                    <a href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/euroscivoc" target="_blank" rel="noopener noreferrer">European Science Vocabulary (EuroSciVoc)</a>
-                                    Science related classifications from the European Commission.
-                                </p>
+                                <table style="border-collapse:collapse;border-color:#ccc;border-spacing:0;border-style:solid;border-width:1px"
+                                    class="tg">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                style="background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;font-weight:bold;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Source</th>
+                                            <th
+                                                style="background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                <span style="font-weight:bold">Description</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#00E;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;text-decoration:underline;vertical-align:top;word-break:normal">
+                                                <a href="https://www.eionet.europa.eu/gemet/en/themes/">European Environment Agency General Multilingual
+                                                    Environmental Thesaurus (GEMET)</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Environmental issue classifications from the European Commission<br></td>
+                                 
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                <a href="https://eige.europa.eu/thesaurus/overview" target="_blank" rel="noopener noreferrer">European
+                                                    Institute for Gender Equality (EIGE) Glossary &amp; Thesaurus</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Gender equality thesaurus from the European Commission</td>
+                                          
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                <a href="http://www.fao.org/agrovoc/" target="_blank" rel="noopener noreferrer">Food and Agriculture
+                                                    Organization of the United Nations - AGROVOC Thesaurus</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Food systems and agricutltural classifications from the United Nations</td>
+                                          
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                <a href="http://zbw.eu/stw" target="_blank" rel="noopener noreferrer">STW Thesaurus of Economics</a><br>
+                                            </td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Standardized subject headings and individual keywords in various areas of economics, geography, society
+                                                and politics from the Leibniz Information Centre for Economics.</td>
                                        
-                                <p>
-                                    <a href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/eurovoc" target="_blank" rel="noopener noreferrer">EUROVOC Thesaurus of Activities related to the EU</a>
-                                    Governmental, social, political, legal and economic classifications from the European Commission.
-                                </p>
-                                       
-                                <p>
-                                    <a href="https://www.nlm.nih.gov/mesh/meshhome.html" target="_blank" rel="noopener noreferrer">National Library of Medicine Medical Subject Headings</a>
-                                    The Medical Subject Headings (MeSH) thesaurus is a controlled and hierarchically-organized vocabulary produced by the National Library of Medicine. It is used for indexing, cataloging, and searching of biomedical and health-related information.
-                                </p>
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#00E;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;text-decoration:underline;vertical-align:top;word-break:normal">
+                                                <a
+                                                    href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/euroscivoc">European
+                                                    Science Vocabulary (EuroSciVoc)</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Science related classifications from the European Commission</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#00E;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;text-decoration:underline;vertical-align:top;word-break:normal">
+                                                <a
+                                                    href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/eurovoc">EUROVOC
+                                                    Thesaurus of Activities related to the EU</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Governmental, social, political, legal and economic classifications from the European Commission</td>
+                                           
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#00E;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;text-decoration:underline;vertical-align:top;word-break:normal">
+                                                <a href="https://www.nlm.nih.gov/mesh/meshhome.html">National Library of Medicine Medical Subject
+                                                    Headings</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                The Medical Subject Headings (MeSH) thesaurus is a controlled and hierarchically-organized vocabulary
+                                                produced by the National Library of Medicine. It is used for indexing, cataloging, and searching of
+                                                biomedical and health-related information</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+           
                            
 
                         </section>     
 
                         <section id="list-item-pipeline" class="examples-section">
-                            <h4 class="examples-heading">NLP Pipelines</h4>
-                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
-                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
-                                <ul>
-
-                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
-                                    
-                                </ul>
-                            
-                            </p>
-
-                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
-                            </p>
-                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
-                            </p>
+                            <h4 class="examples-heading">NLP Pipeline</h4>
                             <p>
-                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
+                                To process the award abstracts, I used the <a href="https://github.com/NIHOPA/NLPre" target="_blank">NIH Office of Portfolio Analysis's NLPre processing pipeline</a>.
+                                The library includes a number of utilities often used when working with scientific publications, including:
                                 <ul>
-                                
-                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
-                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
-                                
-                                </ul>
+                                    <li>Acronym identification and replacement</li>
+                                    <li>Paranthetical phrase identification</li>
+                                    <li>Parenthetical phrase extraction</li>
+                                    <li>Part-of-speech tokenization</li>
+                                    <li>Unicode to ASCII character conversions</li>
+                                    <li>Reconnecting hyphenated words</li>
+                                    <li>Decapitalization of document and section titles</li>
+                                    <li>Citation separation</li>
+                                    <li>URL replacement</li>
+                                    <li>Replacement of mathematical tokens (e.g. > &rarr;'greater than'; % &rarr; 'percent')</li>
+                                    <li>Token replacement from dictionaries</li>
+                                </ul> 
+                            </p> 
+                            <p>
+
+                                To expand the utility of this pipeline when using multiple controlled vocabularies as dictionaries, I added a class that updates an award-level vocabulary index after running through multiple dictionaries.
+                                You can find the class <a href="https://github.com/sethsch/CUNY-Capstone/blob/main/scripts/update_term_index.py" target="_blank">here</a>.  
+                                Work on this utility remains on the to-do list for future improvements, as the class is wholly functional but far from optimally performant.  
+                                You can find more details about that in the accompanying white paper here.
+                            </p>                           
+                            <p>
+                                A special thanks is owed to Travis Hobbes, one of NLPre's co-authors, who was incredibly gracious in talking through the pipeline with me during the ideation phase of this project.
                             </p>
 
 
@@ -207,28 +266,10 @@
                 
                         <section id="list-item-vizlib" class="examples-section">
                             <h4 class="examples-heading">Visualization Libraries</h4>
-                            <p>The map panel displays congressional districts for the 116th United States Congress (2018).  You can choose how you would like to shade the map using the <strong>Congressional District Profiler</strong> menu.  The same color palette is always used on the map and the parallel coordinates profiler chart.</p>
-                            <p>By default, or when you select “Employment sectors” from the dropdown menu, the map and profiler chart will display district-level employment statistics.  Use this data to navigate the map according to the economic landscape of the country.  Each line in the profiler chart reflects a district.  The level of employment in each sector is shown where the line passes through that sector’s axis.  For example, let’s say you would like to explore the following question:
-                                <ul>
-
-                                    <li> What research activities were funded in districts with a higher-than average proportion of workers in manufacturing sectors? </li>
-                                    
-                                </ul>
-                            
-                            </p>
-
-                            <p>Click the MFCTR axis on the profiler chart to change the color palette from the default axis to the Manufacturing sectors.  The information bar and legend will be updated to provide some contextual information on manufacturing employment across the country.  You can either pan to the red and orange districts on the map, or select a portion of districts by using the brushes on the MFCTR axis of the profiler chart.  As you set a selection, the districts will highlight on the map.  You can even set multiple selections to narrow in on districts that meet multiple criteria, like: <em>districts with the largest science and management workforce among districts with high agricultural employment</em>, or, <em>districts with a large construction workforce AND transportation and utilities workforce</em>.
-                            </p>
-                            <p>To exclude districts that had NO grant recipients, use the toggle buttons next to the dropdown menu; this will gray-out non-funded districts.
-                            </p>
                             <p>
-                                Alternatively, you can navigate the SBIR/STTR funding landscape by evaluating where particular Federal departments and agencies committed funding.  Select “Funding agencies” from the Congressional District Profiler menu to display total funding by each agency at the district-level.  Now, each line the chart represents a district’s total funding received from the given agency across the selected years.  The level of funding in the district from each agency is shown where the line intersects with that agency’s axis.  Use the same techniques described above to explore questions like:
-                                <ul>
-                                
-                                <li>What districts received the most SBIR/STTR funding across all agencies?</li>
-                                <li>What districts received the most SBIR/STTR funding from the Department of Health and Human Services (HHS)?  From the Department of Transportation?</li>
-                                
-                                </ul>
+                                The Explorer uses Leaflet.js for the webmap, D3.js to create the other charts and tables, and SlickGrid to create the table accompanying the parallel coordinates chart.
+                                The parallel coordinates chart was created with the latest BigFatDog edition of Syntagmatic's parallel coordinates module, available on Github <a href="https://github.com/BigFatDog/parcoords-es" target="_blank">here</a>.
+                                Axis removal icons were added to the parallel coordinates chart using Bootstrap's popovers.
                             </p>
 
 
