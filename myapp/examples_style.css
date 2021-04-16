@@ -73,3 +73,9 @@ body{
     color: #FFFFFF;
     text-decoration: none;
 }
+.citation-body{
+    text-align: left !important;
+}
+.citation-super{
+    font-size: 0.75em;
+}
