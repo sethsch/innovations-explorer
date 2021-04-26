@@ -155,8 +155,8 @@ function fundedChloro(feature,normVar){
         let cdFundFilt = state.procData.filter(d=>d.GEOID === feature.properties.AFFGEOID)
    
         // get that feature from the funding data and return the chloroscale for that value...
-        if (cdFundFilt.length == 0) {return chloroLinear(0);}
-        else {return chloroLinear(cdFundFilt[0][state.color])}
+        if (cdFundFilt.length == 0) {return choroQuantize(0);}
+        else {return choroQuantize(cdFundFilt[0][state.color])}
  
       }
       else {return "rgba(161, 161, 161,0.4)";}
@@ -166,8 +166,8 @@ function fundedChloro(feature,normVar){
       let cdFundFilt = state.procData.filter(d=>d.GEOID === feature.properties.AFFGEOID)
 
        // get that feature from the funding data and return the chloroscale for that value...
-      if (cdFundFilt.length == 0) {return chloroLinear(0);}
-      else {return chloroLinear(cdFundFilt[0][state.color])}
+      if (cdFundFilt.length == 0) {return choroQuantize(0);}
+      else {return choroQuantize(cdFundFilt[0][state.color])}
       
 
     }
@@ -1357,7 +1357,7 @@ function change_color(dimension) {
     d3.selectAll(".leg-swatch").data(labels).text(d=>d)
   }
   else if (state.parcoordsState === "funding"){
-    parcoords.color(linearColor(parcoords.data(),dimension)).render();
+    parcoords.color(quantizeColor(parcoords.data(),dimension)).render();
 
     // these are the default colors we have for the legend
     let defaultColors = ["rgb(43, 131, 186)","rgb(138, 190, 173)", "rgb(218, 199, 130)", "rgb(243, 134, 72)" ,"rgb(215, 25, 28)"]
@@ -1401,7 +1401,7 @@ function change_color(dimension) {
 
 };
 
-function chloroLinear(d){
+function choroQuantize(d){
   var extent = d3.extent(d3.map(parcoords.data(),d=>d[state.color]))
   // show must have received some funding to get colored
   extent[0] = 1
@@ -1416,8 +1416,8 @@ function chloroLinear(d){
 };
 
 
-// a linear color scale for when we're doing funding parcoords
-function linearColor(data, dimension){
+// a quantized color scale for when we're doing funding parcoords
+function quantizeColor(data, dimension){
 
   var colorscale = d3.scaleQuantize()
       .domain(d3.extent(d3.map(parcoords.data(),d=>d[state.color])))
@@ -1474,10 +1474,10 @@ function stringFilter(item, args) {
   return true;
 };
 
-// FUNCTION - not sure what this is, its' not called anywhere
+/* FUNCTION - not sure what this is, its' not called anywhere
 function percentCompleteSort(a, b) {
   return a["percentComplete"] - b["percentComplete"];
-};
+};*/
   
 // FUNCTION - column sorting
 function comparer(a, b) {
@@ -1569,7 +1569,7 @@ function toTitleCase(str) {
   );
 };
 
-
+/*
 // text wrapping function
 function wrap(text, width) {
   text.each(function() {
@@ -1595,10 +1595,12 @@ function wrap(text, width) {
   });
 };
 
+
 function type(d) {
   d.value = +d.value;
   return d;
-};
+};*/
+
 // setup the parcoords plot
 function initParcoords(){
 

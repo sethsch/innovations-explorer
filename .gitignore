@@ -13,3 +13,9 @@ index.html
 process/~$ckground_writeup.docx
 process/background_writeup.docx
 process/dissertate-CUNY-master/
+scripts/exclude_from_repo/reproject_latlong.py
+scripts/exclude_from_repo/reformat_Migration_Industry_byCongDist.py
+scripts/exclude_from_repo/reformat_Migration_Industry_byCounty.py
+scripts/exclude_from_repo/get_SBIRdata.py
+process/whitepaper_draft_04192021.docx
+process/~$itepaper_draft_04192021.docx
