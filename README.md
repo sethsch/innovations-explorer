@@ -1,4 +1,4 @@
-# The Public Innovations Explorer
+# [The Public Innovations Explorer](https://sethsch.github.io/innovations-explorer/app/index.html)
 
 
 This project was developed and submitted by [Seth Schimmel](mailto:seth.schimmel@gmail.com) in Spring 2021 towards the capstone requirement for completion of the [Masters of Science in Data Analysis and Visualization at the CUNY Graduate Center](https://www.gc.cuny.edu/Page-Elements/Academics-Research-Centers-Initiatives/Masters-Programs/Data-Analysis-and-Visualization). 
