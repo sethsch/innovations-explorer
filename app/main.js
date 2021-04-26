@@ -1569,7 +1569,7 @@ function toTitleCase(str) {
   );
 };
 
-/*
+
 // text wrapping function
 function wrap(text, width) {
   text.each(function() {
@@ -1599,7 +1599,7 @@ function wrap(text, width) {
 function type(d) {
   d.value = +d.value;
   return d;
-};*/
+};
 
 // setup the parcoords plot
 function initParcoords(){
@@ -2535,6 +2535,7 @@ function getCdVocab(district){
   // if the CD is different from teh one already loaded, go forward, if not nothing
   if (state.currentCd !== "99" && state.currentCd !== state.lastCd){
     fetch("data/cd116_vocab_aggs/"+district+".json").then(response => {
+      
       if (!response.ok) {
         //console.log(response);
         state.currentCdVocab = [];
