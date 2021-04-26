@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/ >
+		<!-- Required meta tags -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+		<title>Data Sources - Public Innovations Explorer</title>
+
+		
+			<!--Bootstrap css-->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+            <link rel='stylesheet' type='text/css' href="examples_style.css">
+            
+     
+		
+
+		
+		
+		
+	</head>
+	<body data-bs-spy="scroll" data-bs-offset="85" data-bs-target="#list-example">
+        
+
+		<!--NAV BAR-->
+		<!-- examples: https://www.codeply.com/go/qhaBrcWp3v -->
+		<!-- example 3 - Navbar with brand left, links on center and right that collapse into the vert mobile menu-->
+		<nav class="navbar navbar-dark sticky-top py-1 navbar-expand bg-dark justify-content-center" id="navbar-top">
+			<h1 class="navbar-brand d-flex w-50 mr-auto pub-inno-title" style="padding-left: 4%;"><a href="https://sethsch.github.io/innovations-explorer/app/index.html" class="home-link">Public Innovations Explorer</a></h1>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="navbar-collapse collapse w-100" id="collapsingNavbar3">
+				<ul class="nav navbar-nav ml-auto w-100 justify-content-end" style="padding-right: 6%;">
+					<li class="nav-item">
+						<a class="nav-link" href="https://sethsch.github.io/innovations-explorer/app/index.html">Home</a>
+
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="collapsingNavbar3MenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						About
+						</a>
+						<ul class="dropdown-menu about-menu-container" aria-labelledby="collapsing3NavbarMenuLink">
+							<li><a class="dropdown-item" href="examples.html">User Guide</a></li>
+							<li><a class="dropdown-item" href="background.html">Background</a></li>
+							<li><a class="dropdown-item" href="data_sources.html">Data sources</a></li>
+						</ul>
+					</li>
+
+					
+				</ul>
+			</div>
+		</nav>
+       
+
+
+		
+			
+
+      
+		<div class="container-fluid h-100 d-flex flex-column" id="examples-main-panel">
+           
+			<div class="row flex-fill" style="min-height:0">
+				<!-- START OF MAIN PANEL LEFT-->
+				<!-- TO ADD SCROLL IN THIS COLUMN: style="overflow-y: scroll;"-->
+                <div class="col-2 mh-100 list-menu-col">
+
+                    <div id="list-example" class="list-group">
+                        <h5>Sources</h5>
+                        <a class="list-group-item list-group-item-action" href="#list-item-awards">Awards Data</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-labor">Labor Data</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-vocabs">Vocabularies</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-pipeline">NLP Pipeline</a>
+                        <a class="list-group-item list-group-item-action" href="#list-item-vizlib">Visualization Libraries</a>
+                    </div>
+                   
+                </div>
+				<div class="col-10 mh-100" > 
+
+                    <div  id="examples-details-col"  class="scrollspy-example" tabindex="0">
+                        <section id="list-item-awards" class="examples-section">
+                            <h4 class="examples-heading">Awards Data</h4>
+                            <p>
+                                Awards data for the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) programs was obtained from the Awards Database at <a href="https://www.sbir.gov" target="_blank">SBIR.gov</a>. 
+                                For the period between 2008 and 2018 there were 65,749 grants made by the eleven Federal agencies particpiating in the SBIR and STTR programs.
+                                Information regarding the data models for the available awards data, solicitations data, firms data and local assistance programs datasets, including the data dictionaries, can be found <a href="https://www.sbir.gov/data-resources" target="_blank">here</a>.
+                                Awards were geocoded using <a href="https://geocod.io" target="_blank">Geocod.io</a>. 
+                            </p>
+                            <p>
+                                From the SBIR website:
+                            </p>
+                            <div style="margin-left: 5%; font-size: 0.85em;">    
+                                <p>
+                                    The Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) programs are highly competitive programs that encourage domestic small businesses to engage in Federal Research/Research and Development (R/R&D) with the potential for commercialization. 
+                                    Through a competitive awards-based program, SBIR and STTR enable small businesses to explore their technological potential and provide the incentive to profit from its commercialization. 
+                                    By including qualified small businesses in the nation's R&D arena, high-tech innovation is stimulated, and the United States gains entrepreneurial spirit as it meets its specific research and development needs.
+    
+                                </p>
+                               <p>
+                                    Central to the STTR program is the partnership between small businesses and nonprofit research institutions. 
+                                    The STTR program requires the small business to formally collaborate with a research institution in Phase I and Phase II. 
+                                    STTR's most important role is to bridge the gap between performance of basic science and commercialization of resulting innovations.
+
+                               </p>
+                               <p>
+                                    Each year, Federal agencies with extramural research and development (R&D) budgets that exceed $100 million are required to allocate 3.2% (since FY2017) of this extramural R&D budget to fund small businesses through the SBIR program. 
+                                    Federal agencies with extramural R&D budgets that exceed $1 billion are required to reserve 0.45% (since FY2016) of this extramural R&D budget for the STTR program. 
+                                    Currently, eleven Federal agencies participate in the SBIR program and five of those agencies also participate in the STTR program.
+
+                               </p>
+                            
+                        
+                            </div>
+
+
+                        </section>     
+                        <section id="list-item-labor" class="examples-section">
+                            <h4 class="examples-heading">Labor Data</h4>
+                            <p>
+                                Data on the workforce composition of congressional districts was obtained from the United States Census Bureau's 2014-2018 American Community Survey 5-year estimates, available <a href="https://data.census.gov/cedsci/table?q=INDUSTRY%20FOR%20THE%20CIVILIAN%20EMPLOYED%20POPULATION%2016%20YEARS%20AND%20OVER&tid=ACSST5Y2018.S2405&hidePreview=false" target="_blank">here</a>.
+                                Industries are based on the North American Industry Classification System (NAICS). 
+                                National hot-spots and cold-spots for each industry were identified with the Local Moran's I statistic, using RStudio and the sp, spdep, rgdal libraries.
+
+                            </p>
+                          
+                          
+
+                            
+
+                        </section>            
+                        
+                        <section id="list-item-vocabs" class="examples-section">
+                            <h4 class="examples-heading">Vocabularies</h4>
+                                <p>
+                                    A number of controlled vocabularies and taxonomies were utilized for the keyword extraction pipeline.
+                                    These vocabularies were chosen based upon relevance, as well as based on the ease of using the data resources available.
+                                    Vocabularies were accessed from SPARQL endpoints and/or manually downloaded in various formats, and subsequently reformatted as needed using Python (rdflib) and Protegé open-source ontology editor.
+                                </p>
+                                <table style="border-collapse:collapse;border-color:#ccc;border-spacing:0;border-style:solid;border-width:1px"
+                                    class="tg">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                style="background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;font-weight:bold;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Source</th>
+                                            <th
+                                                style="background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                <span style="font-weight:bold">Description</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#00E;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;text-decoration:underline;vertical-align:top;word-break:normal">
+                                                <a href="https://www.eionet.europa.eu/gemet/en/themes/">European Environment Agency General Multilingual
+                                                    Environmental Thesaurus (GEMET)</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Environmental issue classifications from the European Commission<br></td>
+                                 
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                <a href="https://eige.europa.eu/thesaurus/overview" target="_blank" rel="noopener noreferrer">European
+                                                    Institute for Gender Equality (EIGE) Glossary &amp; Thesaurus</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Gender equality thesaurus from the European Commission</td>
+                                          
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                <a href="http://www.fao.org/agrovoc/" target="_blank" rel="noopener noreferrer">Food and Agriculture
+                                                    Organization of the United Nations - AGROVOC Thesaurus</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Food systems and agricutltural classifications from the United Nations</td>
+                                          
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                <a href="http://zbw.eu/stw" target="_blank" rel="noopener noreferrer">STW Thesaurus of Economics</a><br>
+                                            </td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Standardized subject headings and individual keywords in various areas of economics, geography, society
+                                                and politics from the Leibniz Information Centre for Economics.</td>
+                                       
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#00E;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;text-decoration:underline;vertical-align:top;word-break:normal">
+                                                <a
+                                                    href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/euroscivoc">European
+                                                    Science Vocabulary (EuroSciVoc)</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Science related classifications from the European Commission</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#00E;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;text-decoration:underline;vertical-align:top;word-break:normal">
+                                                <a
+                                                    href="https://op.europa.eu/en/web/eu-vocabularies/dataset/-/resource?uri=http://publications.europa.eu/resource/dataset/eurovoc">EUROVOC
+                                                    Thesaurus of Activities related to the EU</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                Governmental, social, political, legal and economic classifications from the European Commission</td>
+                                           
+                                        </tr>
+                                        <tr>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#00E;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;text-decoration:underline;vertical-align:top;word-break:normal">
+                                                <a href="https://www.nlm.nih.gov/mesh/meshhome.html">National Library of Medicine Medical Subject
+                                                    Headings</a></td>
+                                            <td
+                                                style="background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:middle;word-break:normal">
+                                                The Medical Subject Headings (MeSH) thesaurus is a controlled and hierarchically-organized vocabulary
+                                                produced by the National Library of Medicine. It is used for indexing, cataloging, and searching of
+                                                biomedical and health-related information</td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+           
+                           
+
+                        </section>     
+
+                        <section id="list-item-pipeline" class="examples-section">
+                            <h4 class="examples-heading">NLP Pipeline</h4>
+                            <p>
+                                To process the award abstracts, I used the <a href="https://github.com/NIHOPA/NLPre" target="_blank">NIH Office of Portfolio Analysis's NLPre processing pipeline</a>.
+                                The library includes a number of utilities often used when working with scientific publications, including:
+                                <ul>
+                                    <li>Acronym identification and replacement</li>
+                                    <li>Paranthetical phrase identification</li>
+                                    <li>Parenthetical phrase extraction</li>
+                                    <li>Part-of-speech tokenization</li>
+                                    <li>Unicode to ASCII character conversions</li>
+                                    <li>Reconnecting hyphenated words</li>
+                                    <li>Decapitalization of document and section titles</li>
+                                    <li>Citation separation</li>
+                                    <li>URL replacement</li>
+                                    <li>Replacement of mathematical tokens (e.g. > &rarr;'greater than'; % &rarr; 'percent')</li>
+                                    <li>Token replacement from dictionaries</li>
+                                </ul> 
+                            </p> 
+                            <p>
+
+                                To expand the utility of this pipeline when using multiple controlled vocabularies as dictionaries, I added a class that updates an award-level vocabulary index after running through multiple dictionaries.
+                                You can find the class <a href="https://github.com/sethsch/CUNY-Capstone/blob/main/scripts/update_term_index.py" target="_blank">here</a>.  
+                                Work on this utility remains on the to-do list for future improvements, as the class is wholly functional but far from optimally performant.  
+                                You can find more details about that in the accompanying white paper here.
+                            </p>                           
+                            <p>
+                                A special thanks is owed to Travis Hobbes, one of NLPre's co-authors, who was incredibly gracious in talking through the pipeline with me during the ideation phase of this project.
+                            </p>
+
+
+                        </section>     
+                
+                        <section id="list-item-vizlib" class="examples-section">
+                            <h4 class="examples-heading">Visualization Libraries</h4>
+                            <p>
+                                The Explorer uses Leaflet.js for the webmap, D3.js to create the other charts and tables, and SlickGrid to create the table accompanying the parallel coordinates chart.
+                                The parallel coordinates chart was created with the latest BigFatDog edition of Syntagmatic's parallel coordinates module, available on Github <a href="https://github.com/BigFatDog/parcoords-es" target="_blank">here</a>.
+                                Axis removal icons were added to the parallel coordinates chart using Bootstrap's popovers.
+                            </p>
+
+
+                        </section>     
+                      </div>
+                        
+				</div>
+
+				<!-- START OF MAIN PANEL RIGHT
+				<div class="col-4 mh-100" style="overflow-y: scroll;" id="examples-main-right"></div>-->
+
+					
+				
+			</div>
+
+			<!-- FOOTER ROW-->
+			<div class="row flex-shrink-0" id="footer-row">
+				<div class="col-12 border">Footer </div>
+			</div>
+		
+			
+	</div>
+	
+
+
+    <!--boostrap bundle load-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+    <script
+        src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+        crossorigin="anonymous">
+    </script>
+
+    <script>
+        var scrollSpy = new bootstrap.ScrollSpy(document.body, {
+        target: '#list-example'
+        })
+        var navOffset = -80;
+
+        $('.list-group-item').click(function(event) {
+            var href = $(this).attr('href');
+
+            // Don't let the browser scroll, but still update the current address
+            // in the browser.
+            event.preventDefault();
+            window.location.hash = href;
+            console.log("href",href)
+
+            // Explicitly scroll to where the browser thinks the element
+            // is, but apply the offset.
+            $(href)[0].scrollIntoView({block: "start", inline: "nearest",behavior: "smooth"});
+            //console.log("hrefselect",$(href))
+            //window.scrollBy(0, navOffset);
+        
+    </script>
+
+
+    
+	
+
+	</body>
+
+
+
+
+	
+</html>
