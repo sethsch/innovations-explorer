@@ -18,3 +18,4 @@ scripts/exclude_from_repo/get_SBIRdata.py
 process/whitepaper_draft_04192021.docx
 process/~$itepaper_draft_04192021.docx
 app/data/sbir_2008to2018_FULLINDEX_clean.json
+analytics_examples.md
