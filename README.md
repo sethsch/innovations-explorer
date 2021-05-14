@@ -10,5 +10,5 @@ The project was motivated by my professional experience with data mining and ana
 
 **Go to** [The Public Innovations Explorer](https://sethsch.github.io/innovations-explorer/app/index.html)
 
-**Read more** about the design and methodology via the [documentation here](Documentation.md) or via the [official white paper](process/whitepaper_draft_04192021.docx)
+**Read more** about the design and methodology via the [official white paper](process/schimmel_whitepaper_final_05142021.pdf) or via the [documentation here](Documentation.md) 
 
